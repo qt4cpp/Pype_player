@@ -41,10 +41,22 @@ class Player(QWidget):
         self.player.setVolume(50)
         self.player.play()
 
+
+class PypePlayer(QMainWindow):
+
+    def __init__(self, parent=None):
+        super(PypePlayer, self).__init__(parent)
+
+        player = Player()
+        self.setCentralWidget(player)
+
+        self.setGeometry(300, 300, 350,  300)
+        self.setWindowTitle('Pype Player')
+        self.show()
+
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    player = Player()
-    player.show()
-
+    pypePlayer = PypePlayer()
     sys.exit(app.exec_())
