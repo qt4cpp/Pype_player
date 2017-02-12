@@ -2,8 +2,8 @@ import sys
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import (QPalette)
 from PyQt5.QtWidgets import (QMainWindow, QAction, QFileDialog, QApplication, QWidget,
-                             QHBoxLayout)
-from PyQt5.QtMultimedia import (QMediaPlayer)
+                             QHBoxLayout, QFileDialog)
+from PyQt5.QtMultimedia import (QMediaPlayer, QMediaContent)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
 
@@ -32,6 +32,14 @@ class Player(QWidget):
 
         self.setLayout(displayLayout)
 
+        self.open()
+
+    def open(self):
+        fileName = QFileDialog.getOpenFileUrl(self,"Open file", "~/", ("Video (*.mp4 *.wmv)"))
+        c = QMediaContent(fileName[0])
+        self.player.setMedia(c)
+        self.player.setVolume(50)
+        self.player.play()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
