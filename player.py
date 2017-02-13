@@ -1,8 +1,8 @@
 import sys
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import (QPalette)
+from PyQt5.QtGui import (QPalette, QIcon)
 from PyQt5.QtWidgets import (QMainWindow, QAction, QFileDialog, QApplication, QWidget,
-                             QHBoxLayout, QFileDialog)
+                             QHBoxLayout, QFileDialog, QSizePolicy)
 from PyQt5.QtMultimedia import (QMediaPlayer, QMediaContent)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
@@ -11,6 +11,8 @@ class VideoWidget(QVideoWidget):
 
     def __init__(self, parent=None):
         super(VideoWidget, self).__init__(parent)
+
+        self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
 
         p = self.palette()
         p.setColor(QPalette.Window, Qt.black)
@@ -32,7 +34,6 @@ class Player(QWidget):
 
         self.setLayout(displayLayout)
 
-        self.open()
 
     def open(self):
         fileName = QFileDialog.getOpenFileUrl(self,"Open file", "~/", ("Video (*.mp4 *.wmv)"))
@@ -49,10 +50,23 @@ class PypePlayer(QMainWindow):
 
         player = Player()
         self.setCentralWidget(player)
+        self.createMenus(player)
 
         self.setGeometry(300, 300, 350,  300)
         self.setWindowTitle('Pype Player')
         self.show()
+
+
+    def createMenus(self, player):
+        openFile = QAction(QIcon('open.png'), 'Open', self)
+        openFile.setShortcut('Ctrl+o')
+        openFile.setStatusTip('Open File')
+        openFile.triggered.connect(player.open)
+
+        menubar = self.menuBar()
+        fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(openFile)
+
 
 
 if __name__ == '__main__':
