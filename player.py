@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QDir, Qt
 from PyQt5.QtGui import (QPalette, QIcon)
 from PyQt5.QtWidgets import (QMainWindow, QAction, QFileDialog, QApplication, QWidget,
                              QHBoxLayout, QVBoxLayout, QFileDialog, QSizePolicy, QPushButton, QStyle)
@@ -48,12 +48,14 @@ class Player(QWidget):
 
 
     def open(self):
-        fileName = QFileDialog.getOpenFileUrl(self,"Open file", "~/", ("Video (*.mp4 *.wmv)"))
-        c = QMediaContent(fileName[0])
-        self.player.setMedia(c)
-        self.player.setVolume(50)
-        self.player.play()
-        self.playButton.setEnabled(True)
+        fileName = QFileDialog.getOpenFileUrl(self,"Open file", QDir.homePath(), ("Video (*.mp4)"))
+
+        if fileName != "":
+            c = QMediaContent(fileName[0])
+            self.player.setMedia(c)
+            self.player.play()
+            self.playButton.setEnabled(True)
+
 
     def play(self):
         if self.player.state() == QMediaPlayer.PlayingState:
@@ -78,7 +80,7 @@ class PypePlayer(QMainWindow):
         self.setCentralWidget(player)
         self.createMenus(player)
 
-        self.setGeometry(300, 300, 350,  300)
+        self.resize(320, 240)
         self.setWindowTitle('Pype Player')
         self.show()
 
