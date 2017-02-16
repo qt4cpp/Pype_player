@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import (QPalette, QIcon)
 from PyQt5.QtWidgets import (QMainWindow, QAction, QFileDialog, QApplication, QWidget,
-                             QHBoxLayout, QFileDialog, QSizePolicy)
+                             QHBoxLayout, QVBoxLayout, QFileDialog, QSizePolicy, QPushButton, QStyle)
 from PyQt5.QtMultimedia import (QMediaPlayer, QMediaContent)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
@@ -18,6 +18,7 @@ class VideoWidget(QVideoWidget):
         p.setColor(QPalette.Window, Qt.black)
         self.setPalette(p)
 
+
 class Player(QWidget):
 
     def __init__(self, parent=None):
@@ -27,12 +28,23 @@ class Player(QWidget):
         self.player = QMediaPlayer()
 
         self.videoWidget = VideoWidget()
-        self.player.setVideoOutput(self.videoWidget)
 
-        displayLayout = QHBoxLayout()
+        self.playButton = QPushButton()
+        self.playButton.setEnabled(False)
+        self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
+        self.playButton.clicked.connect(self.play)
+
+        controlLayout = QHBoxLayout()
+        controlLayout.addWidget(self.playButton)
+
+        displayLayout = QVBoxLayout()
         displayLayout.addWidget(self.videoWidget)
+        displayLayout.addLayout(controlLayout)
 
         self.setLayout(displayLayout)
+
+        self.player.setVideoOutput(self.videoWidget)
+        self.player.stateChanged.connect(self.playerStateChanged)
 
 
     def open(self):
@@ -41,6 +53,20 @@ class Player(QWidget):
         self.player.setMedia(c)
         self.player.setVolume(50)
         self.player.play()
+        self.playButton.setEnabled(True)
+
+    def play(self):
+        if self.player.state() == QMediaPlayer.PlayingState:
+            self.player.pause()
+        else:
+            self.player.play()
+
+
+    def playerStateChanged(self, state):
+        if self.player.state() == QMediaPlayer.PlayingState:
+            self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPause))
+        else:
+            self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
 
 
 class PypePlayer(QMainWindow):
