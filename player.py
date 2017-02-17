@@ -59,10 +59,10 @@ class Player(QWidget):
 
 
     def open(self):
-        fileName = QFileDialog.getOpenFileUrl(self,"Open file", QDir.homePath(), ("Video (*.mp4)"))
+        fileName, _ = QFileDialog.getOpenFileUrl(self,"Open file", QDir.homePath(), ("Video (*.mp4)"))
 
-        if fileName != "":
-            c = QMediaContent(fileName[0])
+        if fileName.isEmpty() == False:
+            c = QMediaContent(fileName)
             self.player.setMedia(c)
             self.player.play()
             self.playButton.setEnabled(True)
