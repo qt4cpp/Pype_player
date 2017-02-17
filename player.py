@@ -38,7 +38,7 @@ class Player(QWidget):
         controlLayout.addWidget(self.playButton)
 
         displayLayout = QVBoxLayout()
-        displayLayout.addWidget(self.videoWidget)
+        displayLayout.addWidget(self.videoWidget, QSizePolicy.ExpandFlag)
         displayLayout.addLayout(controlLayout)
 
         self.setLayout(displayLayout)
