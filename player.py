@@ -39,7 +39,12 @@ class Player(QWidget):
         self.stopButton.setIcon(self.style().standardIcon(QStyle.SP_MediaStop))
         self.stopButton.clicked.connect(self.stop)
 
+        self.openButton = QPushButton()
+        self.openButton.setIcon(self.style().standardIcon(QStyle.SP_DirOpenIcon))
+        self.openButton.clicked.connect(self.open)
+
         controlLayout = QHBoxLayout()
+        controlLayout.addWidget(self.openButton)
         controlLayout.addWidget(self.playButton)
         controlLayout.addWidget(self.stopButton)
 
