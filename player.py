@@ -34,8 +34,14 @@ class Player(QWidget):
         self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
         self.playButton.clicked.connect(self.play)
 
+        self.stopButton = QPushButton()
+        self.stopButton.setEnabled(False)
+        self.stopButton.setIcon(self.style().standardIcon(QStyle.SP_MediaStop))
+        self.stopButton.clicked.connect(self.stop)
+
         controlLayout = QHBoxLayout()
         controlLayout.addWidget(self.playButton)
+        controlLayout.addWidget(self.stopButton)
 
         displayLayout = QVBoxLayout()
         displayLayout.addWidget(self.videoWidget, QSizePolicy.ExpandFlag)
@@ -55,6 +61,7 @@ class Player(QWidget):
             self.player.setMedia(c)
             self.player.play()
             self.playButton.setEnabled(True)
+            self.stopButton.setEnabled(True)
 
 
     def play(self):
@@ -62,6 +69,11 @@ class Player(QWidget):
             self.player.pause()
         else:
             self.player.play()
+
+
+    def stop(self):
+        if not self.player.state() == QMediaPlayer.StoppedState:
+            self.player.stop()
 
 
     def playerStateChanged(self, state):
