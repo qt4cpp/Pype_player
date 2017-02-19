@@ -159,7 +159,7 @@ class PypePlayer(QMainWindow):
         self.setCentralWidget(player)
         self.createMenus(player)
 
-        self.resize(320, 240)
+        self.resize(480, 360)
         self.setWindowTitle('Pype Player')
         self.show()
 
