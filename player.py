@@ -1,7 +1,7 @@
 import sys
-from PyQt5.QtCore import QDir, Qt
+from PyQt5.QtCore import QDir, Qt, QTime
 from PyQt5.QtGui import (QPalette, QIcon)
-from PyQt5.QtWidgets import (QMainWindow, QAction, QFileDialog, QApplication, QWidget,
+from PyQt5.QtWidgets import (QMainWindow, QAction, QFileDialog, QApplication, QWidget, QLabel,
                              QHBoxLayout, QVBoxLayout, QFileDialog, QSizePolicy, QPushButton, QStyle)
 from PyQt5.QtMultimedia import (QMediaPlayer, QMediaContent)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
@@ -22,8 +22,9 @@ class VideoWidget(QVideoWidget):
 class Player(QWidget):
 
     def __init__(self, parent=None):
-
         super(Player, self).__init__(parent)
+
+        self.duration = 0
 
         self.player = QMediaPlayer()
 
@@ -43,10 +44,14 @@ class Player(QWidget):
         self.openButton.setIcon(self.style().standardIcon(QStyle.SP_DirOpenIcon))
         self.openButton.clicked.connect(self.open)
 
+        self.labelDuration = QLabel()
+
         controlLayout = QHBoxLayout()
         controlLayout.addWidget(self.openButton)
         controlLayout.addWidget(self.playButton)
         controlLayout.addWidget(self.stopButton)
+        controlLayout.addStretch(1)
+        controlLayout.addWidget(self.labelDuration)
 
         displayLayout = QVBoxLayout()
         displayLayout.addWidget(self.videoWidget, QSizePolicy.ExpandFlag)
@@ -56,6 +61,7 @@ class Player(QWidget):
 
         self.player.setVideoOutput(self.videoWidget)
         self.player.stateChanged.connect(self.playerStateChanged)
+        self.player.durationChanged.connect(self.durationChanged)
 
 
     def open(self):
@@ -87,6 +93,19 @@ class Player(QWidget):
         else:
             self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
 
+    def durationChanged(self, duration):
+        duration /= 1000
+
+        self.duration = duration
+
+        totalTime = QTime((duration/3600)%60, (duration/60)%60, (duration%60), (duration*1000)%1000)
+
+        format = 'hh:mm:ss' if duration > 3600 else 'mm:ss'
+        totalTimeStr = totalTime.toString(format)
+
+        self.labelDuration.setText(totalTimeStr)
+
+    #def updateDuration(self, currentInfo)
 
 class PypePlayer(QMainWindow):
 
