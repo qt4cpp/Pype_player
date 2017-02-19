@@ -71,6 +71,9 @@ class Player(QWidget):
         self.player.durationChanged.connect(self.durationChanged)
         self.player.positionChanged.connect(self.positionChanged)
 
+        self.seekBar.sliderMoved.connect(self.seek)
+        self.seekBar.sliderReleased.connect(self.seekBarMoved)
+
 
     def open(self):
         fileUrl, _ = QFileDialog.getOpenFileUrl(self,"Open file", QDir.homePath(), ("Video (*.mp4)"))
@@ -136,7 +139,13 @@ class Player(QWidget):
         self.labelCurrentTime.setText(currentTimeStr)
 
 
-    #def seek(self, seconds)
+    def seekBarMoved(self):
+        self.seek(self.seekBar.sliderPosition())
+
+
+    def seek(self, seconds):
+        self.player.setPosition(seconds * 1000)
+
 
 #        def setTimetoLabel(self, )
 
