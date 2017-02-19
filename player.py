@@ -44,14 +44,16 @@ class Player(QWidget):
         self.openButton.setIcon(self.style().standardIcon(QStyle.SP_DirOpenIcon))
         self.openButton.clicked.connect(self.open)
 
-        self.labelDuration = QLabel()
+        self.labelTotalTime = QLabel()
+        self.labelCurrentTime = QLabel()
 
         controlLayout = QHBoxLayout()
         controlLayout.addWidget(self.openButton)
         controlLayout.addWidget(self.playButton)
         controlLayout.addWidget(self.stopButton)
         controlLayout.addStretch(1)
-        controlLayout.addWidget(self.labelDuration)
+        controlLayout.addWidget(self.labelCurrentTime)
+        controlLayout.addWidget(self.labelTotalTime)
 
         displayLayout = QVBoxLayout()
         displayLayout.addWidget(self.videoWidget, QSizePolicy.ExpandFlag)
@@ -60,8 +62,10 @@ class Player(QWidget):
         self.setLayout(displayLayout)
 
         self.player.setVideoOutput(self.videoWidget)
+
         self.player.stateChanged.connect(self.playerStateChanged)
         self.player.durationChanged.connect(self.durationChanged)
+        self.player.positionChanged.connect(self.positionChanged)
 
 
     def open(self):
@@ -93,6 +97,7 @@ class Player(QWidget):
         else:
             self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
 
+
     def durationChanged(self, duration):
         duration /= 1000
 
@@ -103,9 +108,30 @@ class Player(QWidget):
         format = 'hh:mm:ss' if duration > 3600 else 'mm:ss'
         totalTimeStr = totalTime.toString(format)
 
-        self.labelDuration.setText(totalTimeStr)
+        self.labelTotalTime.setText(totalTimeStr)
 
-    #def updateDuration(self, currentInfo)
+
+    def positionChanged(self, progress):
+        progress /= 1000
+
+        self.updateDuration(progress)
+
+
+    def updateDuration(self, currentInfo):
+        if currentInfo:
+            currentTime = QTime((currentInfo/3600)%60, (currentInfo/60)%60,
+                                currentInfo%60, (currentInfo*1000)%1000)
+
+            format = 'hh:mm:ss' if self.duration > 3600 else 'mm:ss'
+            currentTimeStr = currentTime.toString(format)
+        else:
+            currentTimeStr = ''
+
+        self.labelCurrentTime.setText(currentTimeStr)
+
+
+        def setTimetoLabel(self, )
+
 
 class PypePlayer(QMainWindow):
 
