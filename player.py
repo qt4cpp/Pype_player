@@ -2,7 +2,8 @@ import sys
 from PyQt5.QtCore import QDir, Qt, QTime
 from PyQt5.QtGui import (QPalette, QIcon)
 from PyQt5.QtWidgets import (QMainWindow, QAction, QFileDialog, QApplication, QWidget, QLabel,
-                             QHBoxLayout, QVBoxLayout, QFileDialog, QSizePolicy, QPushButton, QStyle)
+                             QHBoxLayout, QVBoxLayout, QFileDialog, QSizePolicy, QPushButton, QStyle,
+                             QSlider)
 from PyQt5.QtMultimedia import (QMediaPlayer, QMediaContent)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
@@ -44,6 +45,9 @@ class Player(QWidget):
         self.openButton.setIcon(self.style().standardIcon(QStyle.SP_DirOpenIcon))
         self.openButton.clicked.connect(self.open)
 
+        self.seekBar = QSlider(Qt.Horizontal)
+        self.seekBar.setRange(0, self.player.duration() / 1000)
+
         self.labelTotalTime = QLabel()
         self.labelCurrentTime = QLabel()
 
@@ -51,8 +55,8 @@ class Player(QWidget):
         controlLayout.addWidget(self.openButton)
         controlLayout.addWidget(self.playButton)
         controlLayout.addWidget(self.stopButton)
-        controlLayout.addStretch(1)
         controlLayout.addWidget(self.labelCurrentTime)
+        controlLayout.addWidget(self.seekBar)
         controlLayout.addWidget(self.labelTotalTime)
 
         displayLayout = QVBoxLayout()
@@ -109,15 +113,16 @@ class Player(QWidget):
         totalTimeStr = totalTime.toString(format)
 
         self.labelTotalTime.setText(totalTimeStr)
+        self.seekBar.setRange(0, self.player.duration())
 
 
     def positionChanged(self, progress):
         progress /= 1000
 
-        self.updateDuration(progress)
+        self.updateCurrentTime(progress)
 
 
-    def updateDuration(self, currentInfo):
+    def updateCurrentTime(self, currentInfo):
         if currentInfo:
             currentTime = QTime((currentInfo/3600)%60, (currentInfo/60)%60,
                                 currentInfo%60, (currentInfo*1000)%1000)
@@ -130,7 +135,7 @@ class Player(QWidget):
         self.labelCurrentTime.setText(currentTimeStr)
 
 
-        def setTimetoLabel(self, )
+#        def setTimetoLabel(self, )
 
 
 class PypePlayer(QMainWindow):
