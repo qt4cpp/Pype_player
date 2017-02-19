@@ -113,13 +113,14 @@ class Player(QWidget):
         totalTimeStr = totalTime.toString(format)
 
         self.labelTotalTime.setText(totalTimeStr)
-        self.seekBar.setRange(0, self.player.duration())
+        self.seekBar.setMaximum(duration)
 
 
     def positionChanged(self, progress):
         progress /= 1000
 
         self.updateCurrentTime(progress)
+        self.seekBar.setValue(progress)
 
 
     def updateCurrentTime(self, currentInfo):
@@ -134,6 +135,8 @@ class Player(QWidget):
 
         self.labelCurrentTime.setText(currentTimeStr)
 
+
+    #def seek(self, seconds)
 
 #        def setTimetoLabel(self, )
 
