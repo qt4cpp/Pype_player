@@ -96,6 +96,7 @@ class Player(QWidget):
     def stop(self):
         if not self.player.state() == QMediaPlayer.StoppedState:
             self.player.stop()
+            self.seek(0)
 
 
     def playerStateChanged(self, state):
@@ -134,7 +135,7 @@ class Player(QWidget):
             format = 'hh:mm:ss' if self.duration > 3600 else 'mm:ss'
             currentTimeStr = currentTime.toString(format)
         else:
-            currentTimeStr = ''
+            currentTimeStr = '00:00'
 
         self.labelCurrentTime.setText(currentTimeStr)
 
