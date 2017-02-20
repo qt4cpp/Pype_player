@@ -72,7 +72,7 @@ class Player(QWidget):
         self.player.positionChanged.connect(self.positionChanged)
 
         self.seekBar.sliderMoved.connect(self.seek)
-        self.seekBar.sliderReleased.connect(self.seekBarMoved)
+        self.seekBar.sliderReleased.connect(self.seekBarClicked)
 
 
     def open(self):
@@ -140,7 +140,7 @@ class Player(QWidget):
         self.labelCurrentTime.setText(currentTimeStr)
 
 
-    def seekBarMoved(self):
+    def seekBarClicked(self):
         self.seek(self.seekBar.sliderPosition())
 
 
