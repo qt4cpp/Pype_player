@@ -45,6 +45,9 @@ class Player(QWidget):
         self.openButton.setIcon(self.style().standardIcon(QStyle.SP_DirOpenIcon))
         self.openButton.clicked.connect(self.open)
 
+        self.volumeBar = QSlider(Qt.Horizontal)
+        self.volumeBar.setRange(0, 100)
+
         self.seekBar = QSlider(Qt.Horizontal)
         self.seekBar.setRange(0, self.player.duration() / 1000)
 
@@ -55,8 +58,9 @@ class Player(QWidget):
         controlLayout.addWidget(self.openButton)
         controlLayout.addWidget(self.playButton)
         controlLayout.addWidget(self.stopButton)
+        controlLayout.addWidget(self.volumeBar)
         controlLayout.addWidget(self.labelCurrentTime)
-        controlLayout.addWidget(self.seekBar)
+        controlLayout.addWidget(self.seekBar, stretch=1)
         controlLayout.addWidget(self.labelTotalTime)
 
         displayLayout = QVBoxLayout()
@@ -70,6 +74,9 @@ class Player(QWidget):
         self.player.stateChanged.connect(self.playerStateChanged)
         self.player.durationChanged.connect(self.durationChanged)
         self.player.positionChanged.connect(self.positionChanged)
+
+        self.volumeBar.sliderMoved.connect(self.setVolume)
+        self.volumeBar.sliderReleased.connect(self.setVolume)
 
         self.seekBar.sliderMoved.connect(self.seek)
         self.seekBar.sliderReleased.connect(self.seekBarClicked)
@@ -138,6 +145,10 @@ class Player(QWidget):
             currentTimeStr = '00:00'
 
         self.labelCurrentTime.setText(currentTimeStr)
+
+
+    def setVolume(self):
+        self.player.setVolume(self.volumeBar.sliderPosition())
 
 
     def seekBarClicked(self):
