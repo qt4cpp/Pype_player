@@ -45,6 +45,11 @@ class Player(QWidget):
         self.openButton.setIcon(self.style().standardIcon(QStyle.SP_DirOpenIcon))
         self.openButton.clicked.connect(self.open)
 
+        self.muteButton = QPushButton()
+        self.muteButton.setIcon(self.style().standardIcon(QStyle.SP_MediaVolume if self.player.isMuted() == False else
+                                                          QStyle.SP_MediaVolumeMuted))
+        self.muteButton.clicked.connect(self.toggleMute)
+
         self.volumeBar = QSlider(Qt.Horizontal)
         self.volumeBar.setRange(0, 100)
 
@@ -58,6 +63,7 @@ class Player(QWidget):
         controlLayout.addWidget(self.openButton)
         controlLayout.addWidget(self.playButton)
         controlLayout.addWidget(self.stopButton)
+        controlLayout.addWidget(self.muteButton)
         controlLayout.addWidget(self.volumeBar)
         controlLayout.addWidget(self.labelCurrentTime)
         controlLayout.addWidget(self.seekBar, stretch=1)
@@ -159,7 +165,13 @@ class Player(QWidget):
         self.player.setPosition(seconds * 1000)
 
 
-#        def setTimetoLabel(self, )
+    def toggleMute(self):
+        if self.player.isMuted():
+            self.player.setMuted(False)
+            self.muteButton.setIcon(self.style().standardIcon(QStyle.SP_MediaVolume))
+        else:
+            self.player.setMuted(True)
+            self.muteButton.setIcon(self.style().standardIcon(QStyle.SP_MediaVolumeMuted))
 
 
 class PypePlayer(QMainWindow):
