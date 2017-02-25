@@ -55,12 +55,13 @@ class Player(QWidget):
         self.volumeBar.setRange(0, 100)
 
         self.labelVolume = QLabel(str(self.volume))
+        self.labelVolume.setIndent(20)
 
         self.seekBar = QSlider(Qt.Horizontal)
         self.seekBar.setRange(0, self.player.duration() / 1000)
 
-        self.labelTotalTime = QLabel()
-        self.labelCurrentTime = QLabel()
+        self.labelTotalTime = QLabel('00:00')
+        self.labelCurrentTime = QLabel('00:00')
 
         seekBarLayout = QHBoxLayout()
         seekBarLayout.addWidget(self.labelCurrentTime)
