@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtCore import QDir, Qt, QTime
+from PyQt5.QtCore import (QDir, Qt, QTime)
 from PyQt5.QtGui import (QPalette, QIcon)
 from PyQt5.QtWidgets import (QMainWindow, QAction, QFileDialog, QApplication, QWidget, QLabel,
                              QHBoxLayout, QVBoxLayout, QFileDialog, QSizePolicy, QPushButton, QStyle,
@@ -26,6 +26,7 @@ class Player(QWidget):
         super(Player, self).__init__(parent)
 
         self.duration = 0
+        self.volume = 50
 
         self.player = QMediaPlayer()
 
@@ -53,11 +54,14 @@ class Player(QWidget):
         self.volumeBar = QSlider(Qt.Horizontal)
         self.volumeBar.setRange(0, 100)
 
+        self.labelVolume = QLabel(str(self.volume))
+        self.labelVolume.setIndent(20)
+
         self.seekBar = QSlider(Qt.Horizontal)
         self.seekBar.setRange(0, self.player.duration() / 1000)
 
-        self.labelTotalTime = QLabel()
-        self.labelCurrentTime = QLabel()
+        self.labelTotalTime = QLabel('00:00')
+        self.labelCurrentTime = QLabel('00:00')
 
         seekBarLayout = QHBoxLayout()
         seekBarLayout.addWidget(self.labelCurrentTime)
@@ -69,8 +73,10 @@ class Player(QWidget):
         controlWithoutSeekBarLayout.addWidget(self.openButton)
         controlWithoutSeekBarLayout.addWidget(self.playButton)
         controlWithoutSeekBarLayout.addWidget(self.stopButton)
+        controlWithoutSeekBarLayout.addStretch(stretch=2)
         controlWithoutSeekBarLayout.addWidget(self.muteButton)
         controlWithoutSeekBarLayout.addWidget(self.volumeBar)
+        controlWithoutSeekBarLayout.addWidget(self.labelVolume, alignment=Qt.AlignRight)
 
         controlLayout = QVBoxLayout()
         controlLayout.addLayout(seekBarLayout)
@@ -90,6 +96,7 @@ class Player(QWidget):
 
         self.volumeBar.sliderMoved.connect(self.setVolume)
         self.volumeBar.sliderReleased.connect(self.setVolume)
+        self.volumeBar.valueChanged.connect(self.volumeChanged)
 
         self.seekBar.sliderMoved.connect(self.seek)
         self.seekBar.sliderReleased.connect(self.seekBarClicked)
@@ -162,6 +169,11 @@ class Player(QWidget):
 
     def setVolume(self):
         self.player.setVolume(self.volumeBar.sliderPosition())
+
+
+    def volumeChanged(self):
+        self.labelVolume.setText(str(self.volumeBar.sliderPosition()))
+        self.volume = self.volumeBar.sliderPosition()
 
 
     def seekBarClicked(self):
