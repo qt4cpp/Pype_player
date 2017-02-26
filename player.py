@@ -55,7 +55,7 @@ class Player(QWidget):
         self.volumeBar.setRange(0, 100)
 
         self.labelVolume = QLabel(str(self.volume))
-        self.labelVolume.setIndent(20)
+        self.labelVolume.setMinimumWidth(24)
 
         self.seekBar = QSlider(Qt.Horizontal)
         self.seekBar.setRange(0, self.player.duration() / 1000)
