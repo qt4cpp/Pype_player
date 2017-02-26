@@ -103,7 +103,7 @@ class Player(QWidget):
 
 
     def open(self):
-        fileUrl, _ = QFileDialog.getOpenFileUrl(self,"Open file", QDir.homePath(), ("Video (*.mp4)"))
+        fileUrl, _ = QFileDialog.getOpenFileUrl(self,"Open file", QDir.homePath(), ("(*.mp4 *m4v *.mov *avi *.m4a *.mp3)"))
 
         if fileUrl.isEmpty() == False:
             c = QMediaContent(fileUrl)
