@@ -53,6 +53,7 @@ class Player(QWidget):
 
         self.volumeBar = QSlider(Qt.Horizontal)
         self.volumeBar.setRange(0, 100)
+        self.volumeBar.setValue(self.volume)
 
         self.labelVolume = QLabel(str(self.volume))
         self.labelVolume.setMinimumWidth(24)
