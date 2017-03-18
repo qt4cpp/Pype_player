@@ -6,6 +6,13 @@ from PyQt5.QtWidgets import (QMainWindow, QAction, QFileDialog, QApplication, QW
                              QSlider)
 from PyQt5.QtMultimedia import (QMediaPlayer, QMediaContent)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
+from enum import IntEnum
+
+class SeekStep(IntEnum):
+    SHORT = 5
+    MEDIUM = 30
+    LONG = 60
+    VERYLONG = 300
 
 
 class VideoWidget(QVideoWidget):
@@ -193,6 +200,30 @@ class Player(QWidget):
             self.player.setMuted(True)
             self.muteButton.setIcon(self.style().standardIcon(QStyle.SP_MediaVolumeMuted))
 
+    def forward(self, seconds):
+        currentPosition = self.seekBar.sliderPosition()
+
+        if currentPosition + seconds < self.duration:
+            self.seek(currentPosition + seconds)
+        else:
+            self.seek(self.duration)
+
+
+    def forward_short(self):
+        self.forward(SeekStep.SHORT)
+
+
+    def forward_medium(self):
+        self.forward(SeekStep.MEDIUM)
+
+
+    def forward_long(self):
+        self.forward(SeekStep.LONG)
+
+
+    def forward_verylong(self):
+        self.forward(SeekStep.VERYLONG)
+
 
 class PypePlayer(QMainWindow):
 
@@ -214,10 +245,27 @@ class PypePlayer(QMainWindow):
         openFile.setStatusTip('Open File')
         openFile.triggered.connect(player.open)
 
+        forward_short = QAction('Short Forward', self)
+        forward_short.setShortcut('Right')
+        forward_short.triggered.connect(player.forward_short)
+        forward_medium = QAction('Medium Forward', self)
+        forward_medium.setShortcut('Shift+Right')
+        forward_medium.triggered.connect(player.forward_medium)
+        forward_long = QAction('Long Forward', self)
+        forward_long.setShortcut('Ctrl+Right')
+        forward_long.triggered.connect(player.forward_long)
+        forward_verylong = QAction('Very Long Forward', self)
+        forward_verylong.setShortcut('Shift+Ctrl+Right')
+        forward_verylong.triggered.connect(player.forward_verylong)
+
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(openFile)
-
+        playbackMenu = menubar.addMenu('&Playback')
+        playbackMenu.addAction(forward_short)
+        playbackMenu.addAction(forward_medium)
+        playbackMenu.addAction(forward_long)
+        playbackMenu.addAction(forward_verylong)
 
 
 if __name__ == '__main__':
