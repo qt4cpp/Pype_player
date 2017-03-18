@@ -262,11 +262,11 @@ class PypePlayer(QMainWindow):
     def createMenus(self, player):
         openFile = createAction(self, 'Open', player.open, 'Ctrl+o')
         forward_short = createAction(self, 'Short Forward', player.forward_short, 'Right')
-        forward_medium = createAction(self, 'Medium Forward', player.forward_medium, 'Shift+Right')
+        forward_medium = createAction(self, 'Forward', player.forward_medium, 'Shift+Right')
         forward_long = createAction(self, 'Long Forward', player.forward_long, 'Ctrl+Right')
         forward_verylong = createAction(self, 'Very Long Forward', player.forward_verylong, 'Shift+Ctrl+Right')
         backward_short = createAction(self, 'Short Backward', player.backward_short, 'Left')
-        backward_medium = createAction(self, 'Medium Backward', player.backward_medium, 'Shift+Left')
+        backward_medium = createAction(self, 'Backward', player.backward_medium, 'Shift+Left')
         backward_long = createAction(self, 'Long Backward', player.backward_long, 'Ctrl+Left')
         backward_verylong = createAction(self, 'Very Long Backward', player.backward_verylong, 'Shift+Ctrl+Left')
 
@@ -279,11 +279,11 @@ class PypePlayer(QMainWindow):
         jumpMenu.addAction(forward_medium)
         jumpMenu.addAction(forward_long)
         jumpMenu.addAction(forward_verylong)
+        jumpMenu.addSeparator()
         jumpMenu.addAction(backward_short)
         jumpMenu.addAction(backward_medium)
         jumpMenu.addAction(backward_long)
         jumpMenu.addAction(backward_verylong)
-
 
 
 if __name__ == '__main__':
