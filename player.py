@@ -54,6 +54,13 @@ class Player(QWidget):
         self.openButton.setIcon(self.style().standardIcon(QStyle.SP_DirOpenIcon))
         self.openButton.clicked.connect(self.open)
 
+        self.backwardButton = QPushButton()
+        self.backwardButton.setIcon(self.style().standardIcon(QStyle.SP_MediaSeekBackward))
+        self.backwardButton.clicked.connect(self.backward_short)
+        self.forwardButton = QPushButton()
+        self.forwardButton.setIcon(self.style().standardIcon(QStyle.SP_MediaSeekForward))
+        self.forwardButton.clicked.connect(self.forward_short)
+
         self.muteButton = QPushButton()
         self.muteButton.setIcon(self.style().standardIcon(QStyle.SP_MediaVolume if self.player.isMuted() == False else
                                                           QStyle.SP_MediaVolumeMuted))
@@ -82,6 +89,8 @@ class Player(QWidget):
         controlWithoutSeekBarLayout.addWidget(self.openButton)
         controlWithoutSeekBarLayout.addWidget(self.playButton)
         controlWithoutSeekBarLayout.addWidget(self.stopButton)
+        controlWithoutSeekBarLayout.addWidget(self.backwardButton)
+        controlWithoutSeekBarLayout.addWidget(self.forwardButton)
         controlWithoutSeekBarLayout.addStretch(stretch=2)
         controlWithoutSeekBarLayout.addWidget(self.muteButton)
         controlWithoutSeekBarLayout.addWidget(self.volumeBar)
