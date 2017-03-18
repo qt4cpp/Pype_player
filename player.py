@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import (QMainWindow, QAction, QFileDialog, QApplication, QW
 from PyQt5.QtMultimedia import (QMediaPlayer, QMediaContent)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from enum import IntEnum
+from utility import createAction
 
 class SeekStep(IntEnum):
     SHORT = 5
@@ -240,10 +241,11 @@ class PypePlayer(QMainWindow):
 
 
     def createMenus(self, player):
-        openFile = QAction(QIcon('open.png'), 'Open', self)
-        openFile.setShortcut('Ctrl+o')
-        openFile.setStatusTip('Open File')
-        openFile.triggered.connect(player.open)
+        openFile = createAction(self, 'Open', player.open, 'Ctrl+o')
+        # openFile = QAction(QIcon('open.png'), 'Open', self)
+        # openFile.setShortcut('Ctrl+o')
+        # openFile.setStatusTip('Open File')
+        # openFile.triggered.connect(player.open)
 
         forward_short = QAction('Short Forward', self)
         forward_short.setShortcut('Right')
