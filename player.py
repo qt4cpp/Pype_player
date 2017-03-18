@@ -242,23 +242,10 @@ class PypePlayer(QMainWindow):
 
     def createMenus(self, player):
         openFile = createAction(self, 'Open', player.open, 'Ctrl+o')
-        # openFile = QAction(QIcon('open.png'), 'Open', self)
-        # openFile.setShortcut('Ctrl+o')
-        # openFile.setStatusTip('Open File')
-        # openFile.triggered.connect(player.open)
-
-        forward_short = QAction('Short Forward', self)
-        forward_short.setShortcut('Right')
-        forward_short.triggered.connect(player.forward_short)
-        forward_medium = QAction('Medium Forward', self)
-        forward_medium.setShortcut('Shift+Right')
-        forward_medium.triggered.connect(player.forward_medium)
-        forward_long = QAction('Long Forward', self)
-        forward_long.setShortcut('Ctrl+Right')
-        forward_long.triggered.connect(player.forward_long)
-        forward_verylong = QAction('Very Long Forward', self)
-        forward_verylong.setShortcut('Shift+Ctrl+Right')
-        forward_verylong.triggered.connect(player.forward_verylong)
+        forward_short = createAction(self, 'Short Forward', player.forward_short, 'Right')
+        forward_medium = createAction(self, 'Medium Forward', player.forward_medium, 'Shift+Right')
+        forward_long = createAction(self, 'Long Forward', player.forward_long, 'Ctrl+Right')
+        forward_verylong = createAction(self, 'Very Long Forward', player.forward_verylong, 'Shift+Ctrl+Right')
 
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&File')
