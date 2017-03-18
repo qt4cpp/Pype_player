@@ -54,6 +54,13 @@ class Player(QWidget):
         self.openButton.setIcon(self.style().standardIcon(QStyle.SP_DirOpenIcon))
         self.openButton.clicked.connect(self.open)
 
+        self.backwardButton = QPushButton()
+        self.backwardButton.setIcon(self.style().standardIcon(QStyle.SP_MediaSeekBackward))
+        self.backwardButton.clicked.connect(self.backward_short)
+        self.forwardButton = QPushButton()
+        self.forwardButton.setIcon(self.style().standardIcon(QStyle.SP_MediaSeekForward))
+        self.forwardButton.clicked.connect(self.forward_short)
+
         self.muteButton = QPushButton()
         self.muteButton.setIcon(self.style().standardIcon(QStyle.SP_MediaVolume if self.player.isMuted() == False else
                                                           QStyle.SP_MediaVolumeMuted))
@@ -82,6 +89,8 @@ class Player(QWidget):
         controlWithoutSeekBarLayout.addWidget(self.openButton)
         controlWithoutSeekBarLayout.addWidget(self.playButton)
         controlWithoutSeekBarLayout.addWidget(self.stopButton)
+        controlWithoutSeekBarLayout.addWidget(self.backwardButton)
+        controlWithoutSeekBarLayout.addWidget(self.forwardButton)
         controlWithoutSeekBarLayout.addStretch(stretch=2)
         controlWithoutSeekBarLayout.addWidget(self.muteButton)
         controlWithoutSeekBarLayout.addWidget(self.volumeBar)
@@ -210,6 +219,10 @@ class Player(QWidget):
             self.seek(self.duration)
 
 
+    def backward(self, seconds):
+        self.forward(-seconds)
+
+
     def forward_short(self):
         self.forward(SeekStep.SHORT)
 
@@ -224,6 +237,21 @@ class Player(QWidget):
 
     def forward_verylong(self):
         self.forward(SeekStep.VERYLONG)
+
+    def backward_short(self):
+        self.backward(SeekStep.SHORT)
+
+
+    def backward_medium(self):
+        self.backward(SeekStep.MEDIUM)
+
+
+    def backward_long(self):
+        self.backward(SeekStep.LONG)
+
+
+    def backward_verylong(self):
+        self.backward(SeekStep.VERYLONG)
 
 
 class PypePlayer(QMainWindow):
@@ -243,18 +271,28 @@ class PypePlayer(QMainWindow):
     def createMenus(self, player):
         openFile = createAction(self, 'Open', player.open, 'Ctrl+o')
         forward_short = createAction(self, 'Short Forward', player.forward_short, 'Right')
-        forward_medium = createAction(self, 'Medium Forward', player.forward_medium, 'Shift+Right')
+        forward_medium = createAction(self, 'Forward', player.forward_medium, 'Shift+Right')
         forward_long = createAction(self, 'Long Forward', player.forward_long, 'Ctrl+Right')
         forward_verylong = createAction(self, 'Very Long Forward', player.forward_verylong, 'Shift+Ctrl+Right')
+        backward_short = createAction(self, 'Short Backward', player.backward_short, 'Left')
+        backward_medium = createAction(self, 'Backward', player.backward_medium, 'Shift+Left')
+        backward_long = createAction(self, 'Long Backward', player.backward_long, 'Ctrl+Left')
+        backward_verylong = createAction(self, 'Very Long Backward', player.backward_verylong, 'Shift+Ctrl+Left')
 
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(openFile)
         playbackMenu = menubar.addMenu('&Playback')
-        playbackMenu.addAction(forward_short)
-        playbackMenu.addAction(forward_medium)
-        playbackMenu.addAction(forward_long)
-        playbackMenu.addAction(forward_verylong)
+        jumpMenu = playbackMenu.addMenu('Jump')
+        jumpMenu.addAction(forward_short)
+        jumpMenu.addAction(forward_medium)
+        jumpMenu.addAction(forward_long)
+        jumpMenu.addAction(forward_verylong)
+        jumpMenu.addSeparator()
+        jumpMenu.addAction(backward_short)
+        jumpMenu.addAction(backward_medium)
+        jumpMenu.addAction(backward_long)
+        jumpMenu.addAction(backward_verylong)
 
 
 if __name__ == '__main__':
