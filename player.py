@@ -217,6 +217,14 @@ class Player(QWidget):
         self.forward(SeekStep.MEDIUM)
 
 
+    def forward_long(self):
+        self.forward(SeekStep.LONG)
+
+
+    def forward_verylong(self):
+        self.forward(SeekStep.VERYLONG)
+
+
 class PypePlayer(QMainWindow):
 
     def __init__(self, parent=None):
@@ -243,6 +251,12 @@ class PypePlayer(QMainWindow):
         forward_medium = QAction('Medium Forward', self)
         forward_medium.setShortcut('Shift+Right')
         forward_medium.triggered.connect(player.forward_medium)
+        forward_long = QAction('Long Forward', self)
+        forward_long.setShortcut('Ctrl+Right')
+        forward_long.triggered.connect(player.forward_long)
+        forward_verylong = QAction('Very Long Forward', self)
+        forward_verylong.setShortcut('Shift+Ctrl+Right')
+        forward_verylong.triggered.connect(player.forward_verylong)
 
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&File')
@@ -250,6 +264,8 @@ class PypePlayer(QMainWindow):
         playbackMenu = menubar.addMenu('&Playback')
         playbackMenu.addAction(forward_short)
         playbackMenu.addAction(forward_medium)
+        playbackMenu.addAction(forward_long)
+        playbackMenu.addAction(forward_verylong)
 
 
 if __name__ == '__main__':
