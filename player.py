@@ -86,6 +86,7 @@ class Player(QWidget):
         seekBarLayout.addWidget(self.labelTotalTime)
 
         controlWithoutSeekBarLayout = QHBoxLayout()
+        controlWithoutSeekBarLayout.setSpacing(0)
         controlWithoutSeekBarLayout.addWidget(self.openButton)
         controlWithoutSeekBarLayout.addWidget(self.playButton)
         controlWithoutSeekBarLayout.addWidget(self.stopButton)
