@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtCore import (QDir, Qt, QTime, QTimer)
 from PyQt5.QtGui import (QPalette, QIcon)
 from PyQt5.QtWidgets import (QMainWindow, QAction, QFileDialog, QApplication, QWidget, QLabel,
-                             QHBoxLayout, QVBoxLayout, QFileDialog, QSizePolicy, QPushButton, QStyle,
+                             QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton, QStyle,
                              QSlider, QListView)
 from PyQt5.QtMultimedia import (QMediaPlayer, QMediaContent, QMediaPlaylist)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
@@ -76,7 +76,7 @@ class Player(QWidget):
         self.labelVolume = QLabel(str(self.volume))
         self.labelVolume.setMinimumWidth(24)
 
-        self.errorLabel = QLabel()
+        self.statusInfoLabel = QLabel()
 
         self.seekBar = QSlider(Qt.Horizontal)
         self.seekBar.setRange(0, self.player.duration() / 1000)
@@ -116,13 +116,14 @@ class Player(QWidget):
         layout = QVBoxLayout()
         layout.addLayout(displayLayout)
         layout.addLayout(controlLayout)
-        layout.addWidget(self.errorLabel)
+        layout.addWidget(self.statusInfoLabel)
 
         self.setLayout(layout)
 
         self.player.setVideoOutput(self.videoWidget)
 
         self.player.stateChanged.connect(self.playerStateChanged)
+        self.player.mediaStatusChanged.connect(self.mediaStatusChanged)
         self.player.durationChanged.connect(self.durationChanged)
         self.player.positionChanged.connect(self.positionChanged)
 
@@ -154,6 +155,9 @@ class Player(QWidget):
     def play(self):
         if self.player.state() == QMediaPlayer.PlayingState:
             self.player.pause()
+        elif self.player.mediaStatus() == QMediaPlayer.LoadingMedia\
+        or self.player.mediaStatus() == QMediaPlayer.StalledMedia:
+            QTimer.singleShot(800, self.player.play)
         else:
             self.player.play()
 
@@ -247,14 +251,29 @@ class Player(QWidget):
         self.forwardButton.setEnabled(True)
 
 
-    def clearErrorLabel(self):
-        self.errorLabel.setText("")
+    def mediaStatusChanged(self, status):
+        if status == QMediaPlayer.LoadingMedia:
+            self.setStatusInfo('Loading...')
+        elif status == QMediaPlayer.LoadedMedia:
+           self.setStatusInfo('Loaded')
+        elif status == QMediaPlayer.BufferingMedia:
+            self.setStatusInfo('Buffering')
+        elif status == QMediaPlayer.InvalidMedia:
+            self.handleError()
+
+    def clearStatusInfo(self):
+        self.statusInfoLabel.setText("")
 
 
     def handleError(self):
         self.disableInterface()
-        self.errorLabel.setText('Error: ' + self.player.errorString())
-        QTimer.singleShot(5000, self.clearErrorLabel)
+        self.setStatusInfo('Error: ' + self.player.errorString())
+
+
+    def setStatusInfo(self, message, seconds=5):
+        if not message == '':
+            self.statusInfoLabel.setText(message)
+            QTimer.singleShot(seconds*1000, self.clearStatusInfo)
 
 
     def forward(self, seconds):
