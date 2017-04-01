@@ -3,8 +3,8 @@ from PyQt5.QtCore import (QDir, Qt, QTime, QTimer)
 from PyQt5.QtGui import (QPalette, QIcon)
 from PyQt5.QtWidgets import (QMainWindow, QAction, QFileDialog, QApplication, QWidget, QLabel,
                              QHBoxLayout, QVBoxLayout, QFileDialog, QSizePolicy, QPushButton, QStyle,
-                             QSlider)
-from PyQt5.QtMultimedia import (QMediaPlayer, QMediaContent)
+                             QSlider, QListView)
+from PyQt5.QtMultimedia import (QMediaPlayer, QMediaContent, QMediaPlaylist)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from enum import IntEnum
 from utility import createAction
@@ -39,6 +39,9 @@ class Player(QWidget):
         self.player = QMediaPlayer()
 
         self.videoWidget = VideoWidget()
+
+        self.playList = QMediaPlaylist()
+        self.player.setPlaylist(self.playList)
 
         self.playButton = QPushButton()
         self.playButton.setEnabled(False)
@@ -104,12 +107,18 @@ class Player(QWidget):
         controlLayout.addLayout(seekBarLayout)
         controlLayout.addLayout(controlWithoutSeekBarLayout)
 
-        displayLayout = QVBoxLayout()
+        displayLayout = QHBoxLayout()
+        displayLayout.setSpacing(5)
         displayLayout.addWidget(self.videoWidget, QSizePolicy.ExpandFlag)
-        displayLayout.addLayout(controlLayout)
-        displayLayout.addWidget(self.errorLabel)
+        self.listview = QListView()
+        displayLayout.addWidget(self.listview)
 
-        self.setLayout(displayLayout)
+        layout = QVBoxLayout()
+        layout.addLayout(displayLayout)
+        layout.addLayout(controlLayout)
+        layout.addWidget(self.errorLabel)
+
+        self.setLayout(layout)
 
         self.player.setVideoOutput(self.videoWidget)
 
@@ -126,6 +135,8 @@ class Player(QWidget):
         self.seekBar.sliderMoved.connect(self.seek)
         self.seekBar.sliderReleased.connect(self.seekBarClicked)
 
+        self.videoWidget.show()
+
 
     def open(self):
         fileUrl, _ = QFileDialog.getOpenFileUrl(
@@ -134,9 +145,9 @@ class Player(QWidget):
 
         if fileUrl.isEmpty() == False:
             c = QMediaContent(fileUrl)
+            self.playList.addMedia(c)
             self.player.setMedia(c)
 
-            self.player.play()
             self.enableInterface()
 
 
