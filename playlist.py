@@ -55,9 +55,7 @@ class PlaylistView(QListWidget):
 
         if (event.button() == Qt.LeftButton):
             self.dragStartPosition = event.pos()
-            selectedIndex = self.indexAt((event.pos()))
-            if selectedIndex.row() == -1:
-                return
+            selectedIndex = self.indexAt(self.dragStartPosition)
             self.setCurrentIndex(selectedIndex)
         super(PlaylistView, self).mousePressEvent(event)
 
@@ -88,9 +86,11 @@ class PlaylistView(QListWidget):
         drag.setMimeData(mimeData)
         drag.setHotSpot(event.pos())
 
-        dropAction = drag.exec(Qt.MoveAction)
+        dropAction = drag.exec(Qt.CopyAction | Qt.MoveAction, Qt.CopyAction)
 
-        #super(PlaylistView, self).mouseMoveEvent(event)
+        if dropAction == Qt.MoveAction:
+            delItem = self.takeItem(self.currentRow())
+            del(delItem)
 
 
   #  def dragEnterEvent(self, event):
