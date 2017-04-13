@@ -72,15 +72,8 @@ class PlaylistView(QListWidget):
         mimeData = QMimeData()
         mimeData.setText(currentItem.text())
         originalIndex = QByteArray()
-        mimeData.setData('application/x-original_index',
-                         originalIndex.append('%d'.format(self.currentRow())))
-
-        itemData = QByteArray()
-
-        dataStream = QDataStream(itemData, QIODevice.WriteOnly)
-        dataStream << self.currentItem()
-
-        #mimeData.setData(self.mimetype, itemData)
+        originalIndex.append('%d'.format(self.currentRow()))
+        mimeData.setData('application/x-original_index', originalIndex)
 
         drag = QDrag(self)
         drag.setMimeData(mimeData)
@@ -93,13 +86,15 @@ class PlaylistView(QListWidget):
             del(delItem)
 
 
-  #  def dragEnterEvent(self, event):
-   #     if event.mimeData().hasFormat('application/x-fileurl'):
-    #        super(PlaylistView, self).dragEnterEvent(event)
-    #        event.acceptProposedAction()
-
-
-
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasText():
+            if event.source() == self:
+                event.setDropAction(Qt.MoveAction)
+                event.accept()
+            else:
+                event.acceptProposedAction()
+        else:
+            event.ignore()
 
    # def dropEvent(self, event):
     #    print(event.source)
