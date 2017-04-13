@@ -72,7 +72,7 @@ class PlaylistView(QListWidget):
         mimeData = QMimeData()
         mimeData.setText(currentItem.text())
         originalIndex = QByteArray()
-        mimeData.setData('x-applicatoin/original_index',
+        mimeData.setData('applicatoin/x-original_index',
                          originalIndex.append('%d'.format(self.currentRow())))
 
         itemData = QByteArray()
