@@ -67,7 +67,7 @@ class PlaylistView(QListWidget):
             return
         if (event.pos() - self.dragStartPosition).manhattanLength() < QApplication.startDragDistance():
             return
-        if self.currentItem() == None:
+        if self.itemAt(self.dragStartPosition) == None:
             return
 
         currentItem = self.currentItem()
@@ -84,14 +84,8 @@ class PlaylistView(QListWidget):
 
         #mimeData.setData(self.mimetype, itemData)
 
-        itemRect = self.visualItemRect(self.currentItem())
-        pixmap = QPixmap(itemRect.width(), itemRect.height())
-        renderSource = QRegion(itemRect)
-        self.render(pixmap, sourceRegion=renderSource)
-
         drag = QDrag(self)
         drag.setMimeData(mimeData)
-        drag.setPixmap(pixmap)
         drag.setHotSpot(event.pos())
 
         dropAction = drag.exec(Qt.MoveAction)
