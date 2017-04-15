@@ -27,7 +27,6 @@ class Playlist(QWidget):
 
         if not fileURL.isEmpty():
             self.m_playlist.append(fileURL)
-            print(fileURL)
             self.playListView.addItem(fileURL.fileName())
 
 
@@ -35,32 +34,30 @@ class Playlist(QWidget):
 class PlaylistView(QListWidget):
 
     @property
-    def mimetype(self):
-        return 'application/x-fileurl'
+    def mime_Index(self):
+        return 'application/x-original_index'
 
 
     def __init__(self, parent=None):
         super(PlaylistView, self).__init__(parent)
-        self.dragSourceFlag = False
 
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setDragEnabled(True)
-        self.viewport().setAcceptDrops(True)
-        self.setDropIndicatorShown(True)
+        self.setAcceptDrops(True)
         self.setDragDropMode(QAbstractItemView.DragDrop)
-        self.setDragDropOverwriteMode(True)
-
 
     def mousePressEvent(self, event):
-
-        if (event.button() == Qt.LeftButton):
+        if Qt.LeftButton == event.button():
             self.dragStartPosition = event.pos()
             selectedIndex = self.indexAt(self.dragStartPosition)
             self.setCurrentIndex(selectedIndex)
-        super(PlaylistView, self).mousePressEvent(event)
-
 
     def mouseMoveEvent(self, event):
+        """
+
+        :type event: QMoveEvent
+        
+        """
         if not (event.buttons() & Qt.LeftButton):
             return
         if (event.pos() - self.dragStartPosition).manhattanLength() < QApplication.startDragDistance():
@@ -72,8 +69,8 @@ class PlaylistView(QListWidget):
         mimeData = QMimeData()
         mimeData.setText(currentItem.text())
         originalIndex = QByteArray()
-        originalIndex.append('%d'.format(self.currentRow()))
-        mimeData.setData('application/x-original_index', originalIndex)
+        originalIndex.append(str(self.currentIndex().row()))
+        mimeData.setData(self.mime_Index, originalIndex)
 
         drag = QDrag(self)
         drag.setMimeData(mimeData)
@@ -85,10 +82,9 @@ class PlaylistView(QListWidget):
             delItem = self.takeItem(self.currentRow())
             del(delItem)
 
-
     def dragEnterEvent(self, event):
         if event.mimeData().hasText():
-            if event.source() == self:
+            if event.source() is self:
                 event.setDropAction(Qt.MoveAction)
                 event.accept()
             else:
@@ -96,12 +92,34 @@ class PlaylistView(QListWidget):
         else:
             event.ignore()
 
-   # def dropEvent(self, event):
-    #    print(event.source)
-     #   self.playListView.addItem(event.source)
-      #  super(PlaylistView, self).dropEvent(event)
-       # event.acceptProposedAction()
-        #print(event.source)
+    def dragMoveEvent(self, event):
+        if event.mimeData().hasText():
+            if event.source() is self:
+                event.setDropAction(Qt.MoveAction)
+                event.accept()
+            else:
+                event.acceptProposedAction()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        print(event.pos())
+        if event.mimeData().hasText():
+            mime = event.mimeData()
+            url = mime.text()
+            print(url)
+            position = event.pos()
+            previousRow = mime.data(self.mime_Index)
+            print(previousRow)
+            self.insertItem(0, url)
+
+            if event.source() is self:
+                event.setDropAction(Qt.MoveAction)
+                event.accept()
+            else:
+                event.acceptProposedAction()
+        else:
+            event.ignore()
 
 
 if __name__ == '__main__':
