@@ -8,6 +8,7 @@ from PyQt5.QtMultimedia import (QMediaPlayer, QMediaContent, QMediaPlaylist)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from enum import IntEnum
 from utility import createAction
+from playlist import Playlist
 
 class SeekStep(IntEnum):
     SHORT = 5
@@ -39,9 +40,6 @@ class Player(QWidget):
         self.player = QMediaPlayer()
 
         self.videoWidget = VideoWidget()
-
-        self.playList = QMediaPlaylist()
-        self.player.setPlaylist(self.playList)
 
         self.playButton = QPushButton()
         self.playButton.setEnabled(False)
@@ -88,7 +86,6 @@ class Player(QWidget):
         seekBarLayout = QHBoxLayout()
         seekBarLayout.addWidget(self.labelCurrentTime)
         seekBarLayout.addWidget(self.seekBar)
-        # seekBarLayout.addWidget(self.seekBar, stretch=1)
         seekBarLayout.addWidget(self.labelTotalTime)
 
         controlWithoutSeekBarLayout = QHBoxLayout()
@@ -110,8 +107,8 @@ class Player(QWidget):
         displayLayout = QHBoxLayout()
         displayLayout.setSpacing(5)
         displayLayout.addWidget(self.videoWidget, QSizePolicy.ExpandFlag)
-        self.listview = QListView()
-        displayLayout.addWidget(self.listview)
+        self.playList = Playlist()
+        displayLayout.addWidget(self.playList)
 
         layout = QVBoxLayout()
         layout.addLayout(displayLayout)
