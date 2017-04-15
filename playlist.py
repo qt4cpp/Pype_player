@@ -71,8 +71,9 @@ class PlaylistView(QListWidget):
         currentItem = self.currentItem()
         mimeData = QMimeData()
         mimeData.setText(currentItem.text())
+        currentRow = self.currentIndex().row()
         originalIndex = QByteArray()
-        originalIndex.append(str(self.currentIndex().row()))
+        originalIndex.append(str(currentRow))
         mimeData.setData(self.mime_Index, originalIndex)
 
         drag = QDrag(self)
@@ -82,7 +83,7 @@ class PlaylistView(QListWidget):
         dropAction = drag.exec(Qt.CopyAction | Qt.MoveAction, Qt.CopyAction)
 
         if dropAction == Qt.MoveAction:
-            delItem = self.takeItem(self.currentRow())
+            delItem = self.takeItem(currentRow)
             del(delItem)
 
     def dragEnterEvent(self, event):
