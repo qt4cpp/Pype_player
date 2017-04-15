@@ -1,5 +1,5 @@
-from PyQt5.QtCore import QUrl, QMimeData, Qt, QByteArray, QDataStream, QIODevice, QRect, QPoint
-from PyQt5.QtGui import QDrag, QPixmap, QRegion
+from PyQt5.QtCore import QUrl, QMimeData, Qt, QByteArray, QDataStream, QIODevice, QModelIndex
+from PyQt5.QtGui import QDrag, QPixmap, QRegion, QBrush, QColor, QDragLeaveEvent
 from PyQt5.QtWidgets import (QApplication, QListWidget, QFileDialog, QPushButton, QHBoxLayout,
                              QVBoxLayout, QWidget, QStyle, QAbstractItemView, QListWidgetItem)
 from PyQt5.QtMultimedia import QMediaContent, QMediaResource
@@ -37,7 +37,6 @@ class PlaylistView(QListWidget):
     def mime_Index(self):
         return 'application/x-original_index'
 
-
     def __init__(self, parent=None):
         super(PlaylistView, self).__init__(parent)
 
@@ -45,6 +44,10 @@ class PlaylistView(QListWidget):
         self.setDragEnabled(True)
         self.setAcceptDrops(True)
         self.setDragDropMode(QAbstractItemView.DragDrop)
+        self.setDropIndicatorShown(True)
+
+        self.previousIndex = QModelIndex()
+        self.originalBackground = QBrush()
 
     def mousePressEvent(self, event):
         if Qt.LeftButton == event.button():
@@ -94,6 +97,12 @@ class PlaylistView(QListWidget):
 
     def dragMoveEvent(self, event):
         if event.mimeData().hasText():
+            if self.previousIndex.row() >= 0:
+                self.changeItemBackground(self.previousIndex)
+
+            indexAtCursor = self.indexAt(event.pos())
+            self.changeItemBackground(indexAtCursor, QColor(0,0,0,70))
+            self.previousIndex = indexAtCursor
             if event.source() is self:
                 event.setDropAction(Qt.MoveAction)
                 event.accept()
@@ -102,8 +111,11 @@ class PlaylistView(QListWidget):
         else:
             event.ignore()
 
+    def dragLeaveEvent(self, event: QDragLeaveEvent):
+        self.changeItemBackground(self.previousIndex)
+
     def dropEvent(self, event):
-        print(event.pos())
+
         if event.mimeData().hasText():
             mime = event.mimeData()
             url = mime.text()
@@ -111,7 +123,9 @@ class PlaylistView(QListWidget):
             position = event.pos()
             previousRow = mime.data(self.mime_Index)
             print(previousRow)
-            self.insertItem(0, url)
+            index = self.indexAt(position)
+            self.changeItemBackground(index)
+            self.insertItem(index.row(), url)
 
             if event.source() is self:
                 event.setDropAction(Qt.MoveAction)
@@ -121,6 +135,10 @@ class PlaylistView(QListWidget):
         else:
             event.ignore()
 
+    def changeItemBackground(self, index, color=QColor(255,255,255)):
+        item = self.itemFromIndex(index)
+        if item:
+            item.setBackground(QBrush(color))
 
 if __name__ == '__main__':
     import sys
