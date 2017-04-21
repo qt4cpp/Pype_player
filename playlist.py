@@ -144,12 +144,19 @@ class PlaylistView(QListWidget):
             rect = self.visualItemRect(item)
             gradientBrush = QLinearGradient(QPoint(rect.center().x(), 0),
                                                     QPoint(rect.center().x(), rect.height()))
-            startColor = QColor(Qt.white)
-            endColor = QColor(0, 0, 0, 70)
-            gradientBrush.setColorAt(0, startColor)
-            gradientBrush.setColorAt(1, endColor)
+            brightColor = QColor(Qt.white)
+            darkColor= QColor(0, 0, 0, 50)
+            if self.isUpperHalfInItem(position):
+                gradientBrush.setColorAt(0, darkColor)
+                gradientBrush.setColorAt(1, brightColor)
+            else:
+                gradientBrush.setColorAt(0, brightColor)
+                gradientBrush.setColorAt(1, darkColor)
+        item.setBackground(gradientBrush)
 
-            item.setBackground(gradientBrush)
+    def isUpperHalfInItem(self, position):
+        rect = self.visualItemRect(self.itemAt(position))
+        return position.y() < rect.center().y()
 
     def changeItemBackground(self, index, color=QColor(255,255,255)):
         item = self.itemFromIndex(index)
