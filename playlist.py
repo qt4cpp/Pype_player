@@ -83,10 +83,6 @@ class PlaylistView(QListWidget):
 
         dropAction = drag.exec(Qt.CopyAction | Qt.MoveAction, Qt.CopyAction)
 
-        if dropAction == Qt.MoveAction:
-            delItem = self.takeItem(currentRow)
-            del(delItem)
-
     def dragEnterEvent(self, event):
         if event.mimeData().hasText():
             if event.source() is self:
@@ -124,13 +120,23 @@ class PlaylistView(QListWidget):
             url = mime.text()
             print(url)
             position = event.pos()
-            previousRow = mime.data(self.mime_Index)
+            previousRow = int(mime.data(self.mime_Index))
             print(previousRow)
             index = self.indexAt(position)
             self.changeItemBackground(index)
-            self.insertItem(index.row(), url)
+
+            if self.isUpperHalfInItem(position):
+                insertRow = index.row()
+            else:
+                insertRow = index.row()+1
+            self.insertItem(insertRow, url)
 
             if event.source() is self:
+                if previousRow < index.row():
+                    delItem = self.takeItem(previousRow)
+                else:
+                    delItem = self.takeItem(previousRow+1)
+                del (delItem)
                 event.setDropAction(Qt.MoveAction)
                 event.accept()
             else:
@@ -152,7 +158,7 @@ class PlaylistView(QListWidget):
             else:
                 gradientBrush.setColorAt(0, brightColor)
                 gradientBrush.setColorAt(1, darkColor)
-        item.setBackground(gradientBrush)
+            item.setBackground(gradientBrush)
 
     def isUpperHalfInItem(self, position):
         rect = self.visualItemRect(self.itemAt(position))
