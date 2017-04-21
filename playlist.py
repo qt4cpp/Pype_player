@@ -144,8 +144,10 @@ class PlaylistView(QListWidget):
             rect = self.visualItemRect(item)
             gradientBrush = QLinearGradient(QPoint(rect.center().x(), 0),
                                                     QPoint(rect.center().x(), rect.height()))
-            gradientBrush.setColorAt(0, Qt.white)
-            gradientBrush.setColorAt(1, Qt.black)
+            startColor = QColor(Qt.white)
+            endColor = QColor(0, 0, 0, 70)
+            gradientBrush.setColorAt(0, startColor)
+            gradientBrush.setColorAt(1, endColor)
 
             item.setBackground(gradientBrush)
 
