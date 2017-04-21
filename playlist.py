@@ -51,6 +51,11 @@ class PlaylistView(QListWidget):
         self.originalBackground = QBrush()
 
     def mousePressEvent(self, event):
+        """
+        左クリックされたらカーソル下にある要素を選択し、ドラッグを認識するために現在の位置を保存する。
+        :param event: QMousePressEvent
+        :return: nothing
+        """
         if Qt.LeftButton == event.button():
             self.dragStartPosition = event.pos()
             selectedIndex = self.indexAt(self.dragStartPosition)
@@ -58,9 +63,11 @@ class PlaylistView(QListWidget):
 
     def mouseMoveEvent(self, event):
         """
+        start Drag and prepare for Drop.
 
         :type event: QMoveEvent
-        
+        マウスを動かした嶺がQApplication.startDragDistance()を超えると、Drag開始されたと認識し、
+        そのための準備を行う。QMimeDataを使って、データをやりとりする。
         """
         if not (event.buttons() & Qt.LeftButton):
             return
@@ -84,6 +91,15 @@ class PlaylistView(QListWidget):
         dropAction = drag.exec(Qt.CopyAction | Qt.MoveAction, Qt.CopyAction)
 
     def dragEnterEvent(self, event):
+        """
+        ドラッグした状態でWidgetに入った縁で呼ばれる関数。
+        :param event: QDragEvent
+        :return: nothing
+        
+        イベントが発生元と発生しているWidgetが同一の場合はMoveActionにする。それ以外はCopyAction。
+        その二つの場合は受け入れられるように、accept()もしくはacceptProposedAction()を呼ぶ。
+        """
+
         if event.mimeData().hasText():
             if event.source() is self:
                 event.setDropAction(Qt.MoveAction)
@@ -94,14 +110,20 @@ class PlaylistView(QListWidget):
             event.ignore()
 
     def dragMoveEvent(self, event):
+        """
+        ドラッグした状態でWidget内を移動したときに呼ばれる。
+        :param event: QDragMoveEvent
+        :return: nothing
+        
+        ドラッグしている要素の背景の色を変えて、どこにファイルがDropされるかをグラデーションした背景で
+        表現する。
+        """
         if event.mimeData().hasText():
             if self.previousIndex.row() >= 0:
                 self.changeItemBackground(self.previousIndex)
 
-            indexAtCursor = self.indexAt(event.pos())
             self.dropIndicatorlBackground(event.pos())
-            #self.changeItemBackground(indexAtCursor, QColor(0,0,0,70))
-            self.previousIndex = indexAtCursor
+            self.previousIndex = self.indexAt(event.pos())
             if event.source() is self:
                 event.setDropAction(Qt.MoveAction)
                 event.accept()
@@ -111,9 +133,21 @@ class PlaylistView(QListWidget):
             event.ignore()
 
     def dragLeaveEvent(self, event: QDragLeaveEvent):
+        """
+        ドラッグしたままWidget内を出たときにドラッグ下にあった要素の背景色の色を元に戻す。
+        :param event: QDragLeaveEvent
+        :return: nothing
+        """
         self.changeItemBackground(self.previousIndex)
 
     def dropEvent(self, event):
+        """
+        Dropされたらデータを取り出して、新たに登録する。
+        :param event: QDropEvent
+        :return: nothing
+        
+        ファイルへのパスと移動前に登録してあった要素のindexを取り出す。
+        """
 
         if event.mimeData().hasText():
             mime = event.mimeData()
@@ -145,6 +179,15 @@ class PlaylistView(QListWidget):
             event.ignore()
 
     def dropIndicatorlBackground(self, position):
+        """
+        dropIndicatorを表現するために要素の背景をグラデーションにする。
+        :param position: QPoint
+        :return: 
+        
+        positionから要素を取り出し、上から下にグラデーションがかかるようにする。
+        要素の半分上だと上に挿入するので、上が黒くなるようにして、
+        下半分だとその逆。
+        """
         item = self.itemAt(position)
         if item:
             rect = self.visualItemRect(item)
@@ -161,10 +204,24 @@ class PlaylistView(QListWidget):
             item.setBackground(gradientBrush)
 
     def isUpperHalfInItem(self, position):
+        """
+        マウスカーソルが現在の要素の半分より上にあるかどうかを返す。
+        :param position: QPoint
+        :return: bool
+        
+        rect.center().y()は、要素を規準にした位置ではなくListWidgetでのpostionを返すので、
+        position.y()で比較できる。
+        """
         rect = self.visualItemRect(self.itemAt(position))
         return position.y() < rect.center().y()
 
     def changeItemBackground(self, index, color=QColor(255,255,255)):
+        """
+        indexの背景色を変える。デフォルトでは、白にする。
+        :param index: QAbstractIndexItem
+        :param color: QColor
+        :return: nothing
+        """
         item = self.itemFromIndex(index)
         if item:
             item.setBackground(QBrush(color))
