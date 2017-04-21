@@ -1,5 +1,6 @@
-from PyQt5.QtCore import QUrl, QMimeData, Qt, QByteArray, QDataStream, QIODevice, QModelIndex
-from PyQt5.QtGui import QDrag, QPixmap, QRegion, QBrush, QColor, QDragLeaveEvent
+from PyQt5.QtCore import QUrl, QMimeData, Qt, QByteArray, QDataStream, QIODevice, QModelIndex, \
+    QPointF, QPoint
+from PyQt5.QtGui import QDrag, QPixmap, QRegion, QBrush, QColor, QDragLeaveEvent, QLinearGradient
 from PyQt5.QtWidgets import (QApplication, QListWidget, QFileDialog, QPushButton, QHBoxLayout,
                              QVBoxLayout, QWidget, QStyle, QAbstractItemView, QListWidgetItem)
 from PyQt5.QtMultimedia import QMediaContent, QMediaResource
@@ -102,7 +103,8 @@ class PlaylistView(QListWidget):
                 self.changeItemBackground(self.previousIndex)
 
             indexAtCursor = self.indexAt(event.pos())
-            self.changeItemBackground(indexAtCursor, QColor(0,0,0,70))
+            self.dropIndicatorlBackground(event.pos())
+            #self.changeItemBackground(indexAtCursor, QColor(0,0,0,70))
             self.previousIndex = indexAtCursor
             if event.source() is self:
                 event.setDropAction(Qt.MoveAction)
@@ -135,6 +137,17 @@ class PlaylistView(QListWidget):
                 event.acceptProposedAction()
         else:
             event.ignore()
+
+    def dropIndicatorlBackground(self, position):
+        item = self.itemAt(position)
+        if item:
+            rect = self.visualItemRect(item)
+            gradientBrush = QLinearGradient(QPoint(rect.center().x(), 0),
+                                                    QPoint(rect.center().x(), rect.height()))
+            gradientBrush.setColorAt(0, Qt.white)
+            gradientBrush.setColorAt(1, Qt.black)
+
+            item.setBackground(gradientBrush)
 
     def changeItemBackground(self, index, color=QColor(255,255,255)):
         item = self.itemFromIndex(index)
