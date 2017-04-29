@@ -3,7 +3,6 @@ from PyQt5.QtCore import QUrl, QMimeData, Qt, QByteArray, QDataStream, QIODevice
 from PyQt5.QtGui import QDrag, QPixmap, QRegion, QBrush, QColor, QDragLeaveEvent, QLinearGradient
 from PyQt5.QtWidgets import (QApplication, QListWidget, QFileDialog, QPushButton, QHBoxLayout,
                              QVBoxLayout, QWidget, QStyle, QAbstractItemView, QListWidgetItem)
-from PyQt5.QtMultimedia import QMediaContent, QMediaResource
 
 class Playlist(QWidget):
 
@@ -31,7 +30,6 @@ class Playlist(QWidget):
             self.playListView.addItem(fileURL.fileName())
 
 
-
 class PlaylistView(QListWidget):
 
     @property
@@ -51,8 +49,7 @@ class PlaylistView(QListWidget):
         self.originalBackground = QBrush()
 
     def mousePressEvent(self, event):
-        """
-        左クリックされたらカーソル下にある要素を選択し、ドラッグを認識するために現在の位置を保存する。
+        """左クリックされたらカーソル下にある要素を選択し、ドラッグを認識するために現在の位置を保存する。
         :param event: QMousePressEvent
         :return: nothing
         """
@@ -62,8 +59,7 @@ class PlaylistView(QListWidget):
             self.setCurrentIndex(selectedIndex)
 
     def mouseMoveEvent(self, event):
-        """
-        start Drag and prepare for Drop.
+        """start Drag and prepare for Drop.
 
         :type event: QMoveEvent
         マウスを動かした嶺がQApplication.startDragDistance()を超えると、Drag開始されたと認識し、
@@ -71,9 +67,10 @@ class PlaylistView(QListWidget):
         """
         if not (event.buttons() & Qt.LeftButton):
             return
-        if (event.pos() - self.dragStartPosition).manhattanLength() < QApplication.startDragDistance():
+        if (event.pos() - self.dragStartPosition).manhattanLength() < \
+                QApplication.startDragDistance():
             return
-        if self.itemAt(self.dragStartPosition) == None:
+        if self.itemAt(self.dragStartPosition) is None:
             return
 
         currentItem = self.currentItem()
@@ -91,8 +88,7 @@ class PlaylistView(QListWidget):
         dropAction = drag.exec(Qt.CopyAction | Qt.MoveAction, Qt.CopyAction)
 
     def dragEnterEvent(self, event):
-        """
-        ドラッグした状態でWidgetに入った縁で呼ばれる関数。
+        """ドラッグした状態でWidgetに入った縁で呼ばれる関数。
         :param event: QDragEvent
         :return: nothing
         
@@ -110,8 +106,7 @@ class PlaylistView(QListWidget):
             event.ignore()
 
     def dragMoveEvent(self, event):
-        """
-        ドラッグした状態でWidget内を移動したときに呼ばれる。
+        """ドラッグした状態でWidget内を移動したときに呼ばれる。
         :param event: QDragMoveEvent
         :return: nothing
         
@@ -133,16 +128,14 @@ class PlaylistView(QListWidget):
             event.ignore()
 
     def dragLeaveEvent(self, event: QDragLeaveEvent):
-        """
-        ドラッグしたままWidget内を出たときにドラッグ下にあった要素の背景色の色を元に戻す。
+        """ドラッグしたままWidget内を出たときにドラッグ下にあった要素の背景色の色を元に戻す。
         :param event: QDragLeaveEvent
         :return: nothing
         """
         self.changeItemBackground(self.previousIndex)
 
     def dropEvent(self, event):
-        """
-        Dropされたらデータを取り出して、新たに登録する。
+        """Dropされたらデータを取り出して、新たに登録する。
         :param event: QDropEvent
         :return: nothing
         
@@ -179,8 +172,7 @@ class PlaylistView(QListWidget):
             event.ignore()
 
     def dropIndicatorlBackground(self, position):
-        """
-        dropIndicatorを表現するために要素の背景をグラデーションにする。
+        """dropIndicatorを表現するために要素の背景をグラデーションにする。
         :param position: QPoint
         :return: 
         
@@ -204,8 +196,7 @@ class PlaylistView(QListWidget):
             item.setBackground(gradientBrush)
 
     def isUpperHalfInItem(self, position):
-        """
-        マウスカーソルが現在の要素の半分より上にあるかどうかを返す。
+        """マウスカーソルが現在の要素の半分より上にあるかどうかを返す。
         :param position: QPoint
         :return: bool
         
@@ -216,8 +207,7 @@ class PlaylistView(QListWidget):
         return position.y() < rect.center().y()
 
     def changeItemBackground(self, index, color=QColor(255,255,255)):
-        """
-        indexの背景色を変える。デフォルトでは、白にする。
+        """indexの背景色を変える。デフォルトでは、白にする。
         :param index: QAbstractIndexItem
         :param color: QColor
         :return: nothing
