@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtCore import (QDir, Qt, QTime, QTimer)
+from PyQt5.QtCore import (QUrl, Qt, QTime, QTimer)
 from PyQt5.QtGui import (QPalette, QIcon)
 from PyQt5.QtWidgets import (QMainWindow, QAction, QFileDialog, QApplication, QWidget, QLabel,
                              QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton, QStyle,
@@ -38,7 +38,7 @@ class Player(QWidget):
         self.volume = 50
 
         self.player = QMediaPlayer()
-
+        self.playList = Playlist()
         self.videoWidget = VideoWidget()
 
         self.playButton = QPushButton()
@@ -107,7 +107,6 @@ class Player(QWidget):
         displayLayout = QHBoxLayout()
         displayLayout.setSpacing(5)
         displayLayout.addWidget(self.videoWidget, QSizePolicy.ExpandFlag)
-        self.playList = Playlist()
         displayLayout.addWidget(self.playList)
 
         layout = QVBoxLayout()
@@ -135,19 +134,22 @@ class Player(QWidget):
 
         self.videoWidget.show()
 
-
     def open(self):
-        fileUrl, _ = QFileDialog.getOpenFileUrl(
-            self, 'Open file', QDir.homePath(),
-            '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv')
-
-        if fileUrl.isEmpty() == False:
-            c = QMediaContent(fileUrl)
-            self.playList.addMedia(c)
-            self.player.setMedia(c)
-
+        self.playList.open()
+        print(self.playList.playListView.count())
+        if self.playList.playListView.count() > 0:
             self.enableInterface()
 
+    def load(self, file_url: QUrl):
+        # fileUrl, _ = QFileDialog.getOpenFileUrl(
+        #     self, 'Open file', QDir.homePath(),
+        #     '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv')
+
+        if file_url is None:
+            return
+        c = QMediaContent(file_url)
+        self.player.setMedia(c)
+        self.enableInterface()
 
     def play(self):
         if self.player.state() == QMediaPlayer.PlayingState:
@@ -156,6 +158,7 @@ class Player(QWidget):
         or self.player.mediaStatus() == QMediaPlayer.StalledMedia:
             QTimer.singleShot(800, self.player.play)
         else:
+            self.load(self.playList.playListView.currentUrl())
             self.player.play()
 
 
@@ -332,7 +335,7 @@ class PypePlayer(QMainWindow):
 
 
     def createMenus(self, player):
-        openFile = createAction(self, 'Open', player.open, 'Ctrl+o')
+        openFile = createAction(self, 'Open', player.playList.open, 'Ctrl+o')
         forward_short = createAction(self, 'Short Forward', player.forward_short, 'Right')
         forward_medium = createAction(self, 'Forward', player.forward_medium, 'Shift+Right')
         forward_long = createAction(self, 'Long Forward', player.forward_long, 'Ctrl+Right')

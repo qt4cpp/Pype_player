@@ -1,5 +1,4 @@
-from PyQt5.QtCore import QUrl, QMimeData, Qt, QByteArray, QDataStream, QIODevice, QModelIndex, \
-    QPointF, QPoint
+from PyQt5.QtCore import QUrl, QMimeData, Qt, QByteArray, QDir, QModelIndex, QPoint
 from PyQt5.QtGui import QDrag, QPixmap, QRegion, QBrush, QColor, QDragLeaveEvent, QLinearGradient
 from PyQt5.QtWidgets import (QApplication, QListWidget, QFileDialog, QPushButton, QHBoxLayout,
                              QVBoxLayout, QWidget, QStyle, QAbstractItemView, QListWidgetItem,
@@ -30,10 +29,14 @@ class Playlist(QWidget):
         self.debugButton.clicked.connect(self.debug_m_playlist)
 
     def open(self):
-        fileURL, _ = QFileDialog.getOpenFileUrl(self, 'Open File')
+        fileURL, _ = QFileDialog.getOpenFileUrl(
+            self, 'Open File', QDir.homePath(), '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv')
 
         if not fileURL.isEmpty():
             self.playListView.addUrl(fileURL)
+
+    def url(self, index=0):
+        return self.playListView.m_playlist[index]
 
     def debug_m_playlist(self):
         print('m_playlist:\n', self.playListView.m_playlist)
@@ -83,6 +86,16 @@ class PlaylistView(QListWidget):
 
     def url(self, index:int) -> str:
         return self.m_playlist[index]
+
+    def currentUrl(self):
+        return self.m_playlist[self.currentIndex().row()]
+
+    def nextUrl(self):
+        nextIndex = self.currentIndex().row() + 1
+        if nextIndex < self.count():
+            return self.m_playlist[nextIndex]
+        else:
+            return None
 
     def mousePressEvent(self, event):
         """左クリックされたらカーソル下にある要素を選択し、ドラッグを認識するために現在の位置を保存する。
