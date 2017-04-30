@@ -41,6 +41,7 @@ class Playlist(QWidget):
     def debug_m_playlist(self):
         print('m_playlist:\n', self.playListView.m_playlist)
 
+
 class PlaylistView(QListWidget):
 
     @property
