@@ -2,32 +2,37 @@ from PyQt5.QtCore import QUrl, QMimeData, Qt, QByteArray, QDataStream, QIODevice
     QPointF, QPoint
 from PyQt5.QtGui import QDrag, QPixmap, QRegion, QBrush, QColor, QDragLeaveEvent, QLinearGradient
 from PyQt5.QtWidgets import (QApplication, QListWidget, QFileDialog, QPushButton, QHBoxLayout,
-                             QVBoxLayout, QWidget, QStyle, QAbstractItemView, QListWidgetItem)
+                             QVBoxLayout, QWidget, QStyle, QAbstractItemView, QListWidgetItem,
+                             QPushButton)
 
 class Playlist(QWidget):
 
     def __init__(self, parent=None):
         super(Playlist, self).__init__(parent)
-        self.m_playlist = []
+
         self.playListView = PlaylistView()
         self.openButton = QPushButton('open')
+        self.debugButton = QPushButton('m_playlist')
 
         layout = QVBoxLayout()
         layout.addWidget(self.playListView)
         layout.addWidget(self.openButton)
+        layout.addWidget(self.debugButton)
         self.setLayout(layout)
 
         self.openButton.clicked.connect(self.open)
+        self.debugButton.clicked.connect(self.debug_m_playlist)
 
         self.show()
-
 
     def open(self):
         fileURL, _ = QFileDialog.getOpenFileUrl(self, 'Open File')
 
         if not fileURL.isEmpty():
-            self.m_playlist.append(fileURL)
-            self.playListView.addItem(fileURL.fileName())
+            self.playListView.addUrl(fileURL)
+
+    def debug_m_playlist(self):
+        print('m_playlist:\n', self.playListView.m_playlist)
 
 
 class PlaylistView(QListWidget):
@@ -35,9 +40,14 @@ class PlaylistView(QListWidget):
     @property
     def mime_Index(self):
         return 'application/x-original_index'
+    @property
+    def mime_URL(self):
+        return 'application/x-file-url'
 
     def __init__(self, parent=None):
         super(PlaylistView, self).__init__(parent)
+
+        self.m_playlist = []
 
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setDragEnabled(True)
@@ -47,6 +57,29 @@ class PlaylistView(QListWidget):
 
         self.previousIndex = QModelIndex()
         self.originalBackground = QBrush()
+
+    def addUrl(self, url: QUrl, index=-1):
+        if url.isEmpty():
+            return
+        file_name = url.fileName()
+
+        if index < 0:
+            self.m_playlist.append(url)
+            self.addItem(file_name)
+        else:
+            self.m_playlist.insert(index, url)
+            self.insertItem(index, file_name)
+
+    def delUrl(self, index):
+        if index < 0:
+            index = self.count()-1
+
+        delItem = self.takeItem(index)
+        del(delItem)
+        self.m_playlist.pop(index)
+
+    def url(self, index:int) -> str:
+        return self.m_playlist[index]
 
     def mousePressEvent(self, event):
         """左クリックされたらカーソル下にある要素を選択し、ドラッグを認識するために現在の位置を保存する。
@@ -74,12 +107,20 @@ class PlaylistView(QListWidget):
             return
 
         currentItem = self.currentItem()
-        mimeData = QMimeData()
-        mimeData.setText(currentItem.text())
         currentRow = self.currentIndex().row()
         originalIndex = QByteArray()
         originalIndex.append(str(currentRow))
+        urls = []
+        urls.append(self.m_playlist[currentRow])
+        print(self.m_playlist[currentRow])
+        #urlData = QByteArray()
+        #urlData.append(str(self.m_playlist[currentRow]))
+
+        mimeData = QMimeData()
+        mimeData.setText(currentItem.text())
         mimeData.setData(self.mime_Index, originalIndex)
+        mimeData.setUrls(urls)
+        #mimeData.setData(self.mime_URL, urlData)
 
         drag = QDrag(self)
         drag.setMimeData(mimeData)
@@ -144,11 +185,12 @@ class PlaylistView(QListWidget):
 
         if event.mimeData().hasText():
             mime = event.mimeData()
-            url = mime.text()
-            print(url)
+            file_name = mime.text()
+            print(file_name)
             position = event.pos()
             previousRow = int(mime.data(self.mime_Index))
-            print(previousRow)
+            url = QUrl(mime.urls()[0])
+            print(previousRow, url)
             index = self.indexAt(position)
             self.changeItemBackground(index)
 
@@ -156,14 +198,13 @@ class PlaylistView(QListWidget):
                 insertRow = index.row()
             else:
                 insertRow = index.row()+1
-            self.insertItem(insertRow, url)
+            self.addUrl(url, insertRow)
 
             if event.source() is self:
                 if previousRow < index.row():
-                    delItem = self.takeItem(previousRow)
+                    self.delUrl(previousRow)
                 else:
-                    delItem = self.takeItem(previousRow+1)
-                del (delItem)
+                    self.delUrl(previousRow+1)
                 event.setDropAction(Qt.MoveAction)
                 event.accept()
             else:
