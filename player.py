@@ -1,13 +1,14 @@
 import sys
-from PyQt5.QtCore import (QDir, Qt, QTime, QTimer)
+from PyQt5.QtCore import (QUrl, Qt, QTime, QTimer)
 from PyQt5.QtGui import (QPalette, QIcon)
 from PyQt5.QtWidgets import (QMainWindow, QAction, QFileDialog, QApplication, QWidget, QLabel,
-                             QHBoxLayout, QVBoxLayout, QFileDialog, QSizePolicy, QPushButton, QStyle,
-                             QSlider)
-from PyQt5.QtMultimedia import (QMediaPlayer, QMediaContent)
+                             QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton, QStyle,
+                             QSlider, QListView)
+from PyQt5.QtMultimedia import (QMediaPlayer, QMediaContent, QMediaPlaylist)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from enum import IntEnum
 from utility import createAction
+from playlist import Playlist
 
 class SeekStep(IntEnum):
     SHORT = 5
@@ -37,7 +38,7 @@ class Player(QWidget):
         self.volume = 50
 
         self.player = QMediaPlayer()
-
+        self.playList = Playlist()
         self.videoWidget = VideoWidget()
 
         self.playButton = QPushButton()
@@ -73,7 +74,7 @@ class Player(QWidget):
         self.labelVolume = QLabel(str(self.volume))
         self.labelVolume.setMinimumWidth(24)
 
-        self.errorLabel = QLabel()
+        self.statusInfoLabel = QLabel()
 
         self.seekBar = QSlider(Qt.Horizontal)
         self.seekBar.setRange(0, self.player.duration() / 1000)
@@ -85,7 +86,6 @@ class Player(QWidget):
         seekBarLayout = QHBoxLayout()
         seekBarLayout.addWidget(self.labelCurrentTime)
         seekBarLayout.addWidget(self.seekBar)
-        # seekBarLayout.addWidget(self.seekBar, stretch=1)
         seekBarLayout.addWidget(self.labelTotalTime)
 
         controlWithoutSeekBarLayout = QHBoxLayout()
@@ -104,16 +104,22 @@ class Player(QWidget):
         controlLayout.addLayout(seekBarLayout)
         controlLayout.addLayout(controlWithoutSeekBarLayout)
 
-        displayLayout = QVBoxLayout()
+        displayLayout = QHBoxLayout()
+        displayLayout.setSpacing(5)
         displayLayout.addWidget(self.videoWidget, QSizePolicy.ExpandFlag)
-        displayLayout.addLayout(controlLayout)
-        displayLayout.addWidget(self.errorLabel)
+        displayLayout.addWidget(self.playList)
 
-        self.setLayout(displayLayout)
+        layout = QVBoxLayout()
+        layout.addLayout(displayLayout)
+        layout.addLayout(controlLayout)
+        layout.addWidget(self.statusInfoLabel)
+
+        self.setLayout(layout)
 
         self.player.setVideoOutput(self.videoWidget)
 
         self.player.stateChanged.connect(self.playerStateChanged)
+        self.player.mediaStatusChanged.connect(self.mediaStatusChanged)
         self.player.durationChanged.connect(self.durationChanged)
         self.player.positionChanged.connect(self.positionChanged)
 
@@ -126,24 +132,33 @@ class Player(QWidget):
         self.seekBar.sliderMoved.connect(self.seek)
         self.seekBar.sliderReleased.connect(self.seekBarClicked)
 
+        self.videoWidget.show()
 
     def open(self):
-        fileUrl, _ = QFileDialog.getOpenFileUrl(
-            self, 'Open file', QDir.homePath(),
-            '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv')
-
-        if fileUrl.isEmpty() == False:
-            c = QMediaContent(fileUrl)
-            self.player.setMedia(c)
-
-            self.player.play()
+        self.playList.open()
+        print(self.playList.playListView.count())
+        if self.playList.playListView.count() > 0:
             self.enableInterface()
 
+    def load(self, file_url: QUrl):
+        # fileUrl, _ = QFileDialog.getOpenFileUrl(
+        #     self, 'Open file', QDir.homePath(),
+        #     '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv')
+
+        if file_url is None:
+            return
+        c = QMediaContent(file_url)
+        self.player.setMedia(c)
+        self.enableInterface()
 
     def play(self):
         if self.player.state() == QMediaPlayer.PlayingState:
             self.player.pause()
+        elif self.player.mediaStatus() == QMediaPlayer.LoadingMedia\
+        or self.player.mediaStatus() == QMediaPlayer.StalledMedia:
+            QTimer.singleShot(800, self.player.play)
         else:
+            self.load(self.playList.playListView.currentUrl())
             self.player.play()
 
 
@@ -236,14 +251,29 @@ class Player(QWidget):
         self.forwardButton.setEnabled(True)
 
 
-    def clearErrorLabel(self):
-        self.errorLabel.setText("")
+    def mediaStatusChanged(self, status):
+        if status == QMediaPlayer.LoadingMedia:
+            self.setStatusInfo('Loading...')
+        elif status == QMediaPlayer.LoadedMedia:
+           self.setStatusInfo('Loaded')
+        elif status == QMediaPlayer.BufferingMedia:
+            self.setStatusInfo('Buffering')
+        elif status == QMediaPlayer.InvalidMedia:
+            self.handleError()
+
+    def clearStatusInfo(self):
+        self.statusInfoLabel.setText("")
 
 
     def handleError(self):
         self.disableInterface()
-        self.errorLabel.setText('Error: ' + self.player.errorString())
-        QTimer.singleShot(5000, self.clearErrorLabel)
+        self.setStatusInfo('Error: ' + self.player.errorString())
+
+
+    def setStatusInfo(self, message, seconds=5):
+        if not message == '':
+            self.statusInfoLabel.setText(message)
+            QTimer.singleShot(seconds*1000, self.clearStatusInfo)
 
 
     def forward(self, seconds):
@@ -305,7 +335,7 @@ class PypePlayer(QMainWindow):
 
 
     def createMenus(self, player):
-        openFile = createAction(self, 'Open', player.open, 'Ctrl+o')
+        openFile = createAction(self, 'Open', player.playList.open, 'Ctrl+o')
         forward_short = createAction(self, 'Short Forward', player.forward_short, 'Right')
         forward_medium = createAction(self, 'Forward', player.forward_medium, 'Shift+Right')
         forward_long = createAction(self, 'Long Forward', player.forward_long, 'Ctrl+Right')
