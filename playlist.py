@@ -11,19 +11,23 @@ class Playlist(QWidget):
         super(Playlist, self).__init__(parent)
 
         self.playListView = PlaylistView()
-        self.openButton = QPushButton('open')
-        self.debugButton = QPushButton('m_playlist')
 
         layout = QVBoxLayout()
         layout.addWidget(self.playListView)
+        self.setLayout(layout)
+
+        self.show()
+
+    def debugUI(self):
+        self.openButton = QPushButton('open')
+        self.debugButton = QPushButton('m_playlist')
+
+        layout = self.layout()
         layout.addWidget(self.openButton)
         layout.addWidget(self.debugButton)
-        self.setLayout(layout)
 
         self.openButton.clicked.connect(self.open)
         self.debugButton.clicked.connect(self.debug_m_playlist)
-
-        self.show()
 
     def open(self):
         fileURL, _ = QFileDialog.getOpenFileUrl(self, 'Open File')
@@ -33,7 +37,6 @@ class Playlist(QWidget):
 
     def debug_m_playlist(self):
         print('m_playlist:\n', self.playListView.m_playlist)
-
 
 class PlaylistView(QListWidget):
 
@@ -112,15 +115,11 @@ class PlaylistView(QListWidget):
         originalIndex.append(str(currentRow))
         urls = []
         urls.append(self.m_playlist[currentRow])
-        print(self.m_playlist[currentRow])
-        #urlData = QByteArray()
-        #urlData.append(str(self.m_playlist[currentRow]))
 
         mimeData = QMimeData()
         mimeData.setText(currentItem.text())
         mimeData.setData(self.mime_Index, originalIndex)
         mimeData.setUrls(urls)
-        #mimeData.setData(self.mime_URL, urlData)
 
         drag = QDrag(self)
         drag.setMimeData(mimeData)
@@ -186,11 +185,9 @@ class PlaylistView(QListWidget):
         if event.mimeData().hasText():
             mime = event.mimeData()
             file_name = mime.text()
-            print(file_name)
             position = event.pos()
             previousRow = int(mime.data(self.mime_Index))
             url = QUrl(mime.urls()[0])
-            print(previousRow, url)
             index = self.indexAt(position)
             self.changeItemBackground(index)
 
@@ -262,4 +259,5 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     playlist = Playlist()
+    playlist.debugUI()
     sys.exit(app.exec_())
