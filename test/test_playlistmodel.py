@@ -31,14 +31,15 @@ class TestPlaylistModel(unittest.TestCase):
         self.assertEqual(model.add_url(invalid_url), False)
 
         current_dir = QDir.current()
-        first_file = current_dir.entryList()[0]
-        first_file_url = QUrl('{0}/{1}'.format(current_dir, first_file))
+        first_file = current_dir.entryList()[2]  # first = ., second = ..
+        first_file_url = QUrl('{0}/{1}'.format(current_dir.absolutePath(), first_file))
         self.assertEqual(model.add_url(first_file_url), True)
         self.assertEqual(model.rowCount(), 1)
 
         index = model.index(0, 0)
         data = model.data(index, None)
         self.assertEqual(data, first_file_url)
+        print(model.url_list[0].url)
 
 
 if __name__ == '__main__':
