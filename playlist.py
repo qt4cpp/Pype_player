@@ -69,39 +69,6 @@ class PlaylistView(QListView):
         self.previousIndex = QModelIndex()
         self.originalBackground = QBrush()
 
-    def addUrl(self, url: QUrl, index=-1):
-        if url.isEmpty():
-            return
-        file_name = url.fileName()
-
-        if index < 0:
-            self.m_playlist.append(url)
-            self.addItem(file_name)
-        else:
-            self.m_playlist.insert(index, url)
-            self.insertItem(index, file_name)
-
-    def delUrl(self, index):
-        if index < 0:
-            index = self.count()-1
-
-        delItem = self.takeItem(index)
-        del(delItem)
-        self.m_playlist.pop(index)
-
-    def url(self, index:int) -> str:
-        return self.m_playlist[index]
-
-    def currentUrl(self):
-        return self.m_playlist[self.currentIndex().row()]
-
-    def nextUrl(self):
-        nextIndex = self.currentIndex().row() + 1
-        if nextIndex < self.count():
-            return self.m_playlist[nextIndex]
-        else:
-            return None
-
     def mousePressEvent(self, event):
         """左クリックされたらカーソル下にある要素を選択し、ドラッグを認識するために現在の位置を保存する。
         :param event: QMousePressEvent
