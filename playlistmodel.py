@@ -1,17 +1,24 @@
+from operator import index
+
 from PyQt5.QtCore import QAbstractListModel, QUrl, QModelIndex, QVariant, Qt
 
 
 class PlaylistModel(QAbstractListModel):
 
-    def __init__(self, parent: object = None) -> object:
+    def __init__(self, parent: object = None):
+        """
+
+        :rtype: PlaylistModel
+        """
         super(PlaylistModel, self).__init__(parent)
 
         self.url_list = []
         self.headerTitles = ['Title', 'Duration']
 
-    def rowCount(self, parent: QModelIndex = QModelIndex()) -> int:
+    def rowCount(self, parent: QModelIndex = QModelIndex(), **kwargs) -> int:
         """Return a number of length of urls
 
+        :param **kwargs: 
         :type parent: QModelIndex
         :return int
         """
@@ -24,9 +31,9 @@ class PlaylistModel(QAbstractListModel):
         if index.row() >= self.rowCount():
             return QVariant()
 
-        if role == Qt.DisplayRole:
-            return QVariant(self.url_list[index.row()].fileName())
-        elif role == Qt.ToolTip or role is None:
+        if role == Qt.DisplayRole or role is None:
+            return self.url_list[index.row()].fileName()
+        elif role == Qt.ToolTipRole or role is None:
             return QVariant(self.url_list[index.row()])
         else:
             return QVariant()
@@ -47,16 +54,22 @@ class PlaylistModel(QAbstractListModel):
         else:
             return '{0}.'.format(section+1)
 
+    def flags(self, index : QModelIndex):
+        if not index.isValid():
+            return 0
+
+        return Qt.ItemIsEnabled | Qt.ItemIsSelectable
+
     def add_url(self, url: QUrl, position: int = -1) -> bool:
         if not url.isValid():
             return False
 
-        self.beginInsertRows(QModelIndex(), position, position)
-
         if position >= self.rowCount() or position < 0:
-            self.url_list.append(url)
-        else:
-            self.url_list.insert(position, url)
+            position = self.rowCount()
+
+        self.beginInsertRows(QModelIndex(), position, 1)
+
+        self.url_list.insert(position, url)
 
         self.endInsertRows()
         return True

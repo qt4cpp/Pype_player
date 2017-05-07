@@ -1,8 +1,9 @@
 from PyQt5.QtCore import QUrl, QMimeData, Qt, QByteArray, QDir, QModelIndex, QPoint
 from PyQt5.QtGui import QDrag, QPixmap, QRegion, QBrush, QColor, QDragLeaveEvent, QLinearGradient
-from PyQt5.QtWidgets import (QApplication, QListWidget, QFileDialog, QPushButton, QHBoxLayout,
-                             QVBoxLayout, QWidget, QStyle, QAbstractItemView, QListWidgetItem,
-                             QPushButton)
+from PyQt5.QtWidgets import (QApplication, QFileDialog, QPushButton, QHBoxLayout,
+                             QVBoxLayout, QWidget, QAbstractItemView, QPushButton, QListView)
+
+from playlistmodel import PlaylistModel
 
 class Playlist(QWidget):
 
@@ -10,6 +11,8 @@ class Playlist(QWidget):
         super(Playlist, self).__init__(parent)
 
         self.playListView = PlaylistView()
+        self.m_playlist: PlaylistModel = PlaylistModel()
+        self.playListView.setModel(self.m_playlist)
 
         layout = QVBoxLayout()
         layout.addWidget(self.playListView)
@@ -33,16 +36,19 @@ class Playlist(QWidget):
             self, 'Open File', QDir.homePath(), '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv')
 
         if not fileURL.isEmpty():
-            self.playListView.addUrl(fileURL)
+            self.m_playlist.add_url(fileURL)
 
     def url(self, index=0):
         return self.playListView.m_playlist[index]
 
     def debug_m_playlist(self):
-        print('m_playlist:\n', self.playListView.m_playlist)
+        print('rowCount: ', self.m_playlist.rowCount())
+        for row in range(self.m_playlist.rowCount()):
+            index = self.m_playlist.index(row, 0, QModelIndex())
+            print('m_playlist:\n', self.m_playlist.data(index, Qt.DisplayRole))
 
 
-class PlaylistView(QListWidget):
+class PlaylistView(QListView):
 
     @property
     def mime_Index(self):
@@ -53,8 +59,6 @@ class PlaylistView(QListWidget):
 
     def __init__(self, parent=None):
         super(PlaylistView, self).__init__(parent)
-
-        self.m_playlist = []
 
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setDragEnabled(True)
