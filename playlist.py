@@ -60,7 +60,7 @@ class PlaylistView(QListView):
     def __init__(self, parent=None):
         super(PlaylistView, self).__init__(parent)
 
-        self.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.setDragEnabled(True)
         self.setAcceptDrops(True)
         self.setDragDropMode(QAbstractItemView.DragDrop)
@@ -109,8 +109,8 @@ class PlaylistView(QListView):
         """
         if Qt.LeftButton == event.button():
             self.dragStartPosition = event.pos()
-            selectedIndex = self.indexAt(self.dragStartPosition)
-            self.setCurrentIndex(selectedIndex)
+
+        super(PlaylistView, self).mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
         """start Drag and prepare for Drop.
