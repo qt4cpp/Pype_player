@@ -25,6 +25,12 @@ class PlaylistModel(QAbstractListModel):
         return len(self.url_list)
 
     def data(self, index: QModelIndex, role: int = None) -> QVariant:
+        """引数のindexの値をroleにあった形で返す。
+
+        :param index: QModeIndex
+        :param role: int
+        :return: QVariant
+        """
         if not index.isValid():
             return QVariant()
 
@@ -55,6 +61,10 @@ class PlaylistModel(QAbstractListModel):
             return '{0}.'.format(section+1)
 
     def flags(self, index : QModelIndex):
+        """
+
+        :type index: QModelIndex
+        """
         if not index.isValid():
             return 0
 

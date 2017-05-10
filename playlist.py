@@ -1,6 +1,6 @@
-from PyQt5.QtCore import QUrl, QMimeData, Qt, QByteArray, QDir, QModelIndex, QPoint
+from PyQt5.QtCore import QUrl, QMimeData, Qt, QByteArray, QDir, QModelIndex, QPoint, QRect, QSize
 from PyQt5.QtGui import QDrag, QPixmap, QRegion, QBrush, QColor, QDragLeaveEvent, QLinearGradient
-from PyQt5.QtWidgets import (QApplication, QFileDialog, QPushButton, QHBoxLayout,
+from PyQt5.QtWidgets import (QApplication, QFileDialog, QPushButton, QHBoxLayout, QRubberBand,
                              QVBoxLayout, QWidget, QAbstractItemView, QPushButton, QListView)
 
 from playlistmodel import PlaylistModel
@@ -68,6 +68,7 @@ class PlaylistView(QListView):
 
         self.previousIndex = QModelIndex()
         self.originalBackground = QBrush()
+        self.rubberBand: QRubberBand = None
 
     def mousePressEvent(self, event):
         """左クリックされたらカーソル下にある要素を選択し、ドラッグを認識するために現在の位置を保存する。
@@ -76,6 +77,12 @@ class PlaylistView(QListView):
         """
         if Qt.LeftButton == event.button():
             self.dragStartPosition = event.pos()
+
+        if self.rubberBand is None:
+            self.rubberBand = QRubberBand(QRubberBand.Rectangle, self)
+
+        self.rubberBand.setGeometry(QRect(self.dragStartPosition, QSize()))
+        self.rubberBand.show()
 
         super(PlaylistView, self).mousePressEvent(event)
 
@@ -86,28 +93,29 @@ class PlaylistView(QListView):
         マウスを動かした嶺がQApplication.startDragDistance()を超えると、Drag開始されたと認識し、
         そのための準備を行う。QMimeDataを使って、データをやりとりする。
         """
+        self.rubberBand.setGeometry(QRect(self.dragStartPosition, event.pos()).normalized())
         if not (event.buttons() & Qt.LeftButton):
             return
         if (event.pos() - self.dragStartPosition).manhattanLength() < \
                 QApplication.startDragDistance():
             return
-        if self.itemAt(self.dragStartPosition) is None:
-            return
-
-        currentItem = self.currentItem()
-        currentRow = self.currentIndex().row()
-        originalIndex = QByteArray()
-        originalIndex.append(str(currentRow))
-        urls = []
-        urls.append(self.m_playlist[currentRow])
-
-        mimeData = QMimeData()
-        mimeData.setText(currentItem.text())
-        mimeData.setData(self.mime_Index, originalIndex)
-        mimeData.setUrls(urls)
-
+        # if self.itemAt(self.dragStartPosition) is None:
+        # ˜    return
+        #
+        # currentItem = self.currentItem()
+        # currentRow = self.currentIndex().row()
+        # originalIndex = QByteArray()
+        # originalIndex.append(str(currentRow))
+        # urls = []
+        # urls.append(self.m_playlist[currentRow])
+        #
+        # mimeData = QMimeData()
+        # mimeData.setText(currentItem.text())
+        # mimeData.setData(self.mime_Index, originalIndex)
+        # mimeData.setUrls(urls)
+        #
         drag = QDrag(self)
-        drag.setMimeData(mimeData)
+        # drag.setMimeData(mimeData)
         drag.setHotSpot(event.pos())
 
         dropAction = drag.exec(Qt.CopyAction | Qt.MoveAction, Qt.CopyAction)
@@ -158,6 +166,9 @@ class PlaylistView(QListView):
         :return: nothing
         """
         self.changeItemBackground(self.previousIndex)
+
+    def mouseReleaseEvent(self, event):
+        self.rubberBand.hide()
 
     def dropEvent(self, event):
         """Dropされたらデータを取り出して、新たに登録する。
