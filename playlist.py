@@ -68,21 +68,27 @@ class PlaylistView(QListView):
 
         self.previousIndex = QModelIndex()
         self.originalBackground = QBrush()
-        self.rubberBand: QRubberBand = None
+        self.rubberBand: QRubberBand = QRubberBand(QRubberBand.Rectangle, self)
+        self.isDragging = False
 
     def mousePressEvent(self, event):
         """左クリックされたらカーソル下にある要素を選択し、ドラッグを認識するために現在の位置を保存する。
         :param event: QMousePressEvent
         :return: nothing
         """
+        self.isDragging = False
         if Qt.LeftButton == event.button():
             self.dragStartPosition = event.pos()
 
-        if self.rubberBand is None:
-            self.rubberBand = QRubberBand(QRubberBand.Rectangle, self)
+            index = self.indexAt(self.dragStartPosition)
+            if index.row() == -1:
+                self.clearSelection()
+            if index in self.selectedIndexes():
+                self.isDragging = True
+                return
 
-        self.rubberBand.setGeometry(QRect(self.dragStartPosition, QSize()))
-        self.rubberBand.show()
+            self.rubberBand.setGeometry(QRect(self.dragStartPosition, QSize()))
+            self.rubberBand.show()
 
         super(PlaylistView, self).mousePressEvent(event)
 
@@ -93,32 +99,33 @@ class PlaylistView(QListView):
         マウスを動かした嶺がQApplication.startDragDistance()を超えると、Drag開始されたと認識し、
         そのための準備を行う。QMimeDataを使って、データをやりとりする。
         """
-        self.rubberBand.setGeometry(QRect(self.dragStartPosition, event.pos()).normalized())
         if not (event.buttons() & Qt.LeftButton):
             return
-        if (event.pos() - self.dragStartPosition).manhattanLength() < \
-                QApplication.startDragDistance():
+        if (event.pos() - self.dragStartPosition).manhattanLength() \
+                < QApplication.startDragDistance():
             return
-        # if self.itemAt(self.dragStartPosition) is None:
-        # ˜    return
-        #
-        # currentItem = self.currentItem()
-        # currentRow = self.currentIndex().row()
-        # originalIndex = QByteArray()
-        # originalIndex.append(str(currentRow))
-        # urls = []
-        # urls.append(self.m_playlist[currentRow])
-        #
-        # mimeData = QMimeData()
-        # mimeData.setText(currentItem.text())
-        # mimeData.setData(self.mime_Index, originalIndex)
-        # mimeData.setUrls(urls)
-        #
-        drag = QDrag(self)
-        # drag.setMimeData(mimeData)
-        drag.setHotSpot(event.pos())
 
-        dropAction = drag.exec(Qt.CopyAction | Qt.MoveAction, Qt.CopyAction)
+        # TODO: Dragの開始位置がselected indexesに含まれるなら、Drag開始。そうでないならSelection.
+        if self.isDragging == True:
+            indexes = self.selectedIndexes()
+            print('selected index.')
+            urls = []
+            for index in indexes:
+                urls.append(self.model().data(index))
+            mimeData = QMimeData()
+            mimeData.setUrls(urls)
+
+            drag = QDrag(self)
+            drag.setMimeData(mimeData)
+            drag.setHotSpot(event.pos())
+
+            dropAction = drag.exec(Qt.CopyAction | Qt.MoveAction, Qt.CopyAction)
+            if dropAction == Qt.MoveAction:
+                self.delete_items(indexes)
+
+        else:
+            self.rubberBand.setGeometry(QRect(self.dragStartPosition, event.pos()).normalized())
+            super(PlaylistView, self).mouseMoveEvent(event)
 
     def dragEnterEvent(self, event):
         """ドラッグした状態でWidgetに入った縁で呼ばれる関数。
@@ -146,17 +153,19 @@ class PlaylistView(QListView):
         ドラッグしている要素の背景の色を変えて、どこにファイルがDropされるかをグラデーションした背景で
         表現する。
         """
-        if event.mimeData().hasText():
-            if self.previousIndex.row() >= 0:
-                self.changeItemBackground(self.previousIndex)
+        if event.mimeData().hasUrls():
+            # if self.previousIndex.row() >= 0:
+                # self.changeItemBackground(self.previousIndex)
 
-            self.dropIndicatorlBackground(event.pos())
+            # self.dropIndicatorlBackground(event.pos())
             self.previousIndex = self.indexAt(event.pos())
             if event.source() is self:
                 event.setDropAction(Qt.MoveAction)
                 event.accept()
             else:
                 event.acceptProposedAction()
+
+            super(PlaylistView, self).dragMoveEvent(event)
         else:
             event.ignore()
 
@@ -165,10 +174,13 @@ class PlaylistView(QListView):
         :param event: QDragLeaveEvent
         :return: nothing
         """
-        self.changeItemBackground(self.previousIndex)
+        # self.changeItemBackground(self.previousIndex)
 
     def mouseReleaseEvent(self, event):
         self.rubberBand.hide()
+        if event.pos() == self.dragStartPosition:
+            self.setCurrentIndex(self.indexAt(event.pos()))
+        super(PlaylistView, self).mouseReleaseEvent(event)
 
     def dropEvent(self, event):
         """Dropされたらデータを取り出して、新たに登録する。
@@ -177,31 +189,15 @@ class PlaylistView(QListView):
         
         ファイルへのパスと移動前に登録してあった要素のindexを取り出す。
         """
-
-        if event.mimeData().hasText():
-            mime = event.mimeData()
-            file_name = mime.text()
-            position = event.pos()
-            previousRow = int(mime.data(self.mime_Index))
-            url = QUrl(mime.urls()[0])
-            index = self.indexAt(position)
-            self.changeItemBackground(index)
-
-            if self.isUpperHalfInItem(position):
-                insertRow = index.row()
-            else:
-                insertRow = index.row()+1
-            self.addUrl(url, insertRow)
-
+        if event.mimeData().hasUrls():
+            urls = event.mimeData().urls()
+            self.add_items(urls)
             if event.source() is self:
-                if previousRow < index.row():
-                    self.delUrl(previousRow)
-                else:
-                    self.delUrl(previousRow+1)
                 event.setDropAction(Qt.MoveAction)
                 event.accept()
             else:
                 event.acceptProposedAction()
+            super(PlaylistView, self).dropEvent(event)
         else:
             event.ignore()
 
@@ -249,6 +245,18 @@ class PlaylistView(QListView):
         item = self.itemFromIndex(index)
         if item:
             item.setBackground(QBrush(color))
+
+    def add_items(self, items, start: int = -1):
+        if start == -1:
+            for item in items:
+                self.model().add_url(item)
+        else:
+            for item, position in items, range(len(items)):
+                self.model().add_url(item, start+position)
+
+    def delete_items(self, indexes : [QModelIndex]):
+        for index in indexes:
+            self.model().del_url(index.row())
 
 if __name__ == '__main__':
     import sys

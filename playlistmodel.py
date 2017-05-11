@@ -40,7 +40,7 @@ class PlaylistModel(QAbstractListModel):
         if role == Qt.DisplayRole:
             return self.url_list[index.row()].fileName()
         elif role == Qt.ToolTipRole or role is None:
-            return QVariant(self.url_list[index.row()])
+            return self.url_list[index.row()]
         else:
             return QVariant()
 
@@ -90,6 +90,8 @@ class PlaylistModel(QAbstractListModel):
         elif position == -1:
             position = self.rowCount() - 1
 
+        self.beginRemoveRows(QModelIndex(), position, 1)
         del(self.url_list[position])
+        self.endRemoveRows()
         return True
 
