@@ -37,7 +37,7 @@ class PlaylistModel(QAbstractListModel):
         if index.row() >= self.rowCount():
             return QVariant()
 
-        if role == Qt.DisplayRole or role is None:
+        if role == Qt.DisplayRole:
             return self.url_list[index.row()].fileName()
         elif role == Qt.ToolTipRole or role is None:
             return QVariant(self.url_list[index.row()])
@@ -82,5 +82,14 @@ class PlaylistModel(QAbstractListModel):
         self.url_list.insert(position, url)
 
         self.endInsertRows()
+        return True
+
+    def del_url(self, position: int = -1) -> bool:
+        if position >= self.rowCount():
+            return False
+        elif position == -1:
+            position = self.rowCount() - 1
+
+        del(self.url_list[position])
         return True
 

@@ -24,7 +24,7 @@ class TestPlaylistModel(unittest.TestCase):
         self.assertEqual(header_data(0, Qt.Vertical, Qt.DisplayRole), '1.')
         self.assertEqual(header_data(100, Qt.Vertical, Qt.DisplayRole), '101.')
 
-    def test_add_url(self):
+    def test_add(self):
         model: PlaylistModel = self.playListModel
 
         invalid_url = QUrl('file:/!!//a;''|]~``/b/c/???_rewoui.xf!!', QUrl.StrictMode)
@@ -40,6 +40,20 @@ class TestPlaylistModel(unittest.TestCase):
         data = model.data(index, None)
         self.assertEqual(data, first_file_url)
         print(model.url_list[0].url)
+
+    def test_del(self):
+        model: PlaylistModel = self.playListModel
+
+        current_dir = QDir.current()
+        for file in current_dir.entryList():
+            file_url = QUrl('{0}/{1}'.format(current_dir.absolutePath(), file))
+            model.add_url(file_url)
+
+        self.assertEqual(model.del_url(0), True)
+        self.assertEqual(model.del_url(1), True)
+        self.assertEqual(model.del_url(model.rowCount()), False)
+        print(model.url_list[0])
+
 
 
 if __name__ == '__main__':
