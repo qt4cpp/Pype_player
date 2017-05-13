@@ -1,4 +1,5 @@
-from PyQt5.QtCore import QUrl, QMimeData, Qt, QDir, QModelIndex, QPoint, QRect, QSize
+from PyQt5.QtCore import QUrl, QMimeData, Qt, QDir, QModelIndex, QPoint, QRect, QSize, QByteArray, \
+    QDataStream, QIODevice, QTextStream
 from PyQt5.QtGui import QDrag, QPixmap, QRegion, QBrush, QColor, QDragLeaveEvent, QLinearGradient
 from PyQt5.QtWidgets import (QApplication, QFileDialog, QPushButton, QHBoxLayout, QRubberBand,
                              QVBoxLayout, QWidget, QAbstractItemView, QPushButton, QListView)
@@ -54,8 +55,14 @@ class PlaylistView(QListView):
     def mime_Index(self):
         return 'application/x-original_index'
     @property
-    def mime_URL(self):
-        return 'application/x-file-url'
+    def mime_URLS(self):
+        return 'application/x-file-urls'
+    @property
+    def mime_url_count(self):
+        return 'application/x-urls-count'
+    @property
+    def url_delimiter(self):
+        return '\n'
 
     def __init__(self, parent=None):
         super(PlaylistView, self).__init__(parent)
@@ -105,26 +112,23 @@ class PlaylistView(QListView):
                 < QApplication.startDragDistance():
             return
 
-        # TODO: Dragの開始位置がselected indexesに含まれるなら、Drag開始。そうでないならSelection.
         if self.isDragging:
             indexes = self.selectedIndexes()
             print('selected index.')
-            urls = []
-            for index in indexes:
-                urls.append(self.model().data(index))
+            urls = self.dataToByteArray(indexes)
             mimeData = QMimeData()
-            # mimeData.setText('dummy text')
-            mimeData.setUrls(urls)
+            mimeData.setText(str(len(indexes)))
+            mimeData.setData(self.mime_URLS, urls)
 
             dragRect = self.rectForDrag(indexes)
             pixmap = QPixmap(dragRect.width(), dragRect.height())
             renderSource = QRegion(dragRect)
-            self.render(pixmap, sourceRegion=renderSource)
+            self.render(pixmap, sourceRegion=renderSource,)
 
             drag = QDrag(self)
+            drag.setHotSpot(event.pos())
             drag.setMimeData(mimeData)
             drag.setPixmap(pixmap)
-            drag.setHotSpot(event.pos())
 
             dropAction = drag.exec(Qt.CopyAction | Qt.MoveAction, Qt.CopyAction)
             if dropAction == Qt.MoveAction:
@@ -133,6 +137,22 @@ class PlaylistView(QListView):
         else:
             self.rubberBand.setGeometry(QRect(self.dragStartPosition, event.pos()).normalized())
             super(PlaylistView, self).mouseMoveEvent(event)
+
+    def dataToByteArray(self, indexes : [QModelIndex]) -> QByteArray:
+        urls_byte = QByteArray()
+        stream = QTextStream(urls_byte, QIODevice.WriteOnly)
+        for index in indexes:
+            stream << self.model().data(index).toString() << self.url_delimiter
+
+        return urls_byte
+
+    def byteArrayToUrl(self, byte_array : QByteArray) -> [QUrl]:
+        byte_list = byte_array.split(self.url_delimiter)
+        urls = []
+        for data in byte_list:
+            url = QUrl(data.data().decode('utf-8'))
+            urls.append(url)
+        return urls
 
     def dragEnterEvent(self, event):
         """ドラッグした状態でWidgetに入った縁で呼ばれる関数。
@@ -143,7 +163,7 @@ class PlaylistView(QListView):
         その二つの場合は受け入れられるように、accept()もしくはacceptProposedAction()を呼ぶ。
         """
 
-        if event.mimeData().hasUrls():
+        if event.mimeData().hasFormat(self.mime_URLS):
             if event.source() is self:
                 event.setDropAction(Qt.MoveAction)
                 event.accept()
@@ -160,7 +180,7 @@ class PlaylistView(QListView):
         ドラッグしている要素の背景の色を変えて、どこにファイルがDropされるかをグラデーションした背景で
         表現する。
         """
-        if event.mimeData().hasUrls():
+        if event.mimeData().hasFormat(self.mime_URLS):
             # if self.previousIndex.row() >= 0:
                 # self.changeItemBackground(self.previousIndex)
 
@@ -195,15 +215,15 @@ class PlaylistView(QListView):
         
         ファイルへのパスと移動前に登録してあった要素のindexを取り出す。
         """
-        if event.mimeData().hasUrls():
-            urls = event.mimeData().urls()
+        if event.mimeData().hasFormat(self.mime_URLS):
+            data = event.mimeData().data(self.mime_URLS)
+            urls = self.byteArrayToUrl(data)
             self.add_items(urls)
             if event.source() is self:
                 event.setDropAction(Qt.MoveAction)
                 event.accept()
             else:
                 event.acceptProposedAction()
-            # super(PlaylistView, self).dropEvent(event)
         else:
             event.ignore()
 
@@ -265,7 +285,7 @@ class PlaylistView(QListView):
 
         return QRect(top_left, bottom_right)
 
-    def add_items(self, items, start: int = -1):
+    def add_items(self, items : [QUrl], start: int = -1):
         if start == -1:
             for item in items:
                 self.model().add_url(item)
