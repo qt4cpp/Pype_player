@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QUrl, QMimeData, Qt, QByteArray, QDir, QModelIndex, QPoint, QRect, QSize
+from PyQt5.QtCore import QUrl, QMimeData, Qt, QDir, QModelIndex, QPoint, QRect, QSize
 from PyQt5.QtGui import QDrag, QPixmap, QRegion, QBrush, QColor, QDragLeaveEvent, QLinearGradient
 from PyQt5.QtWidgets import (QApplication, QFileDialog, QPushButton, QHBoxLayout, QRubberBand,
                              QVBoxLayout, QWidget, QAbstractItemView, QPushButton, QListView)
@@ -106,17 +106,24 @@ class PlaylistView(QListView):
             return
 
         # TODO: Dragの開始位置がselected indexesに含まれるなら、Drag開始。そうでないならSelection.
-        if self.isDragging == True:
+        if self.isDragging:
             indexes = self.selectedIndexes()
             print('selected index.')
             urls = []
             for index in indexes:
                 urls.append(self.model().data(index))
             mimeData = QMimeData()
+            # mimeData.setText('dummy text')
             mimeData.setUrls(urls)
+
+            dragRect = self.rectForDrag(indexes)
+            pixmap = QPixmap(dragRect.width(), dragRect.height())
+            renderSource = QRegion(dragRect)
+            self.render(pixmap, sourceRegion=renderSource)
 
             drag = QDrag(self)
             drag.setMimeData(mimeData)
+            drag.setPixmap(pixmap)
             drag.setHotSpot(event.pos())
 
             dropAction = drag.exec(Qt.CopyAction | Qt.MoveAction, Qt.CopyAction)
@@ -136,7 +143,7 @@ class PlaylistView(QListView):
         その二つの場合は受け入れられるように、accept()もしくはacceptProposedAction()を呼ぶ。
         """
 
-        if event.mimeData().hasText():
+        if event.mimeData().hasUrls():
             if event.source() is self:
                 event.setDropAction(Qt.MoveAction)
                 event.accept()
@@ -164,8 +171,6 @@ class PlaylistView(QListView):
                 event.accept()
             else:
                 event.acceptProposedAction()
-
-            super(PlaylistView, self).dragMoveEvent(event)
         else:
             event.ignore()
 
@@ -178,8 +183,9 @@ class PlaylistView(QListView):
 
     def mouseReleaseEvent(self, event):
         self.rubberBand.hide()
-        if event.pos() == self.dragStartPosition:
-            self.setCurrentIndex(self.indexAt(event.pos()))
+        if Qt.LeftButton == event.button():
+            if event.pos() == self.dragStartPosition:
+                self.setCurrentIndex(self.indexAt(event.pos()))
         super(PlaylistView, self).mouseReleaseEvent(event)
 
     def dropEvent(self, event):
@@ -197,7 +203,7 @@ class PlaylistView(QListView):
                 event.accept()
             else:
                 event.acceptProposedAction()
-            super(PlaylistView, self).dropEvent(event)
+            # super(PlaylistView, self).dropEvent(event)
         else:
             event.ignore()
 
@@ -245,6 +251,19 @@ class PlaylistView(QListView):
         item = self.itemFromIndex(index)
         if item:
             item.setBackground(QBrush(color))
+
+    def rectForDrag(self, indexes:[QModelIndex]) -> QRect:
+        item_rect : QRect = self.rectForIndex(indexes[0])
+        height = item_rect.height()
+        width = item_rect.width()
+
+        start_row = indexes[0].row()
+        end_row = indexes[-1].row()
+
+        top_left = QPoint(0, height*start_row)
+        bottom_right = QPoint(width, height*(end_row+1))
+
+        return QRect(top_left, bottom_right)
 
     def add_items(self, items, start: int = -1):
         if start == -1:
