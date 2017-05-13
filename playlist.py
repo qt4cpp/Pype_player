@@ -1,7 +1,7 @@
-from PyQt5.QtCore import QUrl, QMimeData, Qt, QDir, QModelIndex, QPoint, QRect, QSize, QByteArray, \
-    QDataStream, QIODevice, QTextStream
-from PyQt5.QtGui import QDrag, QPixmap, QRegion, QBrush, QColor, QDragLeaveEvent, QLinearGradient
-from PyQt5.QtWidgets import (QApplication, QFileDialog, QPushButton, QHBoxLayout, QRubberBand,
+from PyQt5.QtCore import (QUrl, QMimeData, Qt, QDir, QModelIndex, QPoint, QRect, QSize, QByteArray,
+                          QIODevice, QTextStream)
+from PyQt5.QtGui import QDrag, QPixmap, QRegion, QBrush, QDragLeaveEvent
+from PyQt5.QtWidgets import (QApplication, QFileDialog, QRubberBand,
                              QVBoxLayout, QWidget, QAbstractItemView, QPushButton, QListView)
 
 from playlistmodel import PlaylistModel
@@ -114,7 +114,6 @@ class PlaylistView(QListView):
 
         if self.isDragging:
             indexes = self.selectedIndexes()
-            print('selected index.')
             urls = self.dataToByteArray(indexes)
             mimeData = QMimeData()
             mimeData.setText(str(len(indexes)))
@@ -181,10 +180,6 @@ class PlaylistView(QListView):
         表現する。
         """
         if event.mimeData().hasFormat(self.mime_URLS):
-            # if self.previousIndex.row() >= 0:
-                # self.changeItemBackground(self.previousIndex)
-
-            # self.dropIndicatorlBackground(event.pos())
             self.rubberBand.setGeometry(self.rectForDropIndicator(self.indexForDrop(event.pos())))
             self.rubberBand.show()
             self.previousIndex = self.indexAt(event.pos())
@@ -202,7 +197,6 @@ class PlaylistView(QListView):
         :return: nothing
         """
         self.rubberBand.hide()
-        # self.changeItemBackground(self.previousIndex)
 
     def mouseReleaseEvent(self, event):
         self.rubberBand.hide()
@@ -232,51 +226,6 @@ class PlaylistView(QListView):
                 event.acceptProposedAction()
         else:
             event.ignore()
-
-    def dropIndicatorlBackground(self, position):
-        """dropIndicatorを表現するために要素の背景をグラデーションにする。
-        :param position: QPoint
-        :return: 
-        
-        positionから要素を取り出し、上から下にグラデーションがかかるようにする。
-        要素の半分上だと上に挿入するので、上が黒くなるようにして、
-        下半分だとその逆。
-        """
-        item = self.itemAt(position)
-        if item:
-            rect = self.visualItemRect(item)
-            gradientBrush = QLinearGradient(QPoint(rect.center().x(), 0),
-                                                    QPoint(rect.center().x(), rect.height()))
-            brightColor = QColor(Qt.white)
-            darkColor= QColor(0, 0, 0, 50)
-            if self.isUpperHalfInItem(position):
-                gradientBrush.setColorAt(0, darkColor)
-                gradientBrush.setColorAt(1, brightColor)
-            else:
-                gradientBrush.setColorAt(0, brightColor)
-                gradientBrush.setColorAt(1, darkColor)
-            item.setBackground(gradientBrush)
-
-    def isUpperHalfInItem(self, position):
-        """マウスカーソルが現在の要素の半分より上にあるかどうかを返す。
-        :param position: QPoint
-        :return: bool
-        
-        rect.center().y()は、要素を規準にした位置ではなくListWidgetでのpostionを返すので、
-        position.y()で比較できる。
-        """
-        rect = self.visualItemRect(self.itemAt(position))
-        return position.y() < rect.center().y()
-
-    def changeItemBackground(self, index, color=QColor(255,255,255)):
-        """indexの背景色を変える。デフォルトでは、白にする。
-        :param index: QAbstractIndexItem
-        :param color: QColor
-        :return: nothing
-        """
-        item = self.itemFromIndex(index)
-        if item:
-            item.setBackground(QBrush(color))
 
     def rectForDrag(self, indexes:[QModelIndex]) -> QRect:
         item_rect : QRect = self.rectForIndex(indexes[0])
