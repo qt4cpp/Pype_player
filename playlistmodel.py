@@ -25,16 +25,22 @@ class PlaylistModel(QAbstractListModel):
         return len(self.url_list)
 
     def data(self, index: QModelIndex, role: int = None) -> QVariant:
+        """引数のindexの値をroleにあった形で返す。
+
+        :param index: QModeIndex
+        :param role: int
+        :return: QVariant
+        """
         if not index.isValid():
             return QVariant()
 
         if index.row() >= self.rowCount():
             return QVariant()
 
-        if role == Qt.DisplayRole or role is None:
+        if role == Qt.DisplayRole:
             return self.url_list[index.row()].fileName()
         elif role == Qt.ToolTipRole or role is None:
-            return QVariant(self.url_list[index.row()])
+            return self.url_list[index.row()]
         else:
             return QVariant()
 
@@ -55,6 +61,10 @@ class PlaylistModel(QAbstractListModel):
             return '{0}.'.format(section+1)
 
     def flags(self, index : QModelIndex):
+        """
+
+        :type index: QModelIndex
+        """
         if not index.isValid():
             return 0
 
@@ -72,5 +82,16 @@ class PlaylistModel(QAbstractListModel):
         self.url_list.insert(position, url)
 
         self.endInsertRows()
+        return True
+
+    def del_url(self, position: int = -1) -> bool:
+        if position >= self.rowCount():
+            return False
+        elif position == -1:
+            position = self.rowCount() - 1
+
+        self.beginRemoveRows(QModelIndex(), position, 1)
+        del(self.url_list[position])
+        self.endRemoveRows()
         return True
 
