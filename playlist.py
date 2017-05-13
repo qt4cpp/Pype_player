@@ -185,6 +185,8 @@ class PlaylistView(QListView):
                 # self.changeItemBackground(self.previousIndex)
 
             # self.dropIndicatorlBackground(event.pos())
+            self.rubberBand.setGeometry(self.rectForDropIndicator(self.indexForDrop(event.pos())))
+            self.rubberBand.show()
             self.previousIndex = self.indexAt(event.pos())
             if event.source() is self:
                 event.setDropAction(Qt.MoveAction)
@@ -199,6 +201,7 @@ class PlaylistView(QListView):
         :param event: QDragLeaveEvent
         :return: nothing
         """
+        self.rubberBand.hide()
         # self.changeItemBackground(self.previousIndex)
 
     def mouseReleaseEvent(self, event):
@@ -215,9 +218,12 @@ class PlaylistView(QListView):
         
         ファイルへのパスと移動前に登録してあった要素のindexを取り出す。
         """
+        self.rubberBand.hide()
         if event.mimeData().hasFormat(self.mime_URLS):
             data = event.mimeData().data(self.mime_URLS)
             urls = self.byteArrayToUrl(data)
+            index = self.indexForDrop(event.pos())
+            print(index.row())
             self.add_items(urls)
             if event.source() is self:
                 event.setDropAction(Qt.MoveAction)
@@ -296,6 +302,31 @@ class PlaylistView(QListView):
     def delete_items(self, indexes : [QModelIndex]):
         for index in indexes:
             self.model().del_url(index.row())
+
+    def indexForDrop(self, pos : QPoint) -> QModelIndex:
+        index = self.indexAt(pos)
+        if index.row() < 0:
+            return self.model().index(self.model().rowCount(), 0)
+
+        item_rect = self.rectForIndex(index)
+        if (pos.y()%item_rect.height()) < (item_rect.height()/2):
+            return index
+        else:
+            return self.model().index(index.row()+1, 0)
+
+    def rectForDropIndicator(self, index : QModelIndex) -> QRect:
+        """QRubberBand を DropIndicatorとして表示するためのQRectを返す。
+        Geometryに渡されるので、表示位置となるようにQRectを作成する。
+        幅が表示領域、縦1pixelの棒で表示する。
+        """
+        row = index.row()
+        if row < 0:
+            row = self.model().rowCount()
+        print(row)
+        item_rect = self.rectForIndex(self.model().index(0, 0))
+        top_left = QPoint(0, item_rect.height()*row)
+        size = QSize(item_rect.width(), 3)
+        return QRect(top_left, size)
 
 if __name__ == '__main__':
     import sys
