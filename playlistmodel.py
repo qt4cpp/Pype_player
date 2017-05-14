@@ -70,7 +70,7 @@ class PlaylistModel(QAbstractListModel):
 
         return Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
-    def add_url(self, url: QUrl, position: int = -1) -> bool:
+    def add(self, url: QUrl, position: int = -1) -> bool:
         if not url.isValid():
             return False
 
@@ -84,7 +84,7 @@ class PlaylistModel(QAbstractListModel):
         self.endInsertRows()
         return True
 
-    def del_url(self, position: int = -1) -> bool:
+    def remove(self, position: int = -1) -> bool:
         if position >= self.rowCount():
             return False
         elif position == -1:
@@ -94,4 +94,5 @@ class PlaylistModel(QAbstractListModel):
         del(self.url_list[position])
         self.endRemoveRows()
         return True
+
 

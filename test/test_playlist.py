@@ -25,7 +25,7 @@ if __name__ == '__main__':
         if file == '.' or file == '..':
             continue
         file_url = QUrl('{0}/{1}'.format(current_dir.absolutePath(), file))
-        playlist.m_playlist.add_url(file_url)
+        playlist.m_playlist.add(file_url)
 
     sys.exit(app.exec_())
 

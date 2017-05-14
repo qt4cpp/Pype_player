@@ -37,7 +37,7 @@ class Playlist(QWidget):
             self, 'Open File', QDir.homePath(), '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv')
 
         if not fileURL.isEmpty():
-            self.m_playlist.add_url(fileURL)
+            self.m_playlist.add(fileURL)
 
     def url(self, index=0):
         return self.playListView.m_playlist[index]
@@ -225,10 +225,10 @@ class PlaylistView(QListView):
         """
         if start == -1:
             for item in items:
-                self.model().add_url(item)
+                self.model().add(item)
         else:
             for item, position in items, range(len(items)):
-                self.model().add_url(item, start+position)
+                self.model().add(item, start + position)
 
     def delete_items(self, indexes : [QModelIndex]):
         """渡されたインデックスを十番に消していく。
@@ -236,7 +236,7 @@ class PlaylistView(QListView):
         :param indexes: 消すためのインデックス
         """
         for index in indexes:
-            self.model().del_url(index.row())
+            self.model().remove(index.row())
 
     def convert_to_bytearray(self, indexes : [QModelIndex]) -> QByteArray:
         """modelの項目をbyte型に変換する。
