@@ -114,12 +114,12 @@ class PlaylistView(QListView):
 
         if self.isDragging:
             indexes = self.selectedIndexes()
-            urls = self.dataToByteArray(indexes)
+            urls = self.convert_to_bytearray(indexes)
             mimeData = QMimeData()
             mimeData.setText(str(len(indexes)))
             mimeData.setData(self.mime_URLS, urls)
 
-            dragRect = self.rectForDrag(indexes)
+            dragRect = self.rect_for_drag_items(indexes)
             pixmap = QPixmap(dragRect.width(), dragRect.height())
             renderSource = QRegion(dragRect)
             self.render(pixmap, sourceRegion=renderSource,)
@@ -136,22 +136,6 @@ class PlaylistView(QListView):
         else:
             self.rubberBand.setGeometry(QRect(self.dragStartPosition, event.pos()).normalized())
             super(PlaylistView, self).mouseMoveEvent(event)
-
-    def dataToByteArray(self, indexes : [QModelIndex]) -> QByteArray:
-        urls_byte = QByteArray()
-        stream = QTextStream(urls_byte, QIODevice.WriteOnly)
-        for index in indexes:
-            stream << self.model().data(index).toString() << self.url_delimiter
-
-        return urls_byte
-
-    def byteArrayToUrl(self, byte_array : QByteArray) -> [QUrl]:
-        byte_list = byte_array.split(self.url_delimiter)
-        urls = []
-        for data in byte_list:
-            url = QUrl(data.data().decode('utf-8'))
-            urls.append(url)
-        return urls
 
     def dragEnterEvent(self, event):
         """ドラッグした状態でWidgetに入った縁で呼ばれる関数。
@@ -180,7 +164,7 @@ class PlaylistView(QListView):
         表現する。
         """
         if event.mimeData().hasFormat(self.mime_URLS):
-            self.rubberBand.setGeometry(self.rectForDropIndicator(self.indexForDrop(event.pos())))
+            self.rubberBand.setGeometry(self.rectForDropIndicator(self.index_for_dropping_pos(event.pos())))
             self.rubberBand.show()
             self.previousIndex = self.indexAt(event.pos())
             if event.source() is self:
@@ -199,6 +183,11 @@ class PlaylistView(QListView):
         self.rubberBand.hide()
 
     def mouseReleaseEvent(self, event):
+        """マウスを離したときにQRubberBandを隠す。
+        左クリックを押した位置と話した位置が同じであれば、その要素を選択する。
+
+        :param event: 
+        """
         self.rubberBand.hide()
         if Qt.LeftButton == event.button():
             if event.pos() == self.dragStartPosition:
@@ -215,8 +204,8 @@ class PlaylistView(QListView):
         self.rubberBand.hide()
         if event.mimeData().hasFormat(self.mime_URLS):
             data = event.mimeData().data(self.mime_URLS)
-            urls = self.byteArrayToUrl(data)
-            index = self.indexForDrop(event.pos())
+            urls = self.convert_from_bytearray(data)
+            index = self.index_for_dropping_pos(event.pos())
             print(index.row())
             self.add_items(urls)
             if event.source() is self:
@@ -227,7 +216,62 @@ class PlaylistView(QListView):
         else:
             event.ignore()
 
-    def rectForDrag(self, indexes:[QModelIndex]) -> QRect:
+    def add_items(self, items : [QUrl], start: int = -1):
+        """渡された要素をmodelに追加する。
+
+        :param items: 追加する項目
+        :param start: 追加するindexを表す。初期値は-1
+        start に −1を渡すと一番後ろに追加する。
+        """
+        if start == -1:
+            for item in items:
+                self.model().add_url(item)
+        else:
+            for item, position in items, range(len(items)):
+                self.model().add_url(item, start+position)
+
+    def delete_items(self, indexes : [QModelIndex]):
+        """渡されたインデックスを十番に消していく。
+
+        :param indexes: 消すためのインデックス
+        """
+        for index in indexes:
+            self.model().del_url(index.row())
+
+    def convert_to_bytearray(self, indexes : [QModelIndex]) -> QByteArray:
+        """modelの項目をbyte型に変換する。
+
+        :param indexes: 要素を変換するindexのリスト
+        :return: byte型に変換した項目
+        元に戻すための区切り文字としてself.url_delimiterプロパティを使用
+        """
+        urls_byte = QByteArray()
+        stream = QTextStream(urls_byte, QIODevice.WriteOnly)
+        for index in indexes:
+            stream << self.model().data(index).toString() << self.url_delimiter
+
+        return urls_byte
+
+    def convert_from_bytearray(self, byte_array : QByteArray) -> [QUrl]:
+        """渡されたbyte arrayから元のデータに復元する。
+
+        :param byte_array: 
+        :return: 
+        区切り文字はself.url_delimiterプロパティ
+        """
+        byte_list = byte_array.split(self.url_delimiter)
+        urls = []
+        for data in byte_list:
+            url = QUrl(data.data().decode('utf-8'))
+            urls.append(url)
+        return urls
+
+    def rect_for_drag_items(self, indexes:[QModelIndex]) -> QRect:
+        """dragされる要素を表す領域を返す。
+
+        :param indexes: 
+        :return: indexesが囲われているQRect
+        """
         item_rect : QRect = self.rectForIndex(indexes[0])
         height = item_rect.height()
         width = item_rect.width()
@@ -240,19 +284,13 @@ class PlaylistView(QListView):
 
         return QRect(top_left, bottom_right)
 
-    def add_items(self, items : [QUrl], start: int = -1):
-        if start == -1:
-            for item in items:
-                self.model().add_url(item)
-        else:
-            for item, position in items, range(len(items)):
-                self.model().add_url(item, start+position)
+    def index_for_dropping_pos(self, pos : QPoint) -> QModelIndex:
+        """dropした場所のindexを返す。ただし、要素の高さ半分より下にある場合は、下の要素を返す。
 
-    def delete_items(self, indexes : [QModelIndex]):
-        for index in indexes:
-            self.model().del_url(index.row())
-
-    def indexForDrop(self, pos : QPoint) -> QModelIndex:
+        :param pos: 
+        :return: posから導き出されたindex
+        挿入や移動のために、要素の間を意識している。
+        """
         index = self.indexAt(pos)
         if index.row() < 0:
             return self.model().index(self.model().rowCount(), 0)
@@ -276,6 +314,7 @@ class PlaylistView(QListView):
         top_left = QPoint(0, item_rect.height()*row)
         size = QSize(item_rect.width(), 3)
         return QRect(top_left, size)
+
 
 if __name__ == '__main__':
     import sys
