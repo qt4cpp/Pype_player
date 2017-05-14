@@ -95,4 +95,17 @@ class PlaylistModel(QAbstractListModel):
         self.endRemoveRows()
         return True
 
+    def move(self, begin, end, destination=-1) -> bool:
+        if destination < 0:
+            destination = self.rowCount()
+        if begin <= destination <= end:
+            return False
 
+        self.beginMoveRows(QModelIndex(), begin, end, QModelIndex(), destination)
+        move_list = self.url_list[begin:end+1]
+        self.url_list[begin:end+1] = []
+        if destination > end:
+            destination -= len(move_list)
+        self.url_list[destination:destination] = move_list
+        self.endMoveRows()
+        return True

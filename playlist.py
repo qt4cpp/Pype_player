@@ -131,7 +131,8 @@ class PlaylistView(QListView):
 
             dropAction = drag.exec(Qt.CopyAction | Qt.MoveAction, Qt.CopyAction)
             if dropAction == Qt.MoveAction:
-                self.delete_items(indexes)
+                pass
+                # self.delete_items(indexes)
 
         else:
             self.rubberBand.setGeometry(QRect(self.dragStartPosition, event.pos()).normalized())
@@ -206,12 +207,12 @@ class PlaylistView(QListView):
             data = event.mimeData().data(self.mime_URLS)
             urls = self.convert_from_bytearray(data)
             index = self.index_for_dropping_pos(event.pos())
-            print(index.row())
-            self.add_items(urls)
             if event.source() is self:
+                self.move_items(self.selectedIndexes(), index)
                 event.setDropAction(Qt.MoveAction)
                 event.accept()
             else:
+                self.add_items(urls)
                 event.acceptProposedAction()
         else:
             event.ignore()
@@ -237,6 +238,9 @@ class PlaylistView(QListView):
         """
         for index in indexes:
             self.model().remove(index.row())
+
+    def move_items(self, indexes: [QModelIndex], dest : QModelIndex):
+        self.model().move(indexes[0].row(), indexes[-1].row(), dest.row())
 
     def convert_to_bytearray(self, indexes : [QModelIndex]) -> QByteArray:
         """modelの項目をbyte型に変換する。
@@ -293,7 +297,8 @@ class PlaylistView(QListView):
         """
         index = self.indexAt(pos)
         if index.row() < 0:
-            return self.model().index(self.model().rowCount(), 0)
+            new_index = self.model().index(self.model().rowCount(), 0)
+            return new_index
 
         item_rect = self.rectForIndex(index)
         if (pos.y()%item_rect.height()) < (item_rect.height()/2):
