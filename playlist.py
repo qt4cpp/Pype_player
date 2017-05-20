@@ -45,11 +45,15 @@ class Playlist(QWidget):
         if not fileURL.isEmpty():
             self.m_playlist.add(fileURL)
 
-    def url(self, index=0):
-        if 0 <= index < self.items_count:
-            return self.playListView.m_playlist[index]
-        else
+    def url(self, row=0):
+        if 0 <= row < self.items_count:
+            index = self.playListView.model().index(row, 0)
+            return self.playListView.model().data(index)
+        else:
             return None
+
+    def current(self):
+        return self.url(self.currentIndex)
 
     def next(self):
         self.currentIndex += 1
@@ -80,6 +84,9 @@ class PlaylistView(QListView):
     @property
     def url_delimiter(self):
         return '\n'
+
+    def count(self):
+        return self.model().rowCount()
 
     def __init__(self, parent=None):
         super(PlaylistView, self).__init__(parent)
