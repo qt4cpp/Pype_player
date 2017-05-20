@@ -8,12 +8,18 @@ from playlistmodel import PlaylistModel
 
 class Playlist(QWidget):
 
+    @property
+    def items_count(self):
+        return self.m_playlist.rowCount()
+
     def __init__(self, parent=None):
         super(Playlist, self).__init__(parent)
 
         self.playListView = PlaylistView()
         self.m_playlist: PlaylistModel = PlaylistModel()
         self.playListView.setModel(self.m_playlist)
+
+        self.currentIndex = 0
 
         layout = QVBoxLayout()
         layout.addWidget(self.playListView)
@@ -40,7 +46,18 @@ class Playlist(QWidget):
             self.m_playlist.add(fileURL)
 
     def url(self, index=0):
-        return self.playListView.m_playlist[index]
+        if 0 <= index < self.items_count:
+            return self.playListView.m_playlist[index]
+        else
+            return None
+
+    def next(self):
+        self.currentIndex += 1
+        return self.url(self.currentIndex)
+
+    def previous(self):
+        self.currentIndex -= 1
+        return self.url(self.currentIndex)
 
     def debug_m_playlist(self):
         print('rowCount: ', self.m_playlist.rowCount())
