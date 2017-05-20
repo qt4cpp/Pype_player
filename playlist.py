@@ -228,11 +228,11 @@ class PlaylistView(QListView):
             for item in items:
                 self.model().add(item)
         else:
-            for item, position in items, range(len(items)):
-                self.model().add(item, start + position)
+            for item, i in items, range(start, len(items)):
+                self.model().add(item, i)
 
     def delete_items(self, indexes : [QModelIndex]):
-        """渡されたインデックスを十番に消していく。
+        """渡されたインデックスを順番に消していく。
 
         :param indexes: 消すためのインデックス
         """
@@ -240,7 +240,7 @@ class PlaylistView(QListView):
             self.model().remove(index.row())
 
     def move_items(self, indexes: [QModelIndex], dest : QModelIndex):
-        self.model().move(indexes[0].row(), indexes[-1].row(), dest.row())
+        self.model().move(indexes, dest.row())
 
     def convert_to_bytearray(self, indexes : [QModelIndex]) -> QByteArray:
         """modelの項目をbyte型に変換する。
@@ -319,6 +319,12 @@ class PlaylistView(QListView):
         top_left = QPoint(0, item_rect.height()*row)
         size = QSize(item_rect.width(), 3)
         return QRect(top_left, size)
+
+    def is_all_selected(self, indexes : [QModelIndex]):
+        for i in range(self.model().rowCount()):
+            if indexes[i].row() != i:
+                return False
+        return True
 
 
 if __name__ == '__main__':

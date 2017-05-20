@@ -95,17 +95,33 @@ class PlaylistModel(QAbstractListModel):
         self.endRemoveRows()
         return True
 
-    def move(self, begin, end, destination=-1) -> bool:
+    def move(self, indexes : [QModelIndex], destination=-1) -> bool:
+        #TODO: 大きいindexから消去する。
+        max_index = max(indexes)
+        min_index = min(indexes)
+
+        begin = max_index.row()
+        end = min_index.row()
         if destination < 0:
             destination = self.rowCount()
-        if begin <= destination <= end:
+        if end <= destination <= begin+1:
             return False
 
         self.beginMoveRows(QModelIndex(), begin, end, QModelIndex(), destination)
-        move_list = self.url_list[begin:end+1]
-        self.url_list[begin:end+1] = []
-        if destination > end:
-            destination -= len(move_list)
-        self.url_list[destination:destination] = move_list
+
+        move_list = []
+        delete_index = []
+        for index in indexes:
+            move_list.append(self.url_list[index.row()])
+            delete_index.append(index.row())
+        delete_index.sort(reverse=True)
+        for index in delete_index:
+            self.remove(index)
+        if destination > begin:
+            dest = destination - len(move_list)
+        else:
+            dest = destination
+        self.url_list[dest:dest] = move_list
+
         self.endMoveRows()
         return True
