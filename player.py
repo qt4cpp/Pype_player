@@ -143,6 +143,7 @@ class Player(QWidget):
 
     def load_and_play(self):
         """メディアを読み込み、再生する。"""
+        #TODO: NoMedia以外でもメディアをロードしないと次にいけない。
         if self.player.mediaStatus() == QMediaPlayer.NoMedia:
             self.load(self.playList.current())
         self.play()
@@ -158,6 +159,7 @@ class Player(QWidget):
         c = QMediaContent(file_url)
         self.player.setMedia(c)
         self.enableInterface()
+        self.playList.playListView.set_current_index(self.playList.playListView.current_index)
 
     def play(self):
         if self.player.state() == QMediaPlayer.PlayingState:

@@ -16,7 +16,6 @@ class Playlist(QWidget):
         super(Playlist, self).__init__(parent)
 
         self.playListView = PlaylistView()
-        self.set_current_index(0)
 
         layout = QVBoxLayout()
         layout.addWidget(self.playListView)
@@ -36,12 +35,7 @@ class Playlist(QWidget):
         self.debugButton.clicked.connect(self.debug_m_playlist)
 
     def open(self):
-        file_urls, _ = QFileDialog.getOpenFileUrls(
-            self, 'Open File', QDir.homePath(), '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv')
-
-        for url in file_urls:
-            if not url.isEmpty():
-                self.playListView.model().add(url)
+        self.playListView.open()
 
     def url(self, row=0):
         self.playListView.url(row)
@@ -93,7 +87,7 @@ class PlaylistView(QListView):
         self.setDropIndicatorShown(True)
         self.setModel(PlaylistModel())
 
-        self.current_index = 0
+        self.current_index = -1
         self.previousIndex = QModelIndex()
         self.originalBackground = QBrush()
         self.rubberBand: QRubberBand = QRubberBand(QRubberBand.Rectangle, self)
@@ -101,6 +95,14 @@ class PlaylistView(QListView):
 
     def count(self):
         return self.model().rowCount()
+
+    def open(self):
+        file_urls, _ = QFileDialog.getOpenFileUrls(
+            self, 'Open File', QDir.homePath(), '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv')
+
+        for url in file_urls:
+            if not url.isEmpty():
+                self.playListView.model().add(url)
 
     def set_current_index(self, index):
         if 0 <= index <= self.count():
