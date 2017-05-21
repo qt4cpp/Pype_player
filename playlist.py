@@ -76,6 +76,9 @@ class PlaylistView(QListView):
     @property
     def url_delimiter(self):
         return '\n'
+    @property
+    def open_file_filter(self):
+        return '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv'
 
     def __init__(self, parent=None):
         super(PlaylistView, self).__init__(parent)
@@ -98,7 +101,7 @@ class PlaylistView(QListView):
 
     def open(self):
         file_urls, _ = QFileDialog.getOpenFileUrls(
-            self, 'Open File', QDir.homePath(), '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv')
+            self, 'Open File', QDir.homePath(), self.open_file_filter)
 
         for url in file_urls:
             if not url.isEmpty():
