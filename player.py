@@ -145,7 +145,7 @@ class Player(QWidget):
         #     '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv')
 
         if file_url is None:
-            self.disableInterface()
+            self.stop()
             return False
         c = QMediaContent(file_url)
         self.player.setMedia(c)
@@ -198,8 +198,6 @@ class Player(QWidget):
 
     def updateCurrentTime(self, currentInfo):
         if currentInfo:
-            if currentInfo == self.duration:
-                self.next()
             currentTime = QTime((currentInfo/3600)%60, (currentInfo/60)%60,
                                 currentInfo%60, (currentInfo*1000)%1000)
 
@@ -211,9 +209,11 @@ class Player(QWidget):
         self.labelCurrentTime.setText(currentTimeStr)
 
 
-    def next(self):
+    def next(self, autoplay=True):
         url = self.playList.next()
         self.load(url)
+        if autoplay:
+            self.play()
 
 
     def setVolume(self):
@@ -265,8 +265,11 @@ class Player(QWidget):
            self.setStatusInfo('Loaded')
         elif status == QMediaPlayer.BufferingMedia:
             self.setStatusInfo('Buffering')
+        elif status == QMediaPlayer.EndOfMedia:
+            self.next()
         elif status == QMediaPlayer.InvalidMedia:
             self.handleError()
+            self.next()
 
     def clearStatusInfo(self):
         self.statusInfoLabel.setText("")
