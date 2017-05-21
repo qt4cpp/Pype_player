@@ -132,7 +132,7 @@ class Player(QWidget):
         self.seekBar.sliderMoved.connect(self.seek)
         self.seekBar.sliderReleased.connect(self.seekBarClicked)
 
-        self.playList.current_index_changed.connect(self.load_and_play)
+        self.playList.playListView.current_index_changed.connect(self.load_and_play)
 
         self.videoWidget.show()
 

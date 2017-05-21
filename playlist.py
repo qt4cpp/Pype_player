@@ -8,19 +8,14 @@ from playlistmodel import PlaylistModel
 
 class Playlist(QWidget):
 
-    current_index_changed = pyqtSignal()
-
     @property
     def items_count(self):
-        return self.m_playlist.rowCount()
+        return self.playListView.model().rowCount()
 
     def __init__(self, parent=None):
         super(Playlist, self).__init__(parent)
 
         self.playListView = PlaylistView()
-        self.m_playlist: PlaylistModel = PlaylistModel()
-        self.playListView.setModel(self.m_playlist)
-
         self.set_current_index(0)
 
         layout = QVBoxLayout()
@@ -46,44 +41,34 @@ class Playlist(QWidget):
 
         for url in file_urls:
             if not url.isEmpty():
-                self.m_playlist.add(url)
+                self.playListView.model().add(url)
 
     def url(self, row=0):
-        if 0 <= row < self.items_count:
-            index = self.playListView.model().index(row, 0)
-            return self.playListView.model().data(index)
-        else:
-            return None
+        self.playListView.url(row)
 
     def current(self):
-        return self.url(self.currentIndex)
+        return self.playListView.current()
 
     def next(self):
-        self.set_current_index(self.currentIndex + 1)
-        return self.url(self.currentIndex)
+        return self.playListView.next()
 
     def previous(self):
-        self.set_current_index(self.currentIndex - 1)
-        return self.url(self.currentIndex)
+        return self.playListView.previous()
 
     def set_current_index(self, index):
-        if 0 <= index <= self.items_count:
-            self.currentIndex = index
-            self.current_index_changed.emit()
-            new_index = self.playListView.model().index(self.currentIndex, 0)
-            self.playListView.model().set_index_to_emphasize(new_index)
-            return True
-        else:
-            return False
+        isSuccess = self.playListView.set_current_index(index)
+        return isSuccess
 
     def debug_m_playlist(self):
-        print('rowCount: ', self.m_playlist.rowCount())
-        for row in range(self.m_playlist.rowCount()):
-            index = self.m_playlist.index(row, 0, QModelIndex())
-            print('m_playlist:\n', self.m_playlist.data(index, Qt.DisplayRole))
+        print('rowCount: ', self.playListView.model().rowCount())
+        for row in range(self.playListView.model().rowCount()):
+            index = self.playListView.model().index(row, 0, QModelIndex())
+            print('m_playlist:\n', self.playListView.model().data(index, Qt.DisplayRole))
 
 
 class PlaylistView(QListView):
+
+    current_index_changed = pyqtSignal()
 
     @property
     def mime_Index(self):
@@ -98,9 +83,6 @@ class PlaylistView(QListView):
     def url_delimiter(self):
         return '\n'
 
-    def count(self):
-        return self.model().rowCount()
-
     def __init__(self, parent=None):
         super(PlaylistView, self).__init__(parent)
 
@@ -109,11 +91,44 @@ class PlaylistView(QListView):
         self.setAcceptDrops(True)
         self.setDragDropMode(QAbstractItemView.DragDrop)
         self.setDropIndicatorShown(True)
+        self.setModel(PlaylistModel())
 
+        self.current_index = 0
         self.previousIndex = QModelIndex()
         self.originalBackground = QBrush()
         self.rubberBand: QRubberBand = QRubberBand(QRubberBand.Rectangle, self)
         self.isDragging = False
+
+    def count(self):
+        return self.model().rowCount()
+
+    def set_current_index(self, index):
+        if 0 <= index <= self.count():
+            self.current_index = index
+            self.current_index_changed.emit()
+            new_index = self.model().index(self.current_index, 0)
+            self.model().set_index_to_emphasize(new_index)
+            return True
+        else:
+            return False
+
+    def url(self, row):
+        if 0 <= row < self.count():
+            index = self.model().index(row, 0)
+            return self.model().data(index)
+        else:
+            return None
+
+    def current(self):
+        return self.url(self.current_index)
+
+    def next(self):
+        self.set_current_index(self.current_index + 1)
+        return self.url(self.current_index)
+
+    def previous(self):
+        self.set_current_index(self.current_index - 1)
+        return self.url(self.current_index)
 
     def mousePressEvent(self, event):
         """左クリックされたらカーソル下にある要素を選択し、ドラッグを認識するために現在の位置を保存する。
