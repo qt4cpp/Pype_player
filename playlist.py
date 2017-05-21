@@ -41,11 +41,12 @@ class Playlist(QWidget):
         self.debugButton.clicked.connect(self.debug_m_playlist)
 
     def open(self):
-        fileURL, _ = QFileDialog.getOpenFileUrl(
+        file_urls, _ = QFileDialog.getOpenFileUrls(
             self, 'Open File', QDir.homePath(), '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv')
 
-        if not fileURL.isEmpty():
-            self.m_playlist.add(fileURL)
+        for url in file_urls:
+            if not url.isEmpty():
+                self.m_playlist.add(url)
 
     def url(self, row=0):
         if 0 <= row < self.items_count:

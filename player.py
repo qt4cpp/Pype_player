@@ -143,11 +143,9 @@ class Player(QWidget):
 
     def load_and_play(self):
         """メディアを読み込み、再生する。"""
-        if self.player.state() == QMediaPlayer.PausedState:
-            self.play()
-        else:
+        if self.player.mediaStatus() == QMediaPlayer.NoMedia:
             self.load(self.playList.current())
-            self.play()
+        self.play()
 
     def load(self, file_url: QUrl):
         # fileUrl, _ = QFileDialog.getOpenFileUrl(
