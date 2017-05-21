@@ -44,7 +44,7 @@ class Player(QWidget):
         self.playButton = QPushButton()
         self.playButton.setEnabled(False)
         self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
-        self.playButton.clicked.connect(self.play)
+        self.playButton.clicked.connect(self.load_and_play)
 
         self.stopButton = QPushButton()
         self.stopButton.setEnabled(False)
@@ -132,12 +132,22 @@ class Player(QWidget):
         self.seekBar.sliderMoved.connect(self.seek)
         self.seekBar.sliderReleased.connect(self.seekBarClicked)
 
+        self.playList.current_index_changed.connect(self.load_and_play)
+
         self.videoWidget.show()
 
     def open(self):
         self.playList.open()
         if self.playList.playListView.count() > 0:
             self.enableInterface()
+
+    def load_and_play(self):
+        """メディアを読み込み、再生する。"""
+        if self.player.state() == QMediaPlayer.PausedState:
+            self.play()
+        else:
+            self.load(self.playList.current())
+            self.play()
 
     def load(self, file_url: QUrl):
         # fileUrl, _ = QFileDialog.getOpenFileUrl(
@@ -156,9 +166,10 @@ class Player(QWidget):
             self.player.pause()
         elif self.player.mediaStatus() == QMediaPlayer.LoadingMedia\
             or self.player.mediaStatus() == QMediaPlayer.StalledMedia:
-            QTimer.singleShot(800, self.player.play)
+            QTimer.singleShot(500, self.player.play)
+        elif self.player.mediaStatus() == QMediaPlayer.NoMedia:
+            return
         else:
-            self.load(self.playList.current())
             self.player.play()
 
 
@@ -166,6 +177,7 @@ class Player(QWidget):
         if not self.player.state() == QMediaPlayer.StoppedState:
             self.player.stop()
             self.seek(0)
+            self.setStatusInfo('Stopped')
 
 
     def playerStateChanged(self, state):
@@ -209,11 +221,8 @@ class Player(QWidget):
         self.labelCurrentTime.setText(currentTimeStr)
 
 
-    def next(self, autoplay=True):
-        url = self.playList.next()
-        self.load(url)
-        if autoplay:
-            self.play()
+    def next(self):
+        self.playList.next()
 
 
     def setVolume(self):
@@ -266,6 +275,7 @@ class Player(QWidget):
         elif status == QMediaPlayer.BufferingMedia:
             self.setStatusInfo('Buffering')
         elif status == QMediaPlayer.EndOfMedia:
+            self.stop()
             self.next()
         elif status == QMediaPlayer.InvalidMedia:
             self.handleError()
@@ -339,7 +349,7 @@ class PypePlayer(QMainWindow):
         self.setCentralWidget(player)
         self.createMenus(player)
 
-        self.resize(480, 360)
+        self.resize(600, 360)
         self.setWindowTitle('Pype Player')
         self.show()
 

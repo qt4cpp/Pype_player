@@ -1,5 +1,5 @@
 from PyQt5.QtCore import (QUrl, QMimeData, Qt, QDir, QModelIndex, QPoint, QRect, QSize, QByteArray,
-                          QIODevice, QTextStream)
+                          QIODevice, QTextStream, pyqtSignal)
 from PyQt5.QtGui import QDrag, QPixmap, QRegion, QBrush, QDragLeaveEvent
 from PyQt5.QtWidgets import (QApplication, QFileDialog, QRubberBand,
                              QVBoxLayout, QWidget, QAbstractItemView, QPushButton, QListView)
@@ -7,6 +7,8 @@ from PyQt5.QtWidgets import (QApplication, QFileDialog, QRubberBand,
 from playlistmodel import PlaylistModel
 
 class Playlist(QWidget):
+
+    current_index_changed = pyqtSignal()
 
     @property
     def items_count(self):
@@ -56,12 +58,20 @@ class Playlist(QWidget):
         return self.url(self.currentIndex)
 
     def next(self):
-        self.currentIndex += 1
+        self.set_current_index(self.currentIndex + 1)
         return self.url(self.currentIndex)
 
     def previous(self):
-        self.currentIndex -= 1
+        self.set_current_index(self.currentIndex - 1)
         return self.url(self.currentIndex)
+
+    def set_current_index(self, index):
+        if 0 <= index <= self.items_count:
+            self.currentIndex = index
+            self.current_index_changed.emit()
+            return True
+        else:
+            return False
 
     def debug_m_playlist(self):
         print('rowCount: ', self.m_playlist.rowCount())
