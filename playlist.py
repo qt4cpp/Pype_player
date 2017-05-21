@@ -50,7 +50,7 @@ class Playlist(QWidget):
         return self.playListView.previous()
 
     def set_current_index(self, index):
-        isSuccess = self.playListView.set_current_index(index)
+        isSuccess = self.playListView.set_current_index_from_row(index)
         return isSuccess
 
     def debug_m_playlist(self):
@@ -107,14 +107,19 @@ class PlaylistView(QListView):
             if not url.isEmpty():
                 self.model().add(url)
 
-    def set_current_index(self, row):
+    def set_current_index_from_row(self, row):
         if 0 <= row <= self.count():
             new_index = self.create_index(row)
-            if new_index.isValid():
-                self.current_index = new_index
-                self.current_index_changed.emit()
-                self.model().set_index_to_emphasize(new_index)
-                return True
+            return self.set_current_index(new_index)
+        else:
+            return False
+
+    def set_current_index(self, new_index : QModelIndex):
+        if new_index.isValid():
+            self.current_index = new_index
+            self.model().set_index_to_emphasize(new_index)
+            self.current_index_changed.emit()
+            return True
         else:
             return False
 
@@ -131,15 +136,15 @@ class PlaylistView(QListView):
 
     def current(self):
         if not self.current_index.isValid():
-            self.set_current_index(0)
+            self.set_current_index_from_row(0)
         return self.url(self.current_index)
 
     def next(self):
-        self.set_current_index(self.current_index.row() + 1)
+        self.set_current_index_from_row(self.current_index.row() + 1)
         return self.url(self.current_index)
 
     def previous(self):
-        self.set_current_index(self.current_index.row() - 1)
+        self.set_current_index_from_row(self.current_index.row() - 1)
         return self.url(self.current_index)
 
     def create_index(self, row) -> QModelIndex:
@@ -151,7 +156,7 @@ class PlaylistView(QListView):
         return self.model().index(row, 0)
 
     def update(self):
-        super(PlaylistView, self).update()
+        super(PlaylistView, self).repaint()
 
     def mousePressEvent(self, event):
         """左クリックされたらカーソル下にある要素を選択し、ドラッグを認識するために現在の位置を保存する。
@@ -291,6 +296,11 @@ class PlaylistView(QListView):
                 event.acceptProposedAction()
         else:
             event.ignore()
+
+    def mouseDoubleClickEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            new_index = self.indexAt(event.pos())
+            self.set_current_index(new_index)
 
     def add_items(self, items : [QUrl], start: int = -1):
         """渡された要素をmodelに追加する。
