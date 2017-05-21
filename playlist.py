@@ -21,7 +21,7 @@ class Playlist(QWidget):
         self.m_playlist: PlaylistModel = PlaylistModel()
         self.playListView.setModel(self.m_playlist)
 
-        self.currentIndex = 0
+        self.set_current_index(0)
 
         layout = QVBoxLayout()
         layout.addWidget(self.playListView)
@@ -70,6 +70,8 @@ class Playlist(QWidget):
         if 0 <= index <= self.items_count:
             self.currentIndex = index
             self.current_index_changed.emit()
+            new_index = self.playListView.model().index(self.currentIndex, 0)
+            self.playListView.model().set_index_to_emphasize(new_index)
             return True
         else:
             return False

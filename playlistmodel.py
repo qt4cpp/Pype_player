@@ -1,6 +1,8 @@
 from operator import index
 
 from PyQt5.QtCore import QAbstractListModel, QUrl, QModelIndex, QVariant, Qt
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QWidget, QStyle
 
 
 class PlaylistModel(QAbstractListModel):
@@ -14,6 +16,7 @@ class PlaylistModel(QAbstractListModel):
 
         self.url_list = []
         self.headerTitles = ['Title', 'Duration']
+        self.index_to_emphasize = QModelIndex()
 
     def rowCount(self, parent: QModelIndex = QModelIndex(), **kwargs) -> int:
         """Return a number of length of urls
@@ -39,6 +42,10 @@ class PlaylistModel(QAbstractListModel):
 
         if role == Qt.DisplayRole:
             return self.url_list[index.row()].fileName()
+        elif role == Qt.FontRole and index.row() == self.index_to_emphasize.row():
+            bold_font = QFont()
+            bold_font.setBold(True)
+            return bold_font
         elif role == Qt.ToolTipRole or role is None:
             return self.url_list[index.row()]
         else:
@@ -125,3 +132,7 @@ class PlaylistModel(QAbstractListModel):
 
         self.endMoveRows()
         return True
+
+    def set_index_to_emphasize(self, index : QModelIndex):
+        if index.isValid():
+            self.index_to_emphasize = index
