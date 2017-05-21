@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QStyle
 
 class PlaylistModel(QAbstractListModel):
 
-    rowCount_changed = pyqtSignal()
+    rowCount_changed = pyqtSignal(int)
 
     def __init__(self, parent: object = None):
         """
@@ -29,7 +29,7 @@ class PlaylistModel(QAbstractListModel):
         """
         return len(self.url_list)
 
-    def data(self, index: QModelIndex, role: int = None) -> QVariant:
+    def data(self, index: QModelIndex, role: int = None):
         """引数のindexの値をroleにあった形で返す。
 
         :param index: QModeIndex
@@ -37,7 +37,7 @@ class PlaylistModel(QAbstractListModel):
         :return: QVariant
         """
         if not index.isValid():
-            return QVariant()
+            return None
 
         if index.row() >= self.rowCount():
             return QVariant()
@@ -91,6 +91,7 @@ class PlaylistModel(QAbstractListModel):
         self.url_list.insert(position, url)
 
         self.endInsertRows()
+        self.rowCount_changed.emit(self.rowCount())
         return True
 
     def remove(self, position: int = -1) -> bool:
@@ -102,6 +103,7 @@ class PlaylistModel(QAbstractListModel):
         self.beginRemoveRows(QModelIndex(), position, 1)
         del(self.url_list[position])
         self.endRemoveRows()
+        self.rowCount_changed.emit(self.rowCount())
         return True
 
     def move(self, indexes : [QModelIndex], destination=-1) -> bool:

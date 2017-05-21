@@ -2,7 +2,8 @@ from PyQt5.QtCore import (QUrl, QMimeData, Qt, QDir, QModelIndex, QPoint, QRect,
                           QIODevice, QTextStream, pyqtSignal)
 from PyQt5.QtGui import QDrag, QPixmap, QRegion, QBrush, QDragLeaveEvent
 from PyQt5.QtWidgets import (QApplication, QFileDialog, QRubberBand,
-                             QVBoxLayout, QWidget, QAbstractItemView, QPushButton, QListView)
+                             QVBoxLayout, QWidget, QAbstractItemView, QPushButton, QListView,
+                             QLabel)
 
 from playlistmodel import PlaylistModel
 
@@ -16,10 +17,16 @@ class Playlist(QWidget):
         super(Playlist, self).__init__(parent)
 
         self.playListView = PlaylistView()
+        self.count_label = QLabel()
 
         layout = QVBoxLayout()
         layout.addWidget(self.playListView)
+        layout.addWidget(self.count_label, alignment=Qt.AlignRight)
         self.setLayout(layout)
+
+        self.count_label_update()
+        self.playListView.current_index_changed.connect(self.count_label_update)
+        self.playListView.model().rowCount_changed.connect(self.count_label_update)
 
         self.show()
 
@@ -53,6 +60,10 @@ class Playlist(QWidget):
         isSuccess = self.playListView.set_current_index_from_row(index)
         return isSuccess
 
+    def count_label_update(self):
+        self.count_label.setText('{0}/{1}'.format(
+            self.playListView.current_row+1, self.playListView.count()))
+
     def debug_m_playlist(self):
         print('rowCount: ', self.playListView.model().rowCount())
         for row in range(self.playListView.model().rowCount()):
@@ -79,6 +90,9 @@ class PlaylistView(QListView):
     @property
     def open_file_filter(self):
         return '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv'
+    @property
+    def current_row(self):
+        return self.current_index.row()
 
     def __init__(self, parent=None):
         super(PlaylistView, self).__init__(parent)
