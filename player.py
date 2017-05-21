@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtCore import (QUrl, Qt, QTime, QTimer)
+from PyQt5.QtCore import (QUrl, Qt, QTime, QTimer, pyqtSignal)
 from PyQt5.QtGui import (QPalette, QIcon)
 from PyQt5.QtWidgets import (QMainWindow, QAction, QFileDialog, QApplication, QWidget, QLabel,
                              QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton, QStyle,
@@ -30,6 +30,8 @@ class VideoWidget(QVideoWidget):
 
 
 class Player(QWidget):
+
+    media_loaded = pyqtSignal()
 
     def __init__(self, parent=None):
         super(Player, self).__init__(parent)
@@ -133,6 +135,7 @@ class Player(QWidget):
         self.seekBar.sliderReleased.connect(self.seekBarClicked)
 
         self.playList.playListView.current_index_changed.connect(self.load_and_play)
+        self.media_loaded.connect(self.playList.playListView.update)
 
         self.videoWidget.show()
 
@@ -144,8 +147,8 @@ class Player(QWidget):
     def load_and_play(self):
         """メディアを読み込み、再生する。"""
         #TODO: NoMedia以外でもメディアをロードしないと次にいけない。
-        if self.player.mediaStatus() == QMediaPlayer.NoMedia:
-            self.load(self.playList.current())
+        # if self.player.mediaStatus() == QMediaPlayer.NoMedia:
+        self.load(self.playList.current())
         self.play()
 
     def load(self, file_url: QUrl):
@@ -158,8 +161,8 @@ class Player(QWidget):
             return False
         c = QMediaContent(file_url)
         self.player.setMedia(c)
+        self.media_loaded.emit()
         self.enableInterface()
-        self.playList.playListView.set_current_index(self.playList.playListView.current_index)
 
     def play(self):
         if self.player.state() == QMediaPlayer.PlayingState:
@@ -178,7 +181,6 @@ class Player(QWidget):
             self.player.stop()
             self.seek(0)
             self.setStatusInfo('Stopped')
-
 
     def playerStateChanged(self, state):
         if self.player.state() == QMediaPlayer.PlayingState:

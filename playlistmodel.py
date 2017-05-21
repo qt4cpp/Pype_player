@@ -1,11 +1,13 @@
 from operator import index
 
-from PyQt5.QtCore import QAbstractListModel, QUrl, QModelIndex, QVariant, Qt
+from PyQt5.QtCore import QAbstractListModel, QUrl, QModelIndex, QVariant, Qt, pyqtSignal
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QStyle
 
 
 class PlaylistModel(QAbstractListModel):
+
+    rowCount_changed = pyqtSignal()
 
     def __init__(self, parent: object = None):
         """

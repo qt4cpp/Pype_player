@@ -90,7 +90,7 @@ class PlaylistView(QListView):
         self.setDropIndicatorShown(True)
         self.setModel(PlaylistModel())
 
-        self.current_index = -1
+        self.current_index = self.create_index(0)
         self.previousIndex = QModelIndex()
         self.originalBackground = QBrush()
         self.rubberBand: QRubberBand = QRubberBand(QRubberBand.Rectangle, self)
@@ -105,35 +105,53 @@ class PlaylistView(QListView):
 
         for url in file_urls:
             if not url.isEmpty():
-                self.playListView.model().add(url)
+                self.model().add(url)
 
-    def set_current_index(self, index):
-        if 0 <= index <= self.count():
-            self.current_index = index
-            self.current_index_changed.emit()
-            new_index = self.model().index(self.current_index, 0)
-            self.model().set_index_to_emphasize(new_index)
-            return True
+    def set_current_index(self, row):
+        if 0 <= row <= self.count():
+            new_index = self.create_index(row)
+            if new_index.isValid():
+                self.current_index = new_index
+                self.current_index_changed.emit()
+                self.model().set_index_to_emphasize(new_index)
+                return True
         else:
             return False
 
-    def url(self, row):
-        if 0 <= row < self.count():
-            index = self.model().index(row, 0)
+    def url(self, index):
+        if isinstance(index, int):
+            row = index
+            if 0 <= row < self.count():
+                index = self.model().index(row, 0)
+                return self.model().data(index)
+        elif isinstance(index, QModelIndex):
             return self.model().data(index)
         else:
             return None
 
     def current(self):
+        if not self.current_index.isValid():
+            self.set_current_index(0)
         return self.url(self.current_index)
 
     def next(self):
-        self.set_current_index(self.current_index + 1)
+        self.set_current_index(self.current_index.row() + 1)
         return self.url(self.current_index)
 
     def previous(self):
-        self.set_current_index(self.current_index - 1)
+        self.set_current_index(self.current_index.row() - 1)
         return self.url(self.current_index)
+
+    def create_index(self, row) -> QModelIndex:
+        """モデルからindexを生成するための便利関数
+
+        :param row: 
+        :return: QModelIndex
+        """
+        return self.model().index(row, 0)
+
+    def update(self):
+        super(PlaylistView, self).update()
 
     def mousePressEvent(self, event):
         """左クリックされたらカーソル下にある要素を選択し、ドラッグを認識するために現在の位置を保存する。
