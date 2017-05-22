@@ -167,7 +167,7 @@ class Player(QWidget):
         if self.player.state() == QMediaPlayer.PlayingState:
             self.player.pause()
         elif self.player.mediaStatus() == QMediaPlayer.NoMedia:
-            return
+            self.load_and_play()
         elif self.player.mediaStatus() == QMediaPlayer.LoadingMedia\
             or self.player.mediaStatus() == QMediaPlayer.StalledMedia:
             QTimer.singleShot(500, self.player.play)

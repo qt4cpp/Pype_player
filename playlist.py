@@ -103,6 +103,7 @@ class PlaylistView(QListView):
         self.setDragDropMode(QAbstractItemView.DragDrop)
         self.setDropIndicatorShown(True)
         self.setModel(PlaylistModel())
+        self.setMaximumWidth(200)
 
         self.current_index = self.create_index(0)
         self.previousIndex = QModelIndex()
