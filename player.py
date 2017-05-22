@@ -152,10 +152,6 @@ class Player(QWidget):
         self.play()
 
     def load(self, file_url: QUrl):
-        # fileUrl, _ = QFileDialog.getOpenFileUrl(
-        #     self, 'Open file', QDir.homePath(),
-        #     '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv')
-
         if file_url is None:
             self.stop()
             return False
@@ -167,11 +163,11 @@ class Player(QWidget):
     def play(self):
         if self.player.state() == QMediaPlayer.PlayingState:
             self.player.pause()
+        elif self.player.mediaStatus() == QMediaPlayer.NoMedia:
+            return
         elif self.player.mediaStatus() == QMediaPlayer.LoadingMedia\
             or self.player.mediaStatus() == QMediaPlayer.StalledMedia:
             QTimer.singleShot(500, self.player.play)
-        elif self.player.mediaStatus() == QMediaPlayer.NoMedia:
-            return
         else:
             self.player.play()
 

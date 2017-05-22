@@ -10,8 +10,8 @@ from playlistmodel import PlaylistModel
 class Playlist(QWidget):
 
     @property
-    def items_count(self):
-        return self.playListView.model().rowCount()
+    def count(self):
+        return self.playListView.count()
 
     def __init__(self, parent=None):
         super(Playlist, self).__init__(parent)
