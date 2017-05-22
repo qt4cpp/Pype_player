@@ -153,12 +153,12 @@ class PlaylistView(QListView):
             self.set_current_index_from_row(0)
         return self.url(self.current_index)
 
-    def next(self):
-        self.set_current_index_from_row(self.current_index.row() + 1)
+    def next(self, step=1):
+        self.set_current_index_from_row(self.current_index.row() + step)
         return self.url(self.current_index)
 
-    def previous(self):
-        self.set_current_index_from_row(self.current_index.row() - 1)
+    def previous(self, step=1):
+        self.set_current_index_from_row(self.current_index.row() - step)
         return self.url(self.current_index)
 
     def create_index(self, row) -> QModelIndex:
