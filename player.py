@@ -46,7 +46,7 @@ class Player(QWidget):
         self.playButton = QPushButton()
         self.playButton.setEnabled(False)
         self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
-        self.playButton.clicked.connect(self.load_and_play)
+        self.playButton.clicked.connect(self.play)
 
         self.stopButton = QPushButton()
         self.stopButton.setEnabled(False)
@@ -147,9 +147,12 @@ class Player(QWidget):
     def load_and_play(self):
         """メディアを読み込み、再生する。"""
         #TODO: NoMedia以外でもメディアをロードしないと次にいけない。
-        # if self.player.mediaStatus() == QMediaPlayer.NoMedia:
-        self.load(self.playList.current())
-        self.play()
+        if self.player.mediaStatus() == QMediaPlayer.NoMedia:
+            self.load(self.playList.current())
+            self.play()
+        else:
+            self.load(self.playList.current())
+            self.player.play()
 
     def load(self, file_url: QUrl):
         if file_url is None:
@@ -273,6 +276,7 @@ class Player(QWidget):
         elif status == QMediaPlayer.BufferingMedia:
             self.setStatusInfo('Buffering')
         elif status == QMediaPlayer.EndOfMedia:
+            self.player.parent()
             self.stop()
             self.next()
         elif status == QMediaPlayer.InvalidMedia:
