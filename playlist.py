@@ -171,7 +171,7 @@ class PlaylistView(QListView):
         return self.model().index(row, 0)
 
     def update(self):
-        super(PlaylistView, self).repaint()
+        super(PlaylistView, self).update()
 
     def mousePressEvent(self, event):
         """左クリックされたらカーソル下にある要素を選択し、ドラッグを認識するために現在の位置を保存する。

@@ -148,11 +148,11 @@ class Player(QWidget):
         """メディアを読み込み、再生する。"""
         #TODO: NoMedia以外でもメディアをロードしないと次にいけない。
         if self.player.mediaStatus() == QMediaPlayer.NoMedia:
-            self.load(self.playList.current())
-            self.play()
+            play_func = self.play
         else:
-            self.load(self.playList.current())
-            self.player.play()
+            play_func = self.player.play
+        self.load(self.playList.current())
+        play_func()
 
     def load(self, file_url: QUrl):
         if file_url is None:
@@ -276,8 +276,6 @@ class Player(QWidget):
         elif status == QMediaPlayer.BufferingMedia:
             self.setStatusInfo('Buffering')
         elif status == QMediaPlayer.EndOfMedia:
-            self.player.parent()
-            self.stop()
             self.next()
         elif status == QMediaPlayer.InvalidMedia:
             self.handleError()
