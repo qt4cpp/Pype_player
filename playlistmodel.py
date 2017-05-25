@@ -1,8 +1,5 @@
-from operator import index
-
 from PyQt5.QtCore import QAbstractListModel, QUrl, QModelIndex, QVariant, Qt, pyqtSignal
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget, QStyle
 
 
 class PlaylistModel(QAbstractListModel):
@@ -69,7 +66,7 @@ class PlaylistModel(QAbstractListModel):
         else:
             return '{0}.'.format(section+1)
 
-    def flags(self, index : QModelIndex):
+    def flags(self, index: QModelIndex):
         """
 
         :type index: QModelIndex
@@ -106,17 +103,24 @@ class PlaylistModel(QAbstractListModel):
         self.rowCount_changed.emit(self.rowCount())
         return True
 
-    def move(self, indexes : [QModelIndex], destination=-1) -> bool:
+    def move(self, indexes: [QModelIndex], dest=-1) -> bool:
+        """要素を指定された場所へ移動させる。
+        
+        :param indexes: 移動させる要素を指すインデックスのリスト
+        :param dest: 移動させる先
+        :return: 成功すればTrue, それ以外はFalse
+        要素を消してから移動させる。消すときインデックスが変わってしまうので、大きいインデックスから消していく。
+        """
         max_index = max(indexes)
         min_index = min(indexes)
-        if destination < 0:
-            destination = self.rowCount()
-        if min_index.row() <= destination <= max_index.row()+1:
+        if dest < 0:
+            dest = self.rowCount()
+        elif min_index.row() <= dest <= max_index.row()+1:
             return False
 
         begin = max_index.row()
         end = min_index.row()
-        self.beginMoveRows(QModelIndex(), begin, end, QModelIndex(), destination)
+        self.beginMoveRows(QModelIndex(), begin, end, QModelIndex(), dest)
         move_list = []
         delete_index = []
         for index in indexes:
@@ -125,14 +129,12 @@ class PlaylistModel(QAbstractListModel):
         for index in delete_index:
             self.remove(index)
 
-        if destination > begin:
-            dest = destination - len(move_list)
-        else:
-            dest = destination
+        dest = dest - len(move_list) if dest > begin else dest
         self.url_list[dest:dest] = move_list
         self.endMoveRows()
+        self.rowCount_changed.emit(self.rowCount())
         return True
 
-    def set_index_to_emphasize(self, index : QModelIndex):
+    def set_index_to_emphasize(self, index: QModelIndex):
         if index.isValid():
             self.index_to_emphasize = index
