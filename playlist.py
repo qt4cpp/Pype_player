@@ -44,8 +44,8 @@ class Playlist(QWidget):
     def open(self):
         self.playListView.open()
 
-    def url(self, row=0):
-        self.playListView.url(row)
+    def url(self, index=0):
+        self.playListView.url(index)
 
     def current(self):
         return self.playListView.current()
@@ -162,6 +162,14 @@ class PlaylistView(QListView):
         self.set_current_index_from_row(self.current_index.row() - step)
         return self.url(self.current_index)
 
+    def selected(self):
+        selected_indexes = self.selectedIndexes()
+        if len(selected_indexes) > 0:
+            self.set_current_index(selected_indexes[0])
+            return self.current()
+        else:
+            return None
+
     def create_index(self, row) -> QModelIndex:
         """モデルからindexを生成するための便利関数
 
@@ -169,9 +177,6 @@ class PlaylistView(QListView):
         :return: QModelIndex
         """
         return self.model().index(row, 0)
-
-    def update(self):
-        super(PlaylistView, self).update()
 
     def mousePressEvent(self, event):
         """左クリックされたらカーソル下にある要素を選択し、ドラッグを認識するために現在の位置を保存する。

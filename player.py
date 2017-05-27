@@ -4,7 +4,7 @@ from PyQt5.QtGui import (QPalette, QIcon)
 from PyQt5.QtWidgets import (QMainWindow, QAction, QFileDialog, QApplication, QWidget, QLabel,
                              QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton, QStyle,
                              QSlider, QListView)
-from PyQt5.QtMultimedia import (QMediaPlayer, QMediaContent, QMediaPlaylist)
+from PyQt5.QtMultimedia import (QMediaPlayer, QMediaContent, QMediaPlaylist, QMediaPlayer)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from enum import IntEnum
 from utility import createAction
@@ -166,7 +166,10 @@ class Player(QWidget):
     def play(self):
         if self.player.state() == QMediaPlayer.PlayingState:
             self.player.pause()
-        elif self.player.mediaStatus() == QMediaPlayer.NoMedia:
+        elif self.player.state() == QMediaPlayer.StoppedState:
+            if self.playList.playListView.selected():
+                self.load_and_play()
+        if self.player.mediaStatus() == QMediaPlayer.NoMedia:
             self.load_and_play()
         elif self.player.mediaStatus() == QMediaPlayer.LoadingMedia\
             or self.player.mediaStatus() == QMediaPlayer.StalledMedia:
