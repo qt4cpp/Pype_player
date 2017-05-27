@@ -40,7 +40,8 @@ class Player(QWidget):
         self.volume = 50
 
         self.player = QMediaPlayer()
-        self.playList = Playlist()
+        self.tabbedPlayList = Playlist()
+        self.playlist = self.tabbedPlayList.current()
         self.videoWidget = VideoWidget()
 
         self.playButton = QPushButton()
@@ -109,7 +110,7 @@ class Player(QWidget):
         displayLayout = QHBoxLayout()
         displayLayout.setSpacing(5)
         displayLayout.addWidget(self.videoWidget, QSizePolicy.ExpandFlag)
-        displayLayout.addWidget(self.playList)
+        displayLayout.addWidget(self.tabbedPlayList)
 
         layout = QVBoxLayout()
         layout.addLayout(displayLayout)
