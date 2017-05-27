@@ -68,39 +68,11 @@ class PlaylistView(QListView):
                 self.model().add_playlist(url)
 
 
-    def set_current_index_from_row(self, row):
-        if 0 <= row <= self.count():
-            new_index = self.create_index(row)
-            return self.set_current_index(new_index)
-        else:
-            return False
-
-
-    def set_current_index(self, new_index: QModelIndex):
-        if new_index.isValid():
-            self.current_index = new_index
-            self.model().set_index_to_emphasize(new_index)
-            self.current_index_changed.emit()
-            return True
-        else:
-            return False
-
-
-    def url(self, index):
-        if isinstance(index, int):
-            row = index
-            if 0 <= row < self.count():
-                index = self.model().index(row, 0)
-                return self.model().data(index)
-        elif isinstance(index, QModelIndex):
-            return self.model().data(index)
-        else:
-            return None
-
-
     def current(self):
-        if not self.current_index.isValid():
-            self.set_current_index_from_row(0)
+        selected_url = self.selected()
+        if selected_url is None:
+            if not self.current_index.isValid():
+                self.set_current_index_from_row(0)
         return self.url(self.current_index)
 
 
@@ -121,6 +93,36 @@ class PlaylistView(QListView):
             return self.current()
         else:
             return None
+
+
+    def url(self, index):
+        if isinstance(index, int):
+            row = index
+            if 0 <= row < self.count():
+                index = self.model().index(row, 0)
+                return self.model().data(index)
+        elif isinstance(index, QModelIndex):
+            return self.model().data(index)
+        else:
+            return None
+
+
+    def set_current_index_from_row(self, row):
+        if 0 <= row <= self.count():
+            new_index = self.create_index(row)
+            return self.set_current_index(new_index)
+        else:
+            return False
+
+
+    def set_current_index(self, new_index: QModelIndex):
+        if new_index.isValid():
+            self.current_index = new_index
+            self.model().set_index_to_emphasize(new_index)
+            self.current_index_changed.emit()
+            return True
+        else:
+            return False
 
 
     def create_index(self, row) -> QModelIndex:
