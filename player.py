@@ -134,8 +134,8 @@ class Player(QWidget):
         self.seekBar.sliderMoved.connect(self.seek)
         self.seekBar.sliderReleased.connect(self.seekBarClicked)
 
-        self.playList.playListView.current_index_changed.connect(self.load_and_play)
-        self.media_loaded.connect(self.playList.playListView.update)
+        # self.playList.playListView.current_index_changed.connect(self.load_and_play)
+        # self.media_loaded.connect(self.playList.playListView.update)
 
         self.videoWidget.show()
 
