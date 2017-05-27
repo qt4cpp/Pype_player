@@ -3,7 +3,7 @@ from PyQt5.QtCore import (QUrl, QMimeData, Qt, QDir, QModelIndex, QPoint, QRect,
 from PyQt5.QtGui import QDrag, QPixmap, QRegion, QBrush, QDragLeaveEvent
 from PyQt5.QtWidgets import (QApplication, QFileDialog, QRubberBand,
                              QVBoxLayout, QWidget, QAbstractItemView, QPushButton, QListView,
-                             QLabel)
+                             QLabel, QStyle)
 
 from playlistmodel import PlaylistModel
 
@@ -219,15 +219,16 @@ class PlaylistView(QListView):
             mimeData.setText(str(len(indexes)))
             mimeData.setData(self.mime_URLS, urls)
 
-            dragRect = self.rect_for_drag_items(indexes)
-            pixmap = QPixmap(dragRect.width(), dragRect.height())
-            renderSource = QRegion(dragRect)
-            self.render(pixmap, sourceRegion=renderSource,)
+            # dragRect = self.rect_for_drag_items(indexes)
+            file_icon = self.style().standardIcon(QStyle.SP_FileIcon)
+            pixmap = file_icon.pixmap(32, 32)
+            # renderSource = QRegion(dragRect)
+            # self.render(pixmap, sourceRegion=renderSource,)
 
             drag = QDrag(self)
-            drag.setHotSpot(event.pos())
             drag.setMimeData(mimeData)
             drag.setPixmap(pixmap)
+            drag.setHotSpot(event.pos())
 
             dropAction = drag.exec(Qt.CopyAction | Qt.MoveAction, Qt.CopyAction)
             if dropAction == Qt.MoveAction:
