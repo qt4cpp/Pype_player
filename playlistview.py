@@ -65,7 +65,7 @@ class PlaylistView(QListView):
 
         for url in file_urls:
             if not url.isEmpty():
-                self.model().add(url)
+                self.model().add_playlist(url)
 
 
     def set_current_index_from_row(self, row):
@@ -295,10 +295,10 @@ class PlaylistView(QListView):
         """
         if start == -1:
             for item in items:
-                self.model().add(item)
+                self.model().add_playlist(item)
         else:
             for item, i in items, range(start, len(items)):
-                self.model().add(item, i)
+                self.model().add_playlist(item, i)
 
 
     def delete_items(self, indexes: [QModelIndex]):

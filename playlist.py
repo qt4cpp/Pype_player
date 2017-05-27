@@ -12,15 +12,24 @@ class Playlist(QTabWidget):
         self.addTab(PlaylistView(), 'temp')
         self.setCurrentIndex(0)
 
+        self.using_playlist = self.widget(0)
+
         self.show()
 
     def url(self, index=0):
         self.playListView.url(index)
 
     def current(self):
-        return self.widget(self.currentIndex())
+        self.using_playlist = self.widget(self.currentIndex())
+        return self.using_playlist.current()
 
-    def add(self):
+    def next(self):
+        return self.using_playlist.next()
+
+    def previous(self):
+        return self.using_playlist.previous()
+
+    def add_playlist(self):
         title, ok = QInputDialog.getText(self, 'New Playlist name', 'New Playlist name')
         if ok and len(str(title)) > 0:
             self.addTab(PlaylistView(), str(title))
