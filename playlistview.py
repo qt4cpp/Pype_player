@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QModelIndex, QRect, QSize, QPoint, pyqtSignal, QDir, Qt, QMimeData, QUrl, \
-    QByteArray, QTextStream, QIODevice
+    QByteArray, QTextStream, QIODevice, pyqtSlot
 from PyQt5.QtGui import QDrag
 from PyQt5.QtWidgets import QListView, QRubberBand, QFileDialog, QAbstractItemView, QApplication, \
     QStyle
@@ -10,6 +10,8 @@ from playlistmodel import PlaylistModel
 class PlaylistView(QListView):
 
     current_index_changed = pyqtSignal()
+    next = pyqtSlot(int)
+    previous = pyqtSlot(int)
 
     @property
     def mime_Index(self):
@@ -61,9 +63,10 @@ class PlaylistView(QListView):
 
     def current(self):
         selected_url = self.selected()
-        if selected_url is None:
-            if not self.current_index.isValid():
-                self.set_current_index_from_row(0)
+        if selected_url is not None:
+            self.set_current_index(selected_url)
+        elif self.current_index.isValid():
+            self.set_current_index_from_row(0)
         return self.url(self.current_index)
 
 
@@ -82,8 +85,7 @@ class PlaylistView(QListView):
     def selected(self):
         selected_indexes = self.selectedIndexes()
         if len(selected_indexes) > 0:
-            self.set_current_index(selected_indexes[0])
-            return self.current()
+            return selected_indexes[0]
         else:
             return None
 
