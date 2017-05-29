@@ -65,7 +65,7 @@ class PlaylistView(QListView):
 
         for url in file_urls:
             if not url.isEmpty():
-                self.model().add_playlist(url)
+                self.model().add(url)
 
 
     def current(self):
@@ -77,8 +77,10 @@ class PlaylistView(QListView):
 
 
     def next(self, step=1):
-        self.set_current_index_from_row(self.current_index.row() + step)
-        return self.url(self.current_index)
+        if self.set_current_index_from_row(self.current_index.row() + step):
+            return self.url(self.current_index)
+        else:
+            None
 
 
     def previous(self, step=1):
@@ -100,8 +102,8 @@ class PlaylistView(QListView):
             row = index
             if 0 <= row < self.count():
                 index = self.model().index(row, 0)
-                return self.model().data(index)
-        elif isinstance(index, QModelIndex):
+
+        if isinstance(index, QModelIndex):
             return self.model().data(index)
         else:
             return None
@@ -295,12 +297,14 @@ class PlaylistView(QListView):
         :param start: 追加するindexを表す。初期値は-1
         start に −1を渡すと一番後ろに追加する。
         """
-        if start == -1:
+        if isinstance(items, QUrl):
+            self.model(items, i)
+        elif start == -1:
             for item in items:
-                self.model().add_playlist(item)
+                self.model().add(item)
         else:
             for item, i in items, range(start, len(items)):
-                self.model().add_playlist(item, i)
+                self.model().add(item, i)
 
 
     def delete_items(self, indexes: [QModelIndex]):

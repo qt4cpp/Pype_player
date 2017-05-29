@@ -42,7 +42,7 @@ if __name__ == '__main__':
         if file == '.' or file == '..':
             continue
         file_url.append(QUrl('{0}/{1}'.format(current_dir.absolutePath(), file)))
-    playlist.playlist.current().add_items(file_url)
+    playlist.playlist.currentWidget().add_items(file_url)
 
     sys.exit(app.exec_())
 

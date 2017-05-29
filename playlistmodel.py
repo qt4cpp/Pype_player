@@ -37,7 +37,7 @@ class PlaylistModel(QAbstractListModel):
             return None
 
         if index.row() >= self.rowCount():
-            return QVariant()
+            return None
 
         if role == Qt.DisplayRole:
             return self.url_list[index.row()].fileName()

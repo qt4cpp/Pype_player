@@ -1,14 +1,17 @@
 import sys
-from PyQt5.QtCore import (QUrl, Qt, QTime, QTimer, pyqtSignal)
-from PyQt5.QtGui import (QPalette, QIcon)
-from PyQt5.QtWidgets import (QMainWindow, QAction, QFileDialog, QApplication, QWidget, QLabel,
-                             QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton, QStyle,
-                             QSlider, QListView)
-from PyQt5.QtMultimedia import (QMediaPlayer, QMediaContent, QMediaPlaylist, QMediaPlayer)
-from PyQt5.QtMultimediaWidgets import QVideoWidget
 from enum import IntEnum
-from utility import createAction
+
+from PyQt5.QtCore import (QUrl, Qt, QTime, QTimer, pyqtSignal)
+from PyQt5.QtGui import (QPalette)
+from PyQt5.QtMultimedia import (QMediaContent, QMediaPlayer)
+from PyQt5.QtMultimediaWidgets import QVideoWidget
+from PyQt5.QtWidgets import (QMainWindow, QApplication, QWidget, QLabel,
+                             QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton, QStyle,
+                             QSlider)
+
 from playlist import Playlist
+from utility import createAction
+
 
 class SeekStep(IntEnum):
     SHORT = 5
@@ -40,9 +43,9 @@ class Player(QWidget):
         self.volume = 50
 
         self.player = QMediaPlayer()
-        self.tabbedPlayList = Playlist()
-        self.playlist = self.tabbedPlayList.current()
+        self.playlist = Playlist()
         self.videoWidget = VideoWidget()
+        self.next_url = QUrl()
 
         self.playButton = QPushButton()
         self.playButton.setEnabled(False)
@@ -110,7 +113,7 @@ class Player(QWidget):
         displayLayout = QHBoxLayout()
         displayLayout.setSpacing(5)
         displayLayout.addWidget(self.videoWidget, QSizePolicy.ExpandFlag)
-        displayLayout.addWidget(self.tabbedPlayList)
+        displayLayout.addWidget(self.playlist)
 
         layout = QVBoxLayout()
         layout.addLayout(displayLayout)
@@ -141,37 +144,38 @@ class Player(QWidget):
         self.videoWidget.show()
 
     def open(self):
-        self.playList.open()
-        if self.playList.playListView.count() > 0:
+        self.playlist.open()
+        if self.playlist.count() > 0:
             self.enableInterface()
 
-    def load_and_play(self):
-        """メディアを読み込み、再生する。"""
-        #TODO: NoMedia以外でもメディアをロードしないと次にいけない。
-        if self.player.mediaStatus() == QMediaPlayer.NoMedia:
-            play_func = self.play
-        else:
-            play_func = self.player.play
-        self.load(self.playList.current())
-        play_func()
+    def autoplay(self):
+        """メディアを読み込み、再生する。
+
+        プレイヤーがstoppedであれば、プレイリストから要素を得る。
+        pauseであれば、再生開始。
+        nextがあれば、nextから要素を得る。
+        """
+        if self.next_url is None:
+            self.stop()
+        elif self.next_url.isValid():
+            self.load(self.next_url)
+            self.next_url = None
+            self.play()
 
     def load(self, file_url: QUrl):
-        if file_url is None:
-            self.stop()
-            return False
-        c = QMediaContent(file_url)
-        self.player.setMedia(c)
-        self.media_loaded.emit()
-        self.enableInterface()
+        if file_url.isValid():
+            c = QMediaContent(file_url)
+            self.player.setMedia(c)
+            self.media_loaded.emit()
+            self.enableInterface()
 
     def play(self):
         if self.player.state() == QMediaPlayer.PlayingState:
             self.player.pause()
         elif self.player.state() == QMediaPlayer.StoppedState:
-            if self.playList.playListView.selected():
-                self.load_and_play()
+            self.load(self.playlist.current())
         if self.player.mediaStatus() == QMediaPlayer.NoMedia:
-            self.load_and_play()
+            self.stop()
         elif self.player.mediaStatus() == QMediaPlayer.LoadingMedia\
             or self.player.mediaStatus() == QMediaPlayer.StalledMedia:
             QTimer.singleShot(500, self.player.play)
@@ -227,7 +231,7 @@ class Player(QWidget):
 
 
     def next(self):
-        self.playList.next()
+        self.next_url = self.playlist.next()
 
 
     def setVolume(self):
@@ -281,6 +285,7 @@ class Player(QWidget):
             self.setStatusInfo('Buffering')
         elif status == QMediaPlayer.EndOfMedia:
             self.next()
+            self.autoplay()
         elif status == QMediaPlayer.InvalidMedia:
             self.handleError()
             self.next()
@@ -359,7 +364,7 @@ class PypePlayer(QMainWindow):
 
 
     def createMenus(self, player):
-        openFile = createAction(self, 'Open', player.playList.open, 'Ctrl+o')
+        openFile = createAction(self, 'Open', player.playlist.open, 'Ctrl+o')
         forward_short = createAction(self, 'Short Forward', player.forward_short, 'Right')
         forward_medium = createAction(self, 'Forward', player.forward_medium, 'Shift+Right')
         forward_long = createAction(self, 'Long Forward', player.forward_long, 'Ctrl+Right')

@@ -20,7 +20,7 @@ class Playlist(QTabWidget):
         self.playListView.url(index)
 
     def current(self):
-        self.using_playlist = self.widget(self.currentIndex())
+        self.using_playlist = self.currentWidget()
         return self.using_playlist.current()
 
     def next(self):
@@ -37,6 +37,11 @@ class Playlist(QTabWidget):
         else:
             return False
 
+    def open(self):
+        self.currentWidget().open()
+
+    def count(self):
+        return self.currentWidget().count()
 
 if __name__ == '__main__':
     import sys
