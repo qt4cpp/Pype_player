@@ -29,6 +29,12 @@ class Playlist(QTabWidget):
     def previous(self):
         return self.using_playlist.previous()
 
+    def open(self):
+        self.currentWidget().open()
+
+    def count(self):
+        return self.currentWidget().count()
+
     def add_playlist(self):
         title, ok = QInputDialog.getText(self, 'New Playlist name', 'New Playlist name')
         if ok and len(str(title)) > 0:
@@ -37,11 +43,13 @@ class Playlist(QTabWidget):
         else:
             return False
 
-    def open(self):
-        self.currentWidget().open()
-
-    def count(self):
-        return self.currentWidget().count()
+    def rename_playlist(self):
+        title, ok = QInputDialog.getText(self, 'Rename Playlist', 'New Playlist name')
+        if ok and len(str(title)) > 0:
+            self.setTabText(self.currentIndex(), title)
+            return True
+        else:
+            return False
 
 if __name__ == '__main__':
     import sys

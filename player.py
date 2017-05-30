@@ -367,6 +367,7 @@ class PypePlayer(QMainWindow):
         openFile = createAction(self, 'Open', player.open, 'Ctrl+o')
 
         add_playlist = createAction(self, 'Add playlist', player.playlist.add_playlist, 'Ctrl+N')
+        rename_playlist = createAction(self, 'Rename Playlist', player.playlist.rename_playlist)
 
         forward_short = createAction(self, 'Short Forward', player.forward_short, 'Right')
         forward_medium = createAction(self, 'Forward', player.forward_medium, 'Shift+Right')
@@ -380,7 +381,10 @@ class PypePlayer(QMainWindow):
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(openFile)
+        fileMenu.addSeparator()
         fileMenu.addAction(add_playlist)
+        fileMenu.addAction(rename_playlist)
+
         playbackMenu = menubar.addMenu('&Playback')
         jumpMenu = playbackMenu.addMenu('Jump')
         jumpMenu.addAction(forward_short)
