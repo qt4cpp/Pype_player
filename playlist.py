@@ -1,5 +1,6 @@
 from PyQt5.QtCore import (Qt, QModelIndex)
-from PyQt5.QtWidgets import (QApplication, QPushButton, QLabel, QTabWidget, QInputDialog)
+from PyQt5.QtWidgets import (QApplication, QPushButton, QLabel, QTabWidget, QInputDialog,
+                             QMessageBox)
 
 from playlistview import PlaylistView
 
@@ -32,8 +33,8 @@ class Playlist(QTabWidget):
     def open(self):
         self.currentWidget().open()
 
-    def count(self):
-        return self.currentWidget().count()
+    def count_items(self):
+        return self.currentWidget().count_items()
 
     def add_playlist(self):
         title, ok = QInputDialog.getText(self, 'New Playlist name', 'New Playlist name')
@@ -50,6 +51,19 @@ class Playlist(QTabWidget):
             return True
         else:
             return False
+
+    def remove_playlist(self):
+        msg_box = QMessageBox()
+        if self.count() <= 1:
+            return
+        current = self.currentIndex()
+        msg_box.setText('Do you really want to remove \'{0}\' ?'.format(self.tabText(current)))
+        msg_box.setStandardButtons(QMessageBox.Cancel | QMessageBox.Ok)
+        msg_box.setDefaultButton(QMessageBox.Cancel)
+        ret = msg_box.exec()
+        if ret == QMessageBox.Ok:
+            self.removeTab(current)
+
 
 if __name__ == '__main__':
     import sys

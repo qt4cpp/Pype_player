@@ -145,7 +145,7 @@ class Player(QWidget):
 
     def open(self):
         self.playlist.open()
-        if self.playlist.count() > 0:
+        if self.playlist.count_items() > 0:
             self.enableInterface()
 
     def autoplay(self):
@@ -368,6 +368,7 @@ class PypePlayer(QMainWindow):
 
         add_playlist = createAction(self, 'Add playlist', player.playlist.add_playlist, 'Ctrl+N')
         rename_playlist = createAction(self, 'Rename Playlist', player.playlist.rename_playlist)
+        remove_playlist = createAction(self, 'Remove Playlist', player.playlist.remove_playlist)
 
         forward_short = createAction(self, 'Short Forward', player.forward_short, 'Right')
         forward_medium = createAction(self, 'Forward', player.forward_medium, 'Shift+Right')
@@ -384,6 +385,7 @@ class PypePlayer(QMainWindow):
         fileMenu.addSeparator()
         fileMenu.addAction(add_playlist)
         fileMenu.addAction(rename_playlist)
+        fileMenu.addAction(remove_playlist)
 
         playbackMenu = menubar.addMenu('&Playback')
         jumpMenu = playbackMenu.addMenu('Jump')
