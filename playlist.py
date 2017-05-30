@@ -34,7 +34,7 @@ class Playlist(QTabWidget):
         self.currentWidget().open()
 
     def count_items(self):
-        return self.currentWidget().count_items()
+        return self.currentWidget().count()
 
     def add_playlist(self):
         title, ok = QInputDialog.getText(self, 'New Playlist name', 'New Playlist name')

@@ -160,7 +160,7 @@ class Player(QWidget):
         elif self.next_url.isValid():
             self.load(self.next_url)
             self.next_url = None
-            self.play()
+            self.player.play()
 
     def load(self, file_url: QUrl):
         if file_url.isValid():
@@ -172,6 +172,7 @@ class Player(QWidget):
     def play(self):
         if self.player.state() == QMediaPlayer.PlayingState:
             self.player.pause()
+            return
         elif self.player.state() == QMediaPlayer.StoppedState:
             self.load(self.playlist.current())
         if self.player.mediaStatus() == QMediaPlayer.NoMedia:
