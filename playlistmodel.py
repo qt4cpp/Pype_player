@@ -1,10 +1,11 @@
-from PyQt5.QtCore import QAbstractListModel, QUrl, QModelIndex, QVariant, Qt, pyqtSignal
+from PyQt5.QtCore import QAbstractListModel, QUrl, QModelIndex, QVariant, Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QFont
 
 
 class PlaylistModel(QAbstractListModel):
 
     rowCount_changed = pyqtSignal(int)
+    set_current_index = pyqtSlot(QModelIndex)
 
     def __init__(self, parent: object = None):
         """
@@ -15,7 +16,7 @@ class PlaylistModel(QAbstractListModel):
 
         self.url_list = []
         self.headerTitles = ['Title', 'Duration']
-        self.index_to_emphasize = QModelIndex()
+        self.current_index = QModelIndex()
 
     def rowCount(self, parent: QModelIndex = QModelIndex(), **kwargs) -> int:
         """Return a number of length of urls
@@ -41,7 +42,7 @@ class PlaylistModel(QAbstractListModel):
 
         if role == Qt.DisplayRole:
             return self.url_list[index.row()].fileName()
-        elif role == Qt.FontRole and index.row() == self.index_to_emphasize.row():
+        elif role == Qt.FontRole and index.row() == self.current_index.row():
             bold_font = QFont()
             bold_font.setBold(True)
             return bold_font
@@ -135,6 +136,6 @@ class PlaylistModel(QAbstractListModel):
         self.rowCount_changed.emit(self.rowCount())
         return True
 
-    def set_index_to_emphasize(self, index: QModelIndex):
+    def set_current_index(self, index: QModelIndex):
         if index.isValid():
-            self.index_to_emphasize = index
+            self.current_index = index

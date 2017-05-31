@@ -13,7 +13,7 @@ class Playlist(QTabWidget):
         self.addTab(PlaylistView(), 'temp')
         self.setCurrentIndex(0)
 
-        self.using_playlist = self.widget(0)
+        self.using_playlist: PlaylistView = self.widget(0)
 
         self.show()
 
@@ -21,6 +21,7 @@ class Playlist(QTabWidget):
         self.playListView.url(index)
 
     def current(self):
+        self.reset_playlist()
         self.using_playlist = self.currentWidget()
         return self.using_playlist.current()
 
@@ -63,6 +64,10 @@ class Playlist(QTabWidget):
         ret = msg_box.exec()
         if ret == QMessageBox.Ok:
             self.removeTab(current)
+
+    def reset_playlist(self):
+        self.using_playlist.set_current_index(QModelIndex())
+        self.update()
 
 
 if __name__ == '__main__':

@@ -35,6 +35,7 @@ class VideoWidget(QVideoWidget):
 class Player(QWidget):
 
     media_loaded = pyqtSignal()
+    stop = pyqtSignal()
 
     def __init__(self, parent=None):
         super(Player, self).__init__(parent)
@@ -69,8 +70,8 @@ class Player(QWidget):
         self.forwardButton.clicked.connect(self.forward_short)
 
         self.muteButton = QPushButton()
-        self.muteButton.setIcon(self.style().standardIcon(QStyle.SP_MediaVolume if self.player.isMuted() == False else
-                                                          QStyle.SP_MediaVolumeMuted))
+        self.muteButton.setIcon(self.style().standardIcon(
+            QStyle.SP_MediaVolume if not self.player.isMuted() else QStyle.SP_MediaVolumeMuted))
         self.muteButton.clicked.connect(self.toggleMute)
 
         self.volumeBar = QSlider(Qt.Horizontal)
@@ -163,6 +164,8 @@ class Player(QWidget):
             self.player.play()
 
     def load(self, file_url: QUrl):
+        if file_url is None:
+            return
         if file_url.isValid():
             c = QMediaContent(file_url)
             self.player.setMedia(c)

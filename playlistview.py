@@ -9,7 +9,7 @@ from playlistmodel import PlaylistModel
 
 class PlaylistView(QListView):
 
-    current_index_changed = pyqtSignal()
+    current_index_changed = pyqtSignal(QModelIndex)
     next = pyqtSlot(int)
     previous = pyqtSlot(int)
 
@@ -42,10 +42,12 @@ class PlaylistView(QListView):
         self.setDropIndicatorShown(True)
         self.setModel(PlaylistModel())
 
-        self.current_index = self.create_index(0)
+        self.current_index = QModelIndex()
         self.previousIndex = QModelIndex()
         self.rubberBand: QRubberBand = QRubberBand(QRubberBand.Rectangle, self)
         self.isDragging = False
+
+        self.current_index_changed.connect(self.model().set_current_index)
 
 
     def count(self):
@@ -65,7 +67,7 @@ class PlaylistView(QListView):
         selected_url = self.selected()
         if selected_url is not None:
             self.set_current_index(selected_url)
-        elif self.current_index.isValid():
+        elif not self.current_index.isValid():
             self.set_current_index_from_row(0)
         return self.url(self.current_index)
 
@@ -74,7 +76,7 @@ class PlaylistView(QListView):
         if self.set_current_index_from_row(self.current_index.row() + step):
             return self.url(self.current_index)
         else:
-            None
+            return None
 
 
     def previous(self, step=1):
@@ -94,7 +96,7 @@ class PlaylistView(QListView):
         if isinstance(index, int):
             row = index
             if 0 <= row < self.count():
-                index = self.model().index(row, 0)
+                index = self.model().index(row)
 
         if isinstance(index, QModelIndex):
             return self.model().data(index)
@@ -111,13 +113,10 @@ class PlaylistView(QListView):
 
 
     def set_current_index(self, new_index: QModelIndex):
-        if new_index.isValid():
-            self.current_index = new_index
-            self.model().set_index_to_emphasize(new_index)
-            self.current_index_changed.emit()
-            return True
-        else:
-            return False
+        self.current_index = new_index
+        # self.model().set_current_index(new_index)
+        self.current_index_changed.emit(self.current_index)
+        return True
 
 
     def create_index(self, row) -> QModelIndex:
