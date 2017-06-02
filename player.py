@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (QMainWindow, QApplication, QWidget, QLabel,
                              QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton, QStyle,
                              QSlider)
 
-from playlist import Playlist
+from playlisttab import PlaylistTab
 from utility import createAction
 
 
@@ -44,7 +44,7 @@ class Player(QWidget):
         self.volume = 50
 
         self.player = QMediaPlayer()
-        self.playlist = Playlist()
+        self.playlist = PlaylistTab()
         self.videoWidget = VideoWidget()
         self.next_url = QUrl()
 

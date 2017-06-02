@@ -5,10 +5,10 @@ from PyQt5.QtWidgets import (QApplication, QPushButton, QLabel, QTabWidget, QInp
 from playlistview import PlaylistView
 
 
-class Playlist(QTabWidget):
+class PlaylistTab(QTabWidget):
 
     def __init__(self, parent=None):
-        super(Playlist, self).__init__(parent)
+        super().__init__(parent)
 
         self.addTab(PlaylistView(), 'temp')
         self.setCurrentIndex(0)
@@ -74,5 +74,5 @@ if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)
 
-    playlist = Playlist()
+    playlist = PlaylistTab()
     sys.exit(app.exec_())

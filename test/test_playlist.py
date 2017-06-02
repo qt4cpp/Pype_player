@@ -3,13 +3,13 @@ import unittest
 from PyQt5.QtCore import QDir, QUrl
 from PyQt5.QtWidgets import QWidget, QApplication, QPushButton, QVBoxLayout
 
-from playlist import Playlist
+from playlisttab import PlaylistTab
 
 class PlaylistTestWidget(QWidget):
 
     def __init__(self, parent=None):
         super(PlaylistTestWidget, self).__init__(parent)
-        self.playlist = Playlist()
+        self.playlist = PlaylistTab()
         self.add_button = QPushButton('add')
         self.add_button.clicked.connect(self.playlist.add_playlist)
 
