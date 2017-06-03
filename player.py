@@ -49,28 +49,22 @@ class Player(QWidget):
         self.playButton = QPushButton()
         self.playButton.setEnabled(False)
         self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
-        self.playButton.clicked.connect(self.play)
 
         self.stopButton = QPushButton()
         self.stopButton.setEnabled(False)
         self.stopButton.setIcon(self.style().standardIcon(QStyle.SP_MediaStop))
-        self.stopButton.clicked.connect(self.stop)
 
         self.openButton = QPushButton()
         self.openButton.setIcon(self.style().standardIcon(QStyle.SP_DirOpenIcon))
-        self.openButton.clicked.connect(self.open)
 
         self.backwardButton = QPushButton()
         self.backwardButton.setIcon(self.style().standardIcon(QStyle.SP_MediaSeekBackward))
-        self.backwardButton.clicked.connect(self.backward_short)
         self.forwardButton = QPushButton()
         self.forwardButton.setIcon(self.style().standardIcon(QStyle.SP_MediaSeekForward))
-        self.forwardButton.clicked.connect(self.forward_short)
 
         self.muteButton = QPushButton()
         self.muteButton.setIcon(self.style().standardIcon(
             QStyle.SP_MediaVolume if not self.player.isMuted() else QStyle.SP_MediaVolumeMuted))
-        self.muteButton.clicked.connect(self.toggleMute)
 
         self.volumeBar = QSlider(Qt.Horizontal)
         self.volumeBar.setRange(0, 100)
@@ -87,7 +81,13 @@ class Player(QWidget):
         self.labelTotalTime = QLabel('00:00')
         self.labelCurrentTime = QLabel('00:00')
 
+        self.create_layout()
+        self.create_connections()
 
+        self.player.setVideoOutput(self.videoWidget)
+        self.videoWidget.show()
+
+    def create_layout(self):
         seekBarLayout = QHBoxLayout()
         seekBarLayout.addWidget(self.labelCurrentTime)
         seekBarLayout.addWidget(self.seekBar)
@@ -121,7 +121,13 @@ class Player(QWidget):
 
         self.setLayout(layout)
 
-        self.player.setVideoOutput(self.videoWidget)
+    def create_connections(self):
+        self.playButton.clicked.connect(self.play)
+        self.stopButton.clicked.connect(self.stop)
+        self.openButton.clicked.connect(self.open)
+        self.backwardButton.clicked.connect(self.backward_short)
+        self.forwardButton.clicked.connect(self.forward_short)
+        self.muteButton.clicked.connect(self.toggleMute)
 
         self.player.stateChanged.connect(self.playerStateChanged)
         self.player.mediaStatusChanged.connect(self.mediaStatusChanged)
@@ -136,11 +142,6 @@ class Player(QWidget):
 
         self.seekBar.sliderMoved.connect(self.seek)
         self.seekBar.sliderReleased.connect(self.seekBarClicked)
-
-        # self.playList.playListView.current_index_changed.connect(self.load_and_play)
-        # self.media_loaded.connect(self.playList.playListView.update)
-
-        self.videoWidget.show()
 
     def open(self):
         self.playlist_tab.open()
