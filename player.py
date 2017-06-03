@@ -182,7 +182,6 @@ class Player(QWidget):
         else:
             self.player.play()
 
-
     def stop(self):
         if not self.player.state() == QMediaPlayer.StoppedState:
             self.player.stop()
@@ -190,7 +189,7 @@ class Player(QWidget):
             self.setStatusInfo('Stopped')
 
     def playerStateChanged(self, state):
-        if self.player.state() == QMediaPlayer.PlayingState:
+        if state == QMediaPlayer.PlayingState:
             self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPause))
         else:
             self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
