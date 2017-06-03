@@ -1,4 +1,4 @@
-from PyQt5.QtCore import (Qt, QModelIndex)
+from PyQt5.QtCore import (Qt, QModelIndex, pyqtSignal, pyqtSlot)
 from PyQt5.QtWidgets import (QApplication, QPushButton, QLabel, QTabWidget, QInputDialog,
                              QMessageBox)
 
@@ -7,11 +7,15 @@ from playlistview import PlaylistView
 
 class PlaylistTab(QTabWidget):
 
+    double_clicked = pyqtSignal()
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
         self.addTab(PlaylistView(), 'temp')
         self.setCurrentIndex(0)
+
+        self.widget(0).playlist_double_clicked.connect(self.double_clicked)
 
         self.show()
 
@@ -27,7 +31,9 @@ class PlaylistTab(QTabWidget):
     def add_playlist(self):
         title, ok = QInputDialog.getText(self, 'New Playlist name', 'New Playlist name')
         if ok and len(str(title)) > 0:
-            self.addTab(PlaylistView(), str(title))
+            new_playlist = PlaylistView()
+            self.addTab(new_playlist, str(title))
+            new_playlist.playlist_double_clicked.connect(self.handle_playlist_double_clicked)
             return True
         else:
             return False
@@ -51,6 +57,9 @@ class PlaylistTab(QTabWidget):
         ret = msg_box.exec()
         if ret == QMessageBox.Ok:
             self.removeTab(current)
+
+    def handle_playlist_double_clicked(self):
+        self.double_clicked.emit()
 
 if __name__ == '__main__':
     import sys

@@ -10,6 +10,7 @@ from playlistmodel import PlaylistModel
 class PlaylistView(QListView):
 
     current_index_changed = pyqtSignal(QModelIndex)
+    playlist_double_clicked = pyqtSignal()
     next = pyqtSlot(int)
     previous = pyqtSlot(int)
 
@@ -271,6 +272,7 @@ class PlaylistView(QListView):
         if event.button() == Qt.LeftButton:
             new_index = self.indexAt(event.pos())
             self.set_current_index(new_index)
+            self.playlist_double_clicked.emit()
 
 
     def add_items(self, items: [QUrl], start: int = -1):
@@ -281,7 +283,7 @@ class PlaylistView(QListView):
         start に −1を渡すと一番後ろに追加する。
         """
         if isinstance(items, QUrl):
-            self.model(items, i)
+            self.model(items)
         elif start == -1:
             for item in items:
                 self.model().add(item)

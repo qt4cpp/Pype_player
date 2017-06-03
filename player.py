@@ -1,6 +1,6 @@
 from enum import IntEnum
 
-from PyQt5.QtCore import (QUrl, Qt, QTime, QTimer, pyqtSignal)
+from PyQt5.QtCore import (QUrl, Qt, QTime, QTimer, pyqtSignal, pyqtSlot)
 from PyQt5.QtGui import (QPalette)
 from PyQt5.QtMultimedia import (QMediaContent, QMediaPlayer)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
@@ -33,6 +33,7 @@ class Player(QWidget):
 
     media_loaded = pyqtSignal()
     stop = pyqtSignal()
+    handle_double_click = pyqtSlot()
 
     def __init__(self, parent=None):
         super(Player, self).__init__(parent)
@@ -139,6 +140,8 @@ class Player(QWidget):
         self.seekBar.sliderMoved.connect(self.seek)
         self.seekBar.sliderReleased.connect(self.seekBarClicked)
 
+        self.playlist_tab.double_clicked.connect(self.handle_double_click)
+
     def open(self):
         self.playlist_tab.open()
         if self.playlist.count() > 0:
@@ -157,6 +160,10 @@ class Player(QWidget):
             self.load(self.next_url)
             self.next_url = None
             self.player.play()
+
+    def handle_double_click(self):
+        self.load(self.playlist.current())
+        self.play()
 
     def load(self, file_url: QUrl):
         if file_url is None:
