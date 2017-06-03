@@ -46,24 +46,20 @@ class Player(QWidget):
         self.videoWidget = VideoWidget()
         self.next_url = QUrl()
 
-        self.playButton = QPushButton()
+        standard_icon = self.style().standardIcon
+        self.playButton = QPushButton(standard_icon(QStyle.SP_MediaPlay), '')
         self.playButton.setEnabled(False)
-        self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
 
-        self.stopButton = QPushButton()
+        self.stopButton = QPushButton(standard_icon(QStyle.SP_MediaStop), '')
         self.stopButton.setEnabled(False)
-        self.stopButton.setIcon(self.style().standardIcon(QStyle.SP_MediaStop))
 
-        self.openButton = QPushButton()
-        self.openButton.setIcon(self.style().standardIcon(QStyle.SP_DirOpenIcon))
+        self.openButton = QPushButton(standard_icon(QStyle.SP_DirOpenIcon), '')
 
-        self.backwardButton = QPushButton()
-        self.backwardButton.setIcon(self.style().standardIcon(QStyle.SP_MediaSeekBackward))
-        self.forwardButton = QPushButton()
-        self.forwardButton.setIcon(self.style().standardIcon(QStyle.SP_MediaSeekForward))
+        self.backwardButton = QPushButton(standard_icon(QStyle.SP_MediaSeekBackward), '')
+        self.forwardButton = QPushButton(standard_icon(QStyle.SP_MediaSeekForward), '')
 
         self.muteButton = QPushButton()
-        self.muteButton.setIcon(self.style().standardIcon(
+        self.muteButton.setIcon(standard_icon(
             QStyle.SP_MediaVolume if not self.player.isMuted() else QStyle.SP_MediaVolumeMuted))
 
         self.volumeBar = QSlider(Qt.Horizontal)
