@@ -13,8 +13,8 @@ from playlisttab import PlaylistTab
 class SeekStep(IntEnum):
     SHORT = 5
     MEDIUM = 30
-    LONG = 60
-    VERYLONG = 300
+    LONG = 300
+    VERYLONG = 600
 
 
 class VideoWidget(QVideoWidget):
