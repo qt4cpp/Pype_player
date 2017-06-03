@@ -44,7 +44,8 @@ class Player(QWidget):
         self.volume = 50
 
         self.player = QMediaPlayer()
-        self.playlist = PlaylistTab()
+        self.playlist_tab = PlaylistTab()
+        self.playlist = self.playlist_tab.current_playlist()
         self.videoWidget = VideoWidget()
         self.next_url = QUrl()
 
@@ -114,7 +115,7 @@ class Player(QWidget):
         displayLayout = QHBoxLayout()
         displayLayout.setSpacing(5)
         displayLayout.addWidget(self.videoWidget, QSizePolicy.ExpandFlag)
-        displayLayout.addWidget(self.playlist)
+        displayLayout.addWidget(self.playlist_tab)
 
         layout = QVBoxLayout()
         layout.addLayout(displayLayout)
@@ -145,8 +146,8 @@ class Player(QWidget):
         self.videoWidget.show()
 
     def open(self):
-        self.playlist.open()
-        if self.playlist.count_items() > 0:
+        self.playlist_tab.open()
+        if self.playlist.count() > 0:
             self.enableInterface()
 
     def autoplay(self):
@@ -177,12 +178,13 @@ class Player(QWidget):
             self.player.pause()
             return
         elif self.player.state() == QMediaPlayer.StoppedState:
+            self.playlist = self.playlist_tab.current_playlist()
             self.load(self.playlist.current())
         if self.player.mediaStatus() == QMediaPlayer.NoMedia:
             self.stop()
         elif self.player.mediaStatus() == QMediaPlayer.LoadingMedia\
-            or self.player.mediaStatus() == QMediaPlayer.StalledMedia:
-            QTimer.singleShot(500, self.player.play)
+        or self.player.mediaStatus() == QMediaPlayer.StalledMedia:
+            QTimer.singleShot(600, self.player.play)
         else:
             self.player.play()
 
@@ -370,9 +372,9 @@ class PypePlayer(QMainWindow):
     def createMenus(self, player):
         openFile = createAction(self, 'Open', player.open, 'Ctrl+o')
 
-        add_playlist = createAction(self, 'Add playlist', player.playlist.add_playlist, 'Ctrl+N')
-        rename_playlist = createAction(self, 'Rename Playlist', player.playlist.rename_playlist)
-        remove_playlist = createAction(self, 'Remove Playlist', player.playlist.remove_playlist)
+        add_playlist = createAction(self, 'Add playlist', player.playlist_tab.add_playlist, 'Ctrl+N')
+        rename_playlist = createAction(self, 'Rename Playlist', player.playlist_tab.rename_playlist)
+        remove_playlist = createAction(self, 'Remove Playlist', player.playlist_tab.remove_playlist)
 
         forward_short = createAction(self, 'Short Forward', player.forward_short, 'Right')
         forward_medium = createAction(self, 'Forward', player.forward_medium, 'Shift+Right')

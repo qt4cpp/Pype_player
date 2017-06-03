@@ -49,10 +49,8 @@ class PlaylistView(QListView):
 
         self.current_index_changed.connect(self.model().set_current_index)
 
-
     def count(self):
         return self.model().rowCount()
-
 
     def open(self):
         file_urls, _ = QFileDialog.getOpenFileUrls(
@@ -62,7 +60,6 @@ class PlaylistView(QListView):
             if not url.isEmpty():
                 self.model().add(url)
 
-
     def current(self):
         selected_url = self.selected()
         if selected_url is not None:
@@ -71,18 +68,15 @@ class PlaylistView(QListView):
             self.set_current_index_from_row(0)
         return self.url(self.current_index)
 
-
     def next(self, step=1):
         if self.set_current_index_from_row(self.current_index.row() + step):
             return self.url(self.current_index)
         else:
             return None
 
-
     def previous(self, step=1):
         self.set_current_index_from_row(self.current_index.row() - step)
         return self.url(self.current_index)
-
 
     def selected(self):
         selected_indexes = self.selectedIndexes()
@@ -91,18 +85,15 @@ class PlaylistView(QListView):
         else:
             return None
 
-
     def url(self, index):
         if isinstance(index, int):
             row = index
             if 0 <= row < self.count():
                 index = self.model().index(row)
-
         if isinstance(index, QModelIndex):
             return self.model().data(index)
         else:
             return None
-
 
     def set_current_index_from_row(self, row):
         if 0 <= row <= self.count():
