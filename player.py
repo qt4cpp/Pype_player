@@ -142,7 +142,7 @@ class Player(QWidget):
         self.seekBar.sliderMoved.connect(self.seek)
         self.seekBar.sliderReleased.connect(self.seekBarClicked)
 
-        self.playlist_tab.double_clicked.connect(self.handle_double_click)
+        self.playlist_tab.double_clicked.connect(self.load_and_play)
 
     def open(self):
         self.playlist_tab.open()
@@ -163,7 +163,7 @@ class Player(QWidget):
             self.next_url = None
             self.player.play()
 
-    def handle_double_click(self):
+    def load_and_play(self):
         self.load(self.playlist.current())
         self.play()
 
@@ -293,7 +293,7 @@ class Player(QWidget):
             self.setStatusInfo('Buffering')
         elif status == QMediaPlayer.EndOfMedia:
             self.next()
-            self.autoplay()
+            self.load_and_play()
         elif status == QMediaPlayer.InvalidMedia:
             self.handleError()
             self.next()
