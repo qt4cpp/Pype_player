@@ -108,6 +108,7 @@ class Player(QWidget):
         controlLayout.addLayout(controlWithoutSeekBarLayout)
 
         display_splitter = QSplitter(Qt.Horizontal)
+        display_splitter.setOpaqueResize(False)
         display_splitter.addWidget(self.videoWidget)
         display_splitter.addWidget(self.playlist_tab)
         display_splitter.setSizes([300, 200])
