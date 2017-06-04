@@ -14,6 +14,10 @@ class PlaylistTab(QTabWidget):
 
         self.addTab(self.create_new(), 'temp')
         self.setCurrentIndex(0)
+        self.setUsesScrollButtons(True)
+        self.setAcceptDrops(True)
+        self.setMovable(True)
+        self.setElideMode(Qt.ElideNone)
 
         self.show()
 
@@ -24,7 +28,7 @@ class PlaylistTab(QTabWidget):
         self.widget(self.currentIndex()).open()
 
     def current_playlist(self):
-        return self.widget(self.currentIndex())
+        return self.currentWidget()
 
     def add_playlist(self):
         title, ok = QInputDialog.getText(self, 'New Playlist name', 'New Playlist name')
