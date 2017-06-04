@@ -5,7 +5,7 @@ from PyQt5.QtGui import (QPalette)
 from PyQt5.QtMultimedia import (QMediaContent, QMediaPlayer)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtWidgets import (QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton,
-                             QStyle, QSlider)
+                             QStyle, QSlider, QSplitter)
 
 from playlisttab import PlaylistTab
 
@@ -27,6 +27,7 @@ class VideoWidget(QVideoWidget):
         p = self.palette()
         p.setColor(QPalette.Window, Qt.black)
         self.setPalette(p)
+        self.setMinimumWidth(150)
 
 
 class Player(QWidget):
@@ -106,13 +107,13 @@ class Player(QWidget):
         controlLayout.addLayout(seekBarLayout)
         controlLayout.addLayout(controlWithoutSeekBarLayout)
 
-        displayLayout = QHBoxLayout()
-        displayLayout.setSpacing(5)
-        displayLayout.addWidget(self.videoWidget, QSizePolicy.ExpandFlag)
-        displayLayout.addWidget(self.playlist_tab)
+        display_splitter = QSplitter(Qt.Horizontal)
+        display_splitter.addWidget(self.videoWidget)
+        display_splitter.addWidget(self.playlist_tab)
+        display_splitter.setSizes([300, 200])
 
         layout = QVBoxLayout()
-        layout.addLayout(displayLayout)
+        layout.addWidget(display_splitter, 1)
         layout.addLayout(controlLayout)
         layout.addWidget(self.statusInfoLabel)
 
