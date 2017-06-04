@@ -12,10 +12,8 @@ class PlaylistTab(QTabWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.addTab(PlaylistView(), 'temp')
+        self.addTab(self.create_new(), 'temp')
         self.setCurrentIndex(0)
-
-        self.widget(0).playlist_double_clicked.connect(self.double_clicked)
 
         self.show()
 
@@ -30,13 +28,15 @@ class PlaylistTab(QTabWidget):
 
     def add_playlist(self):
         title, ok = QInputDialog.getText(self, 'New Playlist name', 'New Playlist name')
-        if ok and len(str(title)) > 0:
-            new_playlist = PlaylistView()
-            self.addTab(new_playlist, str(title))
-            new_playlist.playlist_double_clicked.connect(self.handle_playlist_double_clicked)
+        if ok and len(title) > 0:
+            self.addTab(self.create_new(), title)
             return True
-        else:
-            return False
+        return False
+
+    def create_new(self):
+        new = PlaylistView()
+        new.playlist_double_clicked.connect(self.handle_playlist_double_clicked)
+        return new
 
     def rename_playlist(self):
         title, ok = QInputDialog.getText(self, 'Rename Playlist', 'New Playlist name')
