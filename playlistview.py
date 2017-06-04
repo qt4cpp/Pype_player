@@ -144,21 +144,17 @@ class PlaylistView(QListView):
             mimeData.setText(str(len(indexes)))
             mimeData.setData(self.mime_URLS, urls)
 
-            # dragRect = self.rect_for_drag_items(indexes)
             file_icon = self.style().standardIcon(QStyle.SP_FileIcon)
             pixmap = file_icon.pixmap(32, 32)
-            # renderSource = QRegion(dragRect)
-            # self.render(pixmap, sourceRegion=renderSource,)
 
             drag = QDrag(self)
             drag.setMimeData(mimeData)
             drag.setPixmap(pixmap)
-            drag.setHotSpot(event.pos())
+            drag.setHotSpot(QPoint(0, 0))
 
             dropAction = drag.exec(Qt.CopyAction | Qt.MoveAction, Qt.CopyAction)
             if dropAction == Qt.MoveAction:
                 pass
-                # self.delete_items(indexes)
 
         else:
             self.rubberBand.setGeometry(QRect(self.dragStartPosition, event.pos()).normalized())
