@@ -264,7 +264,7 @@ class PlaylistView(QListView):
         start に −1を渡すと一番後ろに追加する。
         """
         if isinstance(items, QUrl):
-            self.model(items)
+            self.model().add(items)
         elif start == -1:
             for item in items:
                 self.model().add(item)
