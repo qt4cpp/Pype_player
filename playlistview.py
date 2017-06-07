@@ -344,8 +344,9 @@ class PlaylistView(QListView):
             new_index = self.model().index(self.model().rowCount(), 0)
             return new_index
 
-        item_rect = self.rectForIndex(index)
-        if (pos.y() % item_rect.height()) < (item_rect.height() / 2):
+        item_rect = self.visualRect(index)
+        pos_in_rect = pos.y() - item_rect.top()
+        if pos_in_rect < (item_rect.height() / 2):
             return index
         else:
             return self.model().index(index.row() + 1, 0)
@@ -356,12 +357,8 @@ class PlaylistView(QListView):
         Geometryに渡されるので、表示位置となるようにQRectを作成する。
         幅が表示領域、縦1pixelの棒で表示する。
         """
-        row = index.row()
-        if row < 0:
-            row = self.model().rowCount()
-        print(row)
-        item_rect = self.rectForIndex(self.model().index(0, 0))
-        top_left = QPoint(0, item_rect.height() * row)
+        item_rect = self.visualRect(index)
+        top_left = item_rect.topLeft()
         size = QSize(item_rect.width(), 3)
         return QRect(top_left, size)
 
