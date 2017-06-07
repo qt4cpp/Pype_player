@@ -286,25 +286,6 @@ class PlaylistView(QListView):
         self.model().move(indexes, dest.row())
 
 
-    def rect_for_drag_items(self, indexes: [QModelIndex]) -> QRect:
-        """dragされる要素を表す領域を返す。
-
-        :param indexes:
-        :return: indexesが囲われているQRect
-        """
-        item_rect: QRect = self.rectForIndex(indexes[0])
-        height = item_rect.height()
-        width = item_rect.width()
-
-        start_row = indexes[0].row()
-        end_row = indexes[-1].row()
-
-        top_left = QPoint(0, height * start_row)
-        bottom_right = QPoint(width, height * (end_row + 1))
-
-        return QRect(top_left, bottom_right)
-
-
     def index_for_dropping_pos(self, pos: QPoint) -> QModelIndex:
         """dropした場所のindexを返す。ただし、要素の高さ半分より下にある場合は、下の要素を返す。
 
@@ -334,16 +315,3 @@ class PlaylistView(QListView):
         top_left = item_rect.topLeft()
         size = QSize(item_rect.width(), 3)
         return QRect(top_left, size)
-
-
-    def is_all_selected(self, indexes: [QModelIndex]):
-        for i in range(self.model().rowCount()):
-            if indexes[i].row() != i:
-                return False
-        return True
-
-    def pack_urls(self, indexes: [QModelIndex]):
-        urls = []
-        for index in indexes:
-            urls.append(self.model().data(index))
-        return urls
