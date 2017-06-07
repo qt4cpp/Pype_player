@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QListView, QRubberBand, QFileDialog, QAbstractItemVi
     QStyle
 
 from playlistmodel import PlaylistModel
+from utility import convert_from_bytearray, convert_to_bytearray
 
 
 class PlaylistView(QListView):
@@ -139,10 +140,10 @@ class PlaylistView(QListView):
 
         if self.isDragging:
             indexes = self.selectedIndexes()
-            urls = self.convert_to_bytearray(indexes)
+            urls = self.pack_urls(indexes)
+
             mimeData = QMimeData()
-            mimeData.setText(str(len(indexes)))
-            mimeData.setData(self.mime_URLS, urls)
+            mimeData.setData(self.mime_URLS, convert_to_bytearray(urls))
 
             file_icon = self.style().standardIcon(QStyle.SP_FileIcon)
             pixmap = file_icon.pixmap(32, 32)
@@ -170,7 +171,7 @@ class PlaylistView(QListView):
         その二つの場合は受け入れられるように、accept()もしくはacceptProposedAction()を呼ぶ。
         """
 
-        if event.mimeData().hasFormat(self.mime_URLS):
+        if event.mimeData().hasUrls() or event.mimeData().hasFormat(self.mime_URLS):
             if event.source() is self:
                 event.setDropAction(Qt.MoveAction)
                 event.accept()
@@ -188,7 +189,7 @@ class PlaylistView(QListView):
         ドラッグしている要素の背景の色を変えて、どこにファイルがDropされるかをグラデーションした背景で
         表現する。
         """
-        if event.mimeData().hasFormat(self.mime_URLS):
+        if event.mimeData().hasUrls() or event.mimeData().hasFormat(self.mime_URLS):
             self.rubberBand.setGeometry(
                 self.rectForDropIndicator(self.index_for_dropping_pos(event.pos())))
             self.rubberBand.show()
@@ -231,9 +232,11 @@ class PlaylistView(QListView):
         ファイルへのパスと移動前に登録してあった要素のindexを取り出す。
         """
         self.rubberBand.hide()
-        if event.mimeData().hasFormat(self.mime_URLS):
-            data = event.mimeData().data(self.mime_URLS)
-            urls = self.convert_from_bytearray(data)
+        if event.mimeData().hasUrls() or event.mimeData().hasFormat(self.mime_URLS):
+            if event.mimeData().hasUrls():
+                urls = event.mimeData().urls()
+            else:
+                urls = convert_from_bytearray(event.mimeData().data(self.mime_URLS))
             index = self.index_for_dropping_pos(event.pos())
             if event.source() is self:
                 self.move_items(self.selectedIndexes(), index)
@@ -281,36 +284,6 @@ class PlaylistView(QListView):
 
     def move_items(self, indexes: [QModelIndex], dest: QModelIndex):
         self.model().move(indexes, dest.row())
-
-
-    def convert_to_bytearray(self, indexes: [QModelIndex]) -> QByteArray:
-        """modelの項目をbyte型に変換する。
-
-        :param indexes: 要素を変換するindexのリスト
-        :return: byte型に変換した項目
-        元に戻すための区切り文字としてself.url_delimiterプロパティを使用
-        """
-        urls_byte = QByteArray()
-        stream = QTextStream(urls_byte, QIODevice.WriteOnly)
-        for index in indexes:
-            stream << self.model().data(index).toString() << self.url_delimiter
-
-        return urls_byte
-
-
-    def convert_from_bytearray(self, byte_array: QByteArray) -> [QUrl]:
-        """渡されたbyte arrayから元のデータに復元する。
-
-        :param byte_array:
-        :return:
-        区切り文字はself.url_delimiterプロパティ
-        """
-        byte_list = byte_array.split(self.url_delimiter)
-        urls = []
-        for data in byte_list:
-            url = QUrl(data.data().decode('utf-8'))
-            urls.append(url)
-        return urls
 
 
     def rect_for_drag_items(self, indexes: [QModelIndex]) -> QRect:
@@ -368,3 +341,9 @@ class PlaylistView(QListView):
             if indexes[i].row() != i:
                 return False
         return True
+
+    def pack_urls(self, indexes: [QModelIndex]):
+        urls = []
+        for index in indexes:
+            urls.append(self.model().data(index))
+        return urls
