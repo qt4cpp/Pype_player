@@ -1,7 +1,7 @@
 from enum import IntEnum
 
 from PyQt5.QtCore import (QUrl, Qt, QTime, QTimer, pyqtSignal, pyqtSlot)
-from PyQt5.QtGui import (QPalette)
+from PyQt5.QtGui import (QPalette, QCloseEvent)
 from PyQt5.QtMultimedia import (QMediaContent, QMediaPlayer)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtWidgets import (QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton,

@@ -87,7 +87,7 @@ class PlaylistView(QListView):
         with open(url, 'wt') as fout:
             for i in range(self.model().rowCount()):
                 index = self.model().index(i)
-                print(self.model().data(index).toString(), file=fout)
+                print(self.model().data(index).toLocalFile(), file=fout)
         return True
 
     def current(self):

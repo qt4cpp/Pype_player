@@ -58,6 +58,10 @@ class PypePlayer(QMainWindow):
         jumpMenu.addAction(backward_medium)
         jumpMenu.addAction(backward_long)
         jumpMenu.addAction(backward_verylong)
+        
+    def closeEvent(self, event):
+        self.player.playlist_tab.save_all()
+        super(PypePlayer, self).closeEvent(event)
 
 
 if __name__ == '__main__':
