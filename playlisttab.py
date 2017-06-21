@@ -62,6 +62,18 @@ class PlaylistTab(QTabWidget):
         if ret == QMessageBox.Ok:
             self.removeTab(current)
 
+    def save_current(self):
+        """現在のPlaylistを保存する
+        
+        タイトルをファイル名として、パスをファイルの各行に書き出す。
+        """
+        self.current_playlist().save(self.tabText(self.currentIndex()), use_dialog=True)
+
+    def save_all(self):
+        """すべてのプレイリストを保存する"""
+        for i in range(self.count()):
+            self.widget(i).save(self.tabText(i))
+
     def handle_playlist_double_clicked(self):
         self.double_clicked.emit()
 

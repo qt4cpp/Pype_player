@@ -1,8 +1,8 @@
 from PyQt5.QtCore import QModelIndex, QRect, QSize, QPoint, pyqtSignal, QDir, Qt, QMimeData, QUrl, \
-    QByteArray, QTextStream, QIODevice, pyqtSlot
+    QByteArray, QTextStream, QIODevice, pyqtSlot, QFile
 from PyQt5.QtGui import QDrag
 from PyQt5.QtWidgets import QListView, QRubberBand, QFileDialog, QAbstractItemView, QApplication, \
-    QStyle
+    QStyle, QInputDialog
 
 from playlistmodel import PlaylistModel
 from utility import convert_from_bytearray, convert_to_bytearray
@@ -61,6 +61,34 @@ class PlaylistView(QListView):
         for url in file_urls:
             if not url.isEmpty():
                 self.model().add(url)
+
+    def save(self, name=None, use_dialog=False):
+        """プレイリストを保存する。
+
+        :param file :QFile 出力するようのファイル
+        fileが指定されていれば、fileに内容を書き込み、
+        指定がなければ、ダイアログで名前を指定してそこにファイルを保存。
+        """
+        import os.path
+
+        if name is None:
+            name = 'untitled'
+
+        if use_dialog:
+            url, ok = QFileDialog.getSaveFileUrl(self, 'Save File', name+'.m3u', 'playlist(*.m3u')
+            if not ok:
+                return False
+            url = url.toLocalFile()
+        else:
+            if not os.path.exists('playlist'):
+                os.mkdir('playlist')
+            url = 'playlist/' + name + '.m3u'
+
+        with open(url, 'wt') as fout:
+            for i in range(self.model().rowCount()):
+                index = self.model().index(i)
+                print(self.model().data(index).toString(), file=fout)
+        return True
 
     def current(self):
         selected_url = self.selected()
