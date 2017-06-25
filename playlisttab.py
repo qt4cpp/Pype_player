@@ -1,6 +1,6 @@
 from PyQt5.QtCore import (Qt, QModelIndex, pyqtSignal, pyqtSlot)
 from PyQt5.QtWidgets import (QApplication, QPushButton, QLabel, QTabWidget, QInputDialog,
-                             QMessageBox)
+                             QMessageBox, QFileDialog)
 
 from playlistview import PlaylistView
 
@@ -69,12 +69,19 @@ class PlaylistTab(QTabWidget):
         
         タイトルをファイル名として、パスをファイルの各行に書き出す。
         """
-        self.current_playlist().save(self.tabText(self.currentIndex()), use_dialog=True)
+        name = self.tabText(self.currentIndex())
+        url, ok = QFileDialog.getSaveFileUrl(self, 'Save File', name+'.m3u', 'playlist(*.m3u')
+        if not ok:
+            return False
+        url = url.toLocalFile()
+        self.current_playlist().save(url)
 
     def save_all(self):
         """すべてのプレイリストを保存する"""
+        save_direcotry = 'playlist/'
         for i in range(self.count()):
-            self.widget(i).save(self.tabText(i))
+            path = save_direcotry + self.tabText(i) + '.m3u'
+            self.widget(i).save(path)
 
     def load_playlists(self):
         """プレイリストをフォルダから読み込む。

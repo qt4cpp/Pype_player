@@ -62,7 +62,7 @@ class PlaylistView(QListView):
             if not url.isEmpty():
                 self.model().add(url)
 
-    def save(self, name=None, use_dialog=False):
+    def save(self, path=None):
         """プレイリストを保存する。
 
         :param file :QFile 出力するようのファイル
@@ -71,20 +71,10 @@ class PlaylistView(QListView):
         """
         import os.path
 
-        if name is None:
-            name = 'untitled'
+        if path is None:
+            return
 
-        if use_dialog:
-            url, ok = QFileDialog.getSaveFileUrl(self, 'Save File', name+'.m3u', 'playlist(*.m3u')
-            if not ok:
-                return False
-            url = url.toLocalFile()
-        else:
-            if not os.path.exists('playlist'):
-                os.mkdir('playlist')
-            url = 'playlist/' + name + '.m3u'
-
-        with open(url, 'wt') as fout:
+        with open(path, 'wt') as fout:
             for i in range(self.model().rowCount()):
                 index = self.model().index(i)
                 print(self.model().data(index).toLocalFile(), file=fout)
