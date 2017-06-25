@@ -293,7 +293,7 @@ class Player(QWidget):
             self.setStatusInfo('Buffering')
         elif status == QMediaPlayer.EndOfMedia:
             self.next()
-            self.load_and_play()
+            self.autoplay()
         elif status == QMediaPlayer.InvalidMedia:
             self.handleError()
             self.next()
