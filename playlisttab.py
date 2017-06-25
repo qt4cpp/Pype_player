@@ -19,6 +19,8 @@ class PlaylistTab(QTabWidget):
         self.setMovable(True)
         self.setElideMode(Qt.ElideNone)
 
+        self.load_playlists()
+
         self.show()
 
     def url(self, index=0):
@@ -73,6 +75,26 @@ class PlaylistTab(QTabWidget):
         """すべてのプレイリストを保存する"""
         for i in range(self.count()):
             self.widget(i).save(self.tabText(i))
+
+    def load_playlists(self):
+        """プレイリストをフォルダから読み込む。
+
+        デフォルトではplaylist/から読み込もうとする。"""
+        import os.path
+
+        path = 'playlist/'
+        if not os.path.exists(path):
+            return False
+        files = os.listdir(path)
+
+        for file in files:
+            if os.path.isdir(file) or file[-3:] != 'm3u':
+                continue
+            new_playlist = self.create_new()
+            self.addTab(new_playlist, file[:-4])
+            new_playlist.load(path+file)
+
+        return True
 
     def handle_playlist_double_clicked(self):
         self.double_clicked.emit()

@@ -90,6 +90,19 @@ class PlaylistView(QListView):
                 print(self.model().data(index).toLocalFile(), file=fout)
         return True
 
+    def load(self, path=None):
+        """プレイリストを読み込む
+
+        pathが与えられた場合は、そこから読み込み、
+        ない場合は、何も読み込まない。"""
+        if path is None:
+            return
+        with open(path, 'rt') as fin:
+            for line in fin:
+                url = QUrl.fromLocalFile(line[:-1])  # 最後の改行文字を取り除く
+                if url.isValid():
+                    self.model().add(url)
+
     def current(self):
         selected_url = self.selected()
         if selected_url is not None:
