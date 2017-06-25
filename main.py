@@ -27,6 +27,8 @@ class PypePlayer(QMainWindow):
                                        self.player.playlist_tab.rename_playlist)
         remove_playlist = createAction(self, 'Remove Playlist',
                                        self.player.playlist_tab.remove_playlist)
+        save_playlist = createAction(self, 'Save current Playlist',
+                                     self.player.playlist_tab.save_current, 'Ctrl+s')
 
         forward_short = createAction(self, 'Short Forward', self.player.forward_short, 'Right')
         forward_medium = createAction(self, 'Forward', self.player.forward_medium, 'Shift+Right')
@@ -46,6 +48,7 @@ class PypePlayer(QMainWindow):
         fileMenu.addAction(add_playlist)
         fileMenu.addAction(rename_playlist)
         fileMenu.addAction(remove_playlist)
+        fileMenu.addAction(save_playlist)
 
         playbackMenu = menubar.addMenu('&Playback')
         jumpMenu = playbackMenu.addMenu('Jump')
