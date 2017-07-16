@@ -1,11 +1,13 @@
 from enum import IntEnum
 
+import qtawesome
 from PyQt5.QtCore import (QUrl, Qt, QTime, QTimer, pyqtSignal, pyqtSlot)
 from PyQt5.QtGui import (QPalette, QCloseEvent)
 from PyQt5.QtMultimedia import (QMediaContent, QMediaPlayer)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtWidgets import (QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton,
                              QStyle, QSlider, QSplitter)
+
 
 from playlisttab import PlaylistTab
 
@@ -47,6 +49,9 @@ class Player(QWidget):
         self.playlist = self.playlist_tab.current_playlist()
         self.videoWidget = VideoWidget()
         self.next_url = QUrl()
+
+        plus_icon = qtawesome.icon('fa.plus')
+        self.plus_button = QPushButton(plus_icon, '')
 
         standard_icon = self.style().standardIcon
         self.playButton = QPushButton(standard_icon(QStyle.SP_MediaPlay), '')
@@ -93,6 +98,7 @@ class Player(QWidget):
 
         controlWithoutSeekBarLayout = QHBoxLayout()
         controlWithoutSeekBarLayout.setSpacing(0)
+        controlWithoutSeekBarLayout.addWidget(self.plus_button)
         controlWithoutSeekBarLayout.addWidget(self.openButton)
         controlWithoutSeekBarLayout.addWidget(self.playButton)
         controlWithoutSeekBarLayout.addWidget(self.stopButton)
