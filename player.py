@@ -120,6 +120,7 @@ class Player(QWidget):
         layout.addWidget(display_splitter, 1)
         layout.addLayout(controlLayout)
         layout.addWidget(self.statusInfoLabel)
+        layout.setSpacing(5)
 
         self.setLayout(layout)
 
