@@ -19,6 +19,7 @@ class Playlist(QWidget):
         self.add_playlist_button = make_button_from_fa('fa.clone')
         self.add_playlist_button.clicked.connect(self.playlist_tab.add_playlist)
         self.open_directory_button = make_button_from_fa('fa.folder-open-o')
+        self.open_directory_button.clicked.connect(self.playlist_tab.open_directory)
         self.add_file_button = make_button_from_fa('fa.plus')
         self.add_file_button.clicked.connect(self.playlist_tab.open)
         self.delete_file_button = make_button_from_fa('fa.minus')

@@ -62,6 +62,18 @@ class PlaylistView(QListView):
             if not url.isEmpty():
                 self.model().add(url)
 
+    def open_direcotry(self):
+        directory_url = QFileDialog.getExistingDirectory(self, 'Open directory', QDir.homePath())
+        dir = QDir(directory_url)
+        filters = ['*.mp4', '*.m4v', '*.mov', '*.mpg', '*.mpeg', '*.mp3', '*.m4a', '*.wmv']
+        dir.setNameFilters(filters)
+        file_list = dir.entryList()
+
+        path = dir.absolutePath() + '/'
+        for file in file_list:
+            url = QUrl.fromLocalFile(path + file)
+            self.model().add(url)
+
     def save(self, path=None):
         """プレイリストを保存する。
 

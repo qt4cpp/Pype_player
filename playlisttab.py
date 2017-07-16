@@ -29,6 +29,9 @@ class PlaylistTab(QTabWidget):
     def open(self):
         self.widget(self.currentIndex()).open()
 
+    def open_directory(self):
+        self.currentWidget().open_direcotry()
+
     def current_playlist(self):
         return self.currentWidget()
 
