@@ -55,10 +55,8 @@ class Player(QWidget):
 
         standard_icon = self.style().standardIcon
         self.playButton = QPushButton(standard_icon(QStyle.SP_MediaPlay), '')
-        self.playButton.setEnabled(False)
 
         self.stopButton = QPushButton(standard_icon(QStyle.SP_MediaStop), '')
-        self.stopButton.setEnabled(False)
 
         self.openButton = QPushButton(standard_icon(QStyle.SP_DirOpenIcon), '')
 
