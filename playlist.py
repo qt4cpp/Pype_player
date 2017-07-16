@@ -28,12 +28,12 @@ class Playlist(QWidget):
         button_layout.addWidget(self.open_directory_button)
         button_layout.addWidget(self.add_file_button)
         button_layout.addWidget(self.delete_file_button)
-        button_layout.setContentsMargins(0, 0, 0, 0)
         button_layout.setSpacing(0)
 
         layout = QVBoxLayout()
         layout.addWidget(self.playlist_tab)
         layout.addLayout(button_layout)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
         self.setLayout(layout)
