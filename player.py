@@ -184,8 +184,7 @@ class Player(QWidget):
             self.player.pause()
             return
         elif self.player.state() == QMediaPlayer.StoppedState:
-            self.playlist = self.playlist.current_playlist()
-            self.load(self.playlist.current())
+            self.load(self.playlist.current_item())
         if self.player.mediaStatus() == QMediaPlayer.NoMedia:
             self.stop()
         elif self.player.mediaStatus() == QMediaPlayer.LoadingMedia\
