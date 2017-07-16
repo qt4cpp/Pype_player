@@ -1,5 +1,6 @@
+import qtawesome
 from PyQt5.QtCore import QByteArray, QIODevice, QTextStream, QUrl
-from PyQt5.QtWidgets import QAction
+from PyQt5.QtWidgets import QAction, QPushButton
 
 
 def createAction(obj, name, function, shortcut=''):
@@ -8,6 +9,12 @@ def createAction(obj, name, function, shortcut=''):
     newAction.triggered.connect(function)
 
     return newAction
+
+def make_button_from_fa(icon_str, str=''):
+    icon = qtawesome.icon(icon_str)
+    button = QPushButton(icon, str)
+
+    return button
 
 
 def convert_to_bytearray(urls: [QUrl], delimiter='\n') -> QByteArray:

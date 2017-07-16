@@ -8,7 +8,7 @@ from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtWidgets import (QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton,
                              QStyle, QSlider, QSplitter)
 
-
+from playlist import Playlist
 from playlisttab import PlaylistTab
 
 
@@ -45,8 +45,7 @@ class Player(QWidget):
         self.volume = 50
 
         self.player = QMediaPlayer()
-        self.playlist_tab = PlaylistTab()
-        self.playlist = self.playlist_tab.current_playlist()
+        self.playlist = Playlist()
         self.videoWidget = VideoWidget()
         self.next_url = QUrl()
 
@@ -114,7 +113,7 @@ class Player(QWidget):
         display_splitter = QSplitter(Qt.Horizontal)
         display_splitter.setOpaqueResize(False)
         display_splitter.addWidget(self.videoWidget)
-        display_splitter.addWidget(self.playlist_tab)
+        display_splitter.addWidget(self.playlist)
         display_splitter.setSizes([300, 200])
 
         layout = QVBoxLayout()
@@ -146,10 +145,10 @@ class Player(QWidget):
         self.seekBar.sliderMoved.connect(self.seek)
         self.seekBar.sliderReleased.connect(self.seekBarClicked)
 
-        self.playlist_tab.double_clicked.connect(self.load_and_play)
+        self.playlist.double_clicked.connect(self.load_and_play)
 
     def open(self):
-        self.playlist_tab.open()
+        self.playlist.open()
         if self.playlist.count() > 0:
             self.enableInterface()
 
@@ -168,7 +167,7 @@ class Player(QWidget):
             self.player.play()
 
     def load_and_play(self):
-        self.load(self.playlist.current())
+        self.load(self.playlist.current_item())
         self.play()
 
     def load(self, file_url: QUrl):
@@ -185,7 +184,7 @@ class Player(QWidget):
             self.player.pause()
             return
         elif self.player.state() == QMediaPlayer.StoppedState:
-            self.playlist = self.playlist_tab.current_playlist()
+            self.playlist = self.playlist.current_playlist()
             self.load(self.playlist.current())
         if self.player.mediaStatus() == QMediaPlayer.NoMedia:
             self.stop()

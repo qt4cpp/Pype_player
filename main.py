@@ -19,16 +19,6 @@ class PypePlayer(QMainWindow):
         self.show()
 
     def create_menus(self):
-        openFile = createAction(self, 'Open', self.player.open, 'Ctrl+o')
-
-        add_playlist = createAction(self, 'Add playlist',
-                                    self.player.playlist_tab.add_playlist, 'Ctrl+N')
-        rename_playlist = createAction(self, 'Rename Playlist',
-                                       self.player.playlist_tab.rename_playlist)
-        remove_playlist = createAction(self, 'Remove Playlist',
-                                       self.player.playlist_tab.remove_playlist)
-        save_playlist = createAction(self, 'Save current Playlist',
-                                     self.player.playlist_tab.save_current, 'Ctrl+s')
 
         forward_short = createAction(self, 'Short Forward', self.player.forward_short, 'Right')
         forward_medium = createAction(self, 'Forward', self.player.forward_medium, 'Shift+Right')
@@ -42,13 +32,7 @@ class PypePlayer(QMainWindow):
                                          self.player.backward_verylong, 'Shift+Ctrl+Left')
 
         menubar = self.menuBar()
-        fileMenu = menubar.addMenu('&File')
-        fileMenu.addAction(openFile)
-        fileMenu.addSeparator()
-        fileMenu.addAction(add_playlist)
-        fileMenu.addAction(rename_playlist)
-        fileMenu.addAction(remove_playlist)
-        fileMenu.addAction(save_playlist)
+        self.player.playlist.create_menu(menubar)
 
         playbackMenu = menubar.addMenu('&Playback')
         jumpMenu = playbackMenu.addMenu('Jump')
@@ -63,7 +47,7 @@ class PypePlayer(QMainWindow):
         jumpMenu.addAction(backward_verylong)
         
     def closeEvent(self, event):
-        self.player.playlist_tab.save_all()
+        # self.player.playlist.save_all()
         super(PypePlayer, self).closeEvent(event)
 
 
