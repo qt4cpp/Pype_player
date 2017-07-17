@@ -1,3 +1,5 @@
+import os
+
 from PyQt5.QtCore import (Qt, QModelIndex, pyqtSignal, pyqtSlot)
 from PyQt5.QtWidgets import (QApplication, QPushButton, QLabel, QTabWidget, QInputDialog,
                              QMessageBox, QFileDialog)
@@ -11,6 +13,8 @@ class PlaylistTab(QTabWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+
+        self.save_playlist_path = 'playlist/'
 
         self.addTab(self.create_new(), 'temp')
         self.setCurrentIndex(0)
@@ -81,10 +85,16 @@ class PlaylistTab(QTabWidget):
 
     def save_all(self):
         """すべてのプレイリストを保存する"""
-        save_direcotry = 'playlist/'
+        os.makedirs(self.save_playlist_path, exist_ok=True)
         for i in range(self.count()):
-            path = save_direcotry + self.tabText(i) + '.m3u'
+            path = self.save_playlist_path + self.tabText(i) + '.m3u'
             self.widget(i).save(path)
+
+    def remove_files(self):
+        """すべてのプレイリストファイルを消去する"""
+        import shutil
+        shutil.rmtree(self.save_playlist_path)
+
 
     def load_playlists(self):
         """プレイリストをフォルダから読み込む。

@@ -81,8 +81,6 @@ class PlaylistView(QListView):
         fileが指定されていれば、fileに内容を書き込み、
         指定がなければ、ダイアログで名前を指定してそこにファイルを保存。
         """
-        import os.path
-
         if path is None:
             return
 
