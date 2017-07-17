@@ -19,9 +19,9 @@ class Playlist(QWidget):
         self.add_playlist_button = make_button_from_fa('fa.clone')
         self.add_playlist_button.clicked.connect(self.playlist_tab.add_playlist)
         self.open_directory_button = make_button_from_fa('fa.folder-open-o')
-        self.open_directory_button.clicked.connect(self.playlist_tab.open_directory)
+        self.open_directory_button.clicked.connect(self.open_directory)
         self.add_file_button = make_button_from_fa('fa.plus')
-        self.add_file_button.clicked.connect(self.playlist_tab.open)
+        self.add_file_button.clicked.connect(self.open)
         self.delete_file_button = make_button_from_fa('fa.minus')
 
         button_layout = QHBoxLayout()
@@ -67,7 +67,10 @@ class Playlist(QWidget):
         return self.playlist_tab.current_playlist()
 
     def open(self):
-        self.playlist_tab.open()
+        self.playlist().open()
+
+    def open_directory(self):
+        self.playlist().open_directory()
 
     def current_item(self):
         return self.using_playlist.current()
