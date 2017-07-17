@@ -52,6 +52,13 @@ class PlaylistTab(QTabWidget):
         return new
 
     def rename_playlist(self):
+        title = self.tabText(self.currentIndex())
+        if title == 'temp':
+            msg_box = QMessageBox()
+            msg_box.setText("{0} can't be renamed.".format(title))
+            msg_box.setStandardButtons(QMessageBox.Ok)
+            msg_box.exec()
+            return False
         title, ok = QInputDialog.getText(self, 'Rename Playlist', 'New Playlist name')
         if ok and len(str(title)) > 0:
             self.setTabText(self.currentIndex(), title)
@@ -61,15 +68,20 @@ class PlaylistTab(QTabWidget):
 
     def remove_playlist(self):
         msg_box = QMessageBox()
-        if self.count() <= 1:
-            return
         current = self.currentIndex()
+        title = self.tabText(current)
+        if title == 'temp':
+            msg_box.setText("{0} can't be removed.".format(title))
+            msg_box.setStandardButtons(QMessageBox.Ok)
+            msg_box.exec()
+            return
         msg_box.setText('Do you really want to remove \'{0}\' ?'.format(self.tabText(current)))
         msg_box.setStandardButtons(QMessageBox.Cancel | QMessageBox.Ok)
         msg_box.setDefaultButton(QMessageBox.Cancel)
         ret = msg_box.exec()
         if ret == QMessageBox.Ok:
             self.removeTab(current)
+        return title
 
     def save_current(self):
         """現在のPlaylistを保存する
