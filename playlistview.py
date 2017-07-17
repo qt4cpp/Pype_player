@@ -62,7 +62,7 @@ class PlaylistView(QListView):
             if not url.isEmpty():
                 self.model().add(url)
 
-    def open_direcotry(self):
+    def open_directory(self):
         directory_url = QFileDialog.getExistingDirectory(self, 'Open directory', QDir.homePath())
         dir = QDir(directory_url)
         filters = ['*.mp4', '*.m4v', '*.mov', '*.mpg', '*.mpeg', '*.mp3', '*.m4a', '*.wmv']
