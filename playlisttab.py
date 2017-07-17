@@ -75,13 +75,20 @@ class PlaylistTab(QTabWidget):
             msg_box.setStandardButtons(QMessageBox.Ok)
             msg_box.exec()
             return
-        msg_box.setText('Do you really want to remove \'{0}\' ?'.format(self.tabText(current)))
+        msg_box.setText('Do you really want to remove \'{0}\' ?'.format(title))
         msg_box.setStandardButtons(QMessageBox.Cancel | QMessageBox.Ok)
         msg_box.setDefaultButton(QMessageBox.Cancel)
         ret = msg_box.exec()
         if ret == QMessageBox.Ok:
+            self.remove_file(title)
             self.removeTab(current)
         return title
+
+    def remove_file(self, name=''):
+        if os.path.exists(self.save_playlist_path + name):
+            os.remove(self.save_playlist_path + name)
+            return name
+        return False
 
     def save_current(self):
         """現在のPlaylistを保存する
@@ -99,14 +106,15 @@ class PlaylistTab(QTabWidget):
         """すべてのプレイリストを保存する"""
         os.makedirs(self.save_playlist_path, exist_ok=True)
         for i in range(self.count()):
-            path = self.save_playlist_path + self.tabText(i) + '.m3u'
-            self.widget(i).save(path)
+            title = self.tabText(i)
+            if not title == 'temp':
+                path = self.save_playlist_path + self.tabText(i) + '.m3u'
+                self.widget(i).save(path)
 
     def remove_files(self):
         """すべてのプレイリストファイルを消去する"""
         import shutil
         shutil.rmtree(self.save_playlist_path)
-
 
     def load_playlists(self):
         """プレイリストをフォルダから読み込む。
