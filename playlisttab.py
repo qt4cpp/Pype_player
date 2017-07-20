@@ -41,15 +41,19 @@ class PlaylistTab(QTabWidget):
         return self.currentWidget()
 
     def add_playlist(self):
-        title, ok = QInputDialog.getText(self, 'New Playlist name', 'New Playlist name')
-        if ok and len(title) > 0:
-            if not self.is_used(title):
-                self.addTab(self.create_new(), title)
-                return True
-            else:
+        while True:
+            title, ok = QInputDialog.getText(self, 'New Playlist name', 'New Playlist name')
+            if not ok:
+                return False
+            elif len(title) == 0:
+                msg_box = dialog_for_message('Empty name.')
+                msg_box.exec()
+            elif self.is_used(title):
                 msg_box = dialog_for_message("'{0}' is already used.".format(title))
                 msg_box.exec()
-        return False
+            else:
+                self.addTab(self.create_new(), title)
+                return True
 
     def create_new(self):
         new = PlaylistView()
@@ -57,16 +61,20 @@ class PlaylistTab(QTabWidget):
         return new
 
     def rename_playlist(self):
-        title = self.tabText(self.currentIndex())
-        title, ok = QInputDialog.getText(self, 'Rename Playlist', 'New Playlist name', text=title)
-        if ok and len(str(title)) > 0:
-            if not self.is_used(title):
-                self.setTabText(self.currentIndex(), title)
-                return True
-            else:
+        original = self.tabText(self.currentIndex())
+        while True:
+            title, ok = QInputDialog.getText(self, 'Rename Playlist', 'New Playlist name', text=original)
+            if not ok:
+                return False
+            elif not title:
+                msg_box = dialog_for_message('Empty name.')
+                msg_box.exec()
+            elif self.is_used(title):
                 msg_box = dialog_for_message("'{0}' is already used.".format(title))
                 msg_box.exec()
-        return False
+            else:
+                self.setTabText(self.currentIndex(), title)
+                return True
 
     def remove_playlist(self):
         msg_box = QMessageBox()
