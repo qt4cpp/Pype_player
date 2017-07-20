@@ -1,6 +1,8 @@
+from email import message
+
 import qtawesome
 from PyQt5.QtCore import QByteArray, QIODevice, QTextStream, QUrl
-from PyQt5.QtWidgets import QAction, QPushButton
+from PyQt5.QtWidgets import QAction, QPushButton, QMessageBox
 
 
 def createAction(obj, name, function, shortcut=''):
@@ -16,6 +18,11 @@ def make_button_from_fa(icon_str, str=''):
 
     return button
 
+def dialog_for_message(message=''):
+    msg_box = QMessageBox()
+    msg_box.setText(message)
+    msg_box.setStandardButtons(QMessageBox.Ok)
+    return msg_box
 
 def convert_to_bytearray(urls: [QUrl], delimiter='\n') -> QByteArray:
     """modelの項目をbyte型に変換する。

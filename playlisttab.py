@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import (QApplication, QPushButton, QLabel, QTabWidget, QInp
                              QMessageBox, QFileDialog)
 
 from playlistview import PlaylistView
+from utility import dialog_for_message
 
 
 class PlaylistTab(QTabWidget):
@@ -42,8 +43,12 @@ class PlaylistTab(QTabWidget):
     def add_playlist(self):
         title, ok = QInputDialog.getText(self, 'New Playlist name', 'New Playlist name')
         if ok and len(title) > 0:
-            self.addTab(self.create_new(), title)
-            return True
+            if not self.is_used(title):
+                self.addTab(self.create_new(), title)
+                return True
+            else:
+                msg_box = dialog_for_message("'{0}' is already used.".format(title))
+                msg_box.exec()
         return False
 
     def create_new(self):
@@ -53,18 +58,15 @@ class PlaylistTab(QTabWidget):
 
     def rename_playlist(self):
         title = self.tabText(self.currentIndex())
-        if title == 'temp':
-            msg_box = QMessageBox()
-            msg_box.setText("{0} can't be renamed.".format(title))
-            msg_box.setStandardButtons(QMessageBox.Ok)
-            msg_box.exec()
-            return False
-        title, ok = QInputDialog.getText(self, 'Rename Playlist', 'New Playlist name')
+        title, ok = QInputDialog.getText(self, 'Rename Playlist', 'New Playlist name', text=title)
         if ok and len(str(title)) > 0:
-            self.setTabText(self.currentIndex(), title)
-            return True
-        else:
-            return False
+            if not self.is_used(title):
+                self.setTabText(self.currentIndex(), title)
+                return True
+            else:
+                msg_box = dialog_for_message("'{0}' is already used.".format(title))
+                msg_box.exec()
+        return False
 
     def remove_playlist(self):
         msg_box = QMessageBox()
@@ -135,6 +137,12 @@ class PlaylistTab(QTabWidget):
             new_playlist.load(path+file)
 
         return True
+
+    def is_used(self, name=''):
+        for i in range(self.count()):
+            if name == self.tabText(i):
+                return True
+        return False
 
     def handle_playlist_double_clicked(self):
         self.double_clicked.emit()
