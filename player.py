@@ -6,7 +6,7 @@ from PyQt5.QtGui import (QPalette, QCloseEvent)
 from PyQt5.QtMultimedia import (QMediaContent, QMediaPlayer)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtWidgets import (QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton,
-                             QStyle, QSlider, QSplitter)
+                             QStyle, QSlider, QSplitter, QMenu, QComboBox)
 
 from playlist import Playlist
 from playlisttab import PlaylistTab
@@ -62,6 +62,11 @@ class Player(QWidget):
         self.backwardButton = QPushButton(standard_icon(QStyle.SP_MediaSeekBackward), '')
         self.forwardButton = QPushButton(standard_icon(QStyle.SP_MediaSeekForward), '')
 
+        self.order_list = QComboBox()
+        self.order_list.addItem('default')
+        self.order_list.addItem('Repeat track')
+        self.order_list.addItem('Repeat playlist')
+
         self.muteButton = QPushButton()
         self.muteButton.setIcon(standard_icon(
             QStyle.SP_MediaVolume if not self.player.isMuted() else QStyle.SP_MediaVolumeMuted))
@@ -101,6 +106,7 @@ class Player(QWidget):
         controlWithoutSeekBarLayout.addWidget(self.stopButton)
         controlWithoutSeekBarLayout.addWidget(self.backwardButton)
         controlWithoutSeekBarLayout.addWidget(self.forwardButton)
+        controlWithoutSeekBarLayout.addWidget(self.order_list)
         controlWithoutSeekBarLayout.addStretch(stretch=2)
         controlWithoutSeekBarLayout.addWidget(self.muteButton)
         controlWithoutSeekBarLayout.addWidget(self.volumeBar)
@@ -322,7 +328,7 @@ class Player(QWidget):
         if currentPosition + seconds < self.duration:
             self.seek(currentPosition + seconds)
         else:
-            self.seek(self.duration)
+            self.seek(self.duration-1)
 
 
     def backward(self, seconds):
