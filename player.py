@@ -49,15 +49,10 @@ class Player(QWidget):
         self.videoWidget = VideoWidget()
         self.next_url = QUrl()
 
-        plus_icon = qtawesome.icon('fa.plus')
-        self.plus_button = QPushButton(plus_icon, '')
-
         standard_icon = self.style().standardIcon
         self.playButton = QPushButton(standard_icon(QStyle.SP_MediaPlay), '')
 
         self.stopButton = QPushButton(standard_icon(QStyle.SP_MediaStop), '')
-
-        self.openButton = QPushButton(standard_icon(QStyle.SP_DirOpenIcon), '')
 
         self.backwardButton = QPushButton(standard_icon(QStyle.SP_MediaSeekBackward), '')
         self.forwardButton = QPushButton(standard_icon(QStyle.SP_MediaSeekForward), '')
@@ -100,8 +95,6 @@ class Player(QWidget):
 
         controlWithoutSeekBarLayout = QHBoxLayout()
         controlWithoutSeekBarLayout.setSpacing(0)
-        controlWithoutSeekBarLayout.addWidget(self.plus_button)
-        controlWithoutSeekBarLayout.addWidget(self.openButton)
         controlWithoutSeekBarLayout.addWidget(self.playButton)
         controlWithoutSeekBarLayout.addWidget(self.stopButton)
         controlWithoutSeekBarLayout.addWidget(self.backwardButton)
@@ -133,7 +126,6 @@ class Player(QWidget):
     def create_connections(self):
         self.playButton.clicked.connect(self.play)
         self.stopButton.clicked.connect(self.stop)
-        self.openButton.clicked.connect(self.open)
         self.backwardButton.clicked.connect(self.backward_short)
         self.forwardButton.clicked.connect(self.forward_short)
         self.muteButton.clicked.connect(self.toggleMute)
@@ -153,11 +145,6 @@ class Player(QWidget):
         self.seekBar.sliderReleased.connect(self.seekBarClicked)
 
         self.playlist.double_clicked.connect(self.load_and_play)
-
-    def open(self):
-        self.playlist.open()
-        if self.playlist.count() > 0:
-            self.enableInterface()
 
     def autoplay(self):
         """メディアを読み込み、再生する。
