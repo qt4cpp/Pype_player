@@ -43,11 +43,8 @@ class PlaylistTab(QTabWidget):
     def add_playlist(self):
         while True:
             title, ok = QInputDialog.getText(self, 'New Playlist name', 'New Playlist name')
-            if not ok:
+            if not ok or not title:
                 return False
-            elif len(title) == 0:
-                msg_box = dialog_for_message('Empty name.')
-                msg_box.exec()
             elif self.is_used(title):
                 msg_box = dialog_for_message("'{0}' is already used.".format(title))
                 msg_box.exec()
@@ -64,11 +61,8 @@ class PlaylistTab(QTabWidget):
         original = self.tabText(self.currentIndex())
         while True:
             title, ok = QInputDialog.getText(self, 'Rename Playlist', 'New Playlist name', text=original)
-            if not ok:
+            if not ok or not title:
                 return False
-            elif not title:
-                msg_box = dialog_for_message('Empty name.')
-                msg_box.exec()
             elif self.is_used(title):
                 msg_box = dialog_for_message("'{0}' is already used.".format(title))
                 msg_box.exec()
@@ -146,7 +140,12 @@ class PlaylistTab(QTabWidget):
 
         return True
 
-    def is_used(self, name=''):
+    def is_valid_name(self, name):
+        if len(name) and not self.is_used():
+            return True
+        return False
+
+    def is_used(self, name):
         for i in range(self.count()):
             if name == self.tabText(i):
                 return True
