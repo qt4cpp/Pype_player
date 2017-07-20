@@ -71,22 +71,20 @@ class PlaylistTab(QTabWidget):
                 return True
 
     def remove_playlist(self):
-        msg_box = QMessageBox()
-        current = self.currentIndex()
-        title = self.tabText(current)
-        if title == 'temp':
-            msg_box.setText("{0} can't be removed.".format(title))
-            msg_box.setStandardButtons(QMessageBox.Ok)
+        if self.count() == 1:
+            msg_box = dialog_for_message("You can't remove the last tab.")
             msg_box.exec()
             return
-        msg_box.setText('Do you really want to remove \'{0}\' ?'.format(title))
-        msg_box.setStandardButtons(QMessageBox.Cancel | QMessageBox.Ok)
-        msg_box.setDefaultButton(QMessageBox.Cancel)
+
+        current = self.currentIndex()
+        title = self.tabText(current)
+        msg_box = dialog_for_message('Do you really want to remove \'{0}\' ?'.format(title),
+                                     QMessageBox.Cancel | QMessageBox.Ok)
         ret = msg_box.exec()
         if ret == QMessageBox.Ok:
             self.remove_file(title)
             self.removeTab(current)
-        return title
+            return title
 
     def remove_file(self, name=''):
         if os.path.exists(self.save_playlist_path + name):

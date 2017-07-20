@@ -18,10 +18,10 @@ def make_button_from_fa(icon_str, str=''):
 
     return button
 
-def dialog_for_message(message=''):
+def dialog_for_message(message, button=QMessageBox.Ok):
     msg_box = QMessageBox()
     msg_box.setText(message)
-    msg_box.setStandardButtons(QMessageBox.Ok)
+    msg_box.setStandardButtons(button)
     return msg_box
 
 def convert_to_bytearray(urls: [QUrl], delimiter='\n') -> QByteArray:
