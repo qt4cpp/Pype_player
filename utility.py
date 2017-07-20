@@ -12,9 +12,10 @@ def createAction(obj, name, function, shortcut=''):
 
     return newAction
 
-def make_button_from_fa(icon_str, str=''):
+def make_button_from_fa(icon_str, str='', tooltip=''):
     icon = qtawesome.icon(icon_str)
     button = QPushButton(icon, str)
+    button.setToolTip(tooltip)
 
     return button
 

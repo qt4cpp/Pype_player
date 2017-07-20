@@ -16,13 +16,13 @@ class Playlist(QWidget):
         self.playlist_tab.double_clicked.connect(self.handle_double_clicked)
         self.using_playlist = self.playlist_tab.widget(0)
 
-        self.add_playlist_button = make_button_from_fa('fa.plus')
+        self.add_playlist_button = make_button_from_fa('fa.plus', tooltip='Add new playlist')
         self.add_playlist_button.clicked.connect(self.playlist_tab.add_playlist)
-        self.remove_playlist_button = make_button_from_fa('fa.minus')
+        self.remove_playlist_button = make_button_from_fa('fa.minus', tooltip='Remove current playlist')
         self.remove_playlist_button.clicked.connect(self.playlist_tab.remove_playlist)
-        self.open_directory_button = make_button_from_fa('fa.folder-open-o')
+        self.open_directory_button = make_button_from_fa('fa.folder-open-o', tooltip='Add media files from directory')
         self.open_directory_button.clicked.connect(self.open_directory)
-        self.add_file_button = make_button_from_fa('fa.file-o')
+        self.add_file_button = make_button_from_fa('fa.file-o', tooltip='Add media file')
         self.add_file_button.clicked.connect(self.open)
 
         button_layout = QHBoxLayout()
