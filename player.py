@@ -1,7 +1,7 @@
 from enum import IntEnum
 
 import qtawesome
-from PyQt5.QtCore import (QUrl, Qt, QTime, QTimer, pyqtSignal, pyqtSlot)
+from PyQt5.QtCore import (QUrl, Qt, QTime, QTimer, pyqtSignal, pyqtSlot, QSize)
 from PyQt5.QtGui import (QPalette, QCloseEvent)
 from PyQt5.QtMultimedia import (QMediaContent, QMediaPlayer)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
@@ -49,21 +49,22 @@ class Player(QWidget):
         self.videoWidget = VideoWidget()
         self.next_url = QUrl()
 
-        standard_icon = self.style().standardIcon
-        self.playButton = QPushButton(standard_icon(QStyle.SP_MediaPlay), '')
+        std_icon = self.style().standardIcon
+        self.play_button = QPushButton(std_icon(QStyle.SP_MediaPlay), '')
 
-        self.stopButton = QPushButton(standard_icon(QStyle.SP_MediaStop), '')
+        self.stopButton = QPushButton(std_icon(QStyle.SP_MediaStop), '')
 
-        self.backwardButton = QPushButton(standard_icon(QStyle.SP_MediaSeekBackward), '')
-        self.forwardButton = QPushButton(standard_icon(QStyle.SP_MediaSeekForward), '')
+        self.backwardButton = QPushButton(std_icon(QStyle.SP_MediaSeekBackward), '')
+        self.forwardButton = QPushButton(std_icon(QStyle.SP_MediaSeekForward), '')
 
         self.order_list = QComboBox()
-        self.order_list.addItem('default')
+        self.order_list.addItem('No repeat')
         self.order_list.addItem('Repeat track')
-        self.order_list.addItem('Repeat playlist')
+        self.order_list.addItem('Repeat all')
+        self.order_list.setFixedWidth(115)
 
         self.muteButton = QPushButton()
-        self.muteButton.setIcon(standard_icon(
+        self.muteButton.setIcon(std_icon(
             QStyle.SP_MediaVolume if not self.player.isMuted() else QStyle.SP_MediaVolumeMuted))
 
         self.volumeBar = QSlider(Qt.Horizontal)
@@ -94,8 +95,8 @@ class Player(QWidget):
         seekBarLayout.addWidget(self.labelTotalTime)
 
         controlWithoutSeekBarLayout = QHBoxLayout()
-        controlWithoutSeekBarLayout.setSpacing(0)
-        controlWithoutSeekBarLayout.addWidget(self.playButton)
+        controlWithoutSeekBarLayout.setSpacing(1)
+        controlWithoutSeekBarLayout.addWidget(self.play_button)
         controlWithoutSeekBarLayout.addWidget(self.stopButton)
         controlWithoutSeekBarLayout.addWidget(self.backwardButton)
         controlWithoutSeekBarLayout.addWidget(self.forwardButton)
@@ -124,7 +125,7 @@ class Player(QWidget):
         self.setLayout(layout)
 
     def create_connections(self):
-        self.playButton.clicked.connect(self.play)
+        self.play_button.clicked.connect(self.play)
         self.stopButton.clicked.connect(self.stop)
         self.backwardButton.clicked.connect(self.backward_short)
         self.forwardButton.clicked.connect(self.forward_short)
@@ -149,16 +150,22 @@ class Player(QWidget):
     def autoplay(self):
         """メディアを読み込み、再生する。
 
-        プレイヤーがstoppedであれば、プレイリストから要素を得る。
-        pauseであれば、再生開始。
-        nextがあれば、nextから要素を得る。
+        playerがplayingであれば、そのままplayを続ける。
+        nextがあれば、nextから要素を得て、再生をする。
         """
-        if self.next_url is None:
-            self.stop()
-        elif self.next_url.isValid():
-            self.load(self.next_url)
-            self.next_url = None
-            self.player.play()
+        i = self.order_list.currentIndex()
+        if i == 1:
+            self.seek(0)
+        elif i == 2:
+            self.load(self.repeat_all())
+        else:
+            url = self.playlist.next()
+            if url is None:
+                self.stop()
+                return
+            else:
+                self.load(url)
+        self.play()
 
     def load_and_play(self):
         self.load(self.playlist.current_item())
@@ -166,7 +173,7 @@ class Player(QWidget):
 
     def load(self, file_url: QUrl):
         if file_url is None:
-            return
+            return None
         if file_url.isValid():
             c = QMediaContent(file_url)
             self.player.setMedia(c)
@@ -195,9 +202,9 @@ class Player(QWidget):
 
     def playerStateChanged(self, state):
         if state == QMediaPlayer.PlayingState:
-            self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPause))
+            self.play_button.setIcon(self.style().standardIcon(QStyle.SP_MediaPause))
         else:
-            self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
+            self.play_button.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
 
 
     def durationChanged(self, duration):
@@ -234,8 +241,14 @@ class Player(QWidget):
         self.labelCurrentTime.setText(currentTimeStr)
 
 
-    def next(self):
-        self.next_url = self.playlist.next()
+    def repeat_track(self):
+        self.seek(0)
+
+    def repeat_all(self):
+        if self.playlist.count()-1 == self.playlist.current_index():
+            return self.playlist.first()
+        else:
+            return self.playlist.next()
 
 
     def setVolume(self):
@@ -265,7 +278,7 @@ class Player(QWidget):
 
 
     def disableInterface(self):
-        self.playButton.setEnabled(False)
+        self.play_button.setEnabled(False)
         self.stopButton.setEnabled(False)
         self.backwardButton.setEnabled(False)
         self.forwardButton.setEnabled(False)
@@ -274,7 +287,7 @@ class Player(QWidget):
 
 
     def enableInterface(self):
-        self.playButton.setEnabled(True)
+        self.play_button.setEnabled(True)
         self.stopButton.setEnabled(True)
         self.backwardButton.setEnabled(True)
         self.forwardButton.setEnabled(True)
@@ -284,15 +297,15 @@ class Player(QWidget):
         if status == QMediaPlayer.LoadingMedia:
             self.setStatusInfo('Loading...')
         elif status == QMediaPlayer.LoadedMedia:
-           self.setStatusInfo('Loaded')
+            self.setStatusInfo('Loaded')
         elif status == QMediaPlayer.BufferingMedia:
             self.setStatusInfo('Buffering')
         elif status == QMediaPlayer.EndOfMedia:
-            self.next()
+            self.player.stop()
             self.autoplay()
         elif status == QMediaPlayer.InvalidMedia:
             self.handleError()
-            self.next()
+            #TODO: Step Forward を割り当てる
 
     def clearStatusInfo(self):
         self.statusInfoLabel.setText("")

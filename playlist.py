@@ -2,6 +2,7 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QApplication
 
 from playlisttab import PlaylistTab
+from playlistview import PlaylistView
 from utility import make_button_from_fa, createAction
 
 
@@ -14,7 +15,7 @@ class Playlist(QWidget):
         
         self.playlist_tab = PlaylistTab()
         self.playlist_tab.double_clicked.connect(self.handle_double_clicked)
-        self.using_playlist = self.playlist_tab.widget(0)
+        self.using_playlist: PlaylistView = self.playlist_tab.widget(0)
 
         self.add_playlist_button = make_button_from_fa('fa.plus', tooltip='Add new playlist')
         self.add_playlist_button.clicked.connect(self.playlist_tab.add_playlist)
@@ -81,6 +82,13 @@ class Playlist(QWidget):
 
     def previous(self):
         pass
+
+    def current_index(self):
+        return self.using_playlist.current_row()
+
+    def first(self):
+        self.using_playlist.set_current_index_from_row(0)
+        return self.current_item()
 
     def count(self):
         return self.using_playlist.count()

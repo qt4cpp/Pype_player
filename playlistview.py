@@ -30,9 +30,6 @@ class PlaylistView(QListView):
     @property
     def open_file_filter(self):
         return '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv'
-    @property
-    def current_row(self):
-        return self.current_index.row()
 
     def __init__(self, parent=None):
         super(PlaylistView, self).__init__(parent)
@@ -55,10 +52,10 @@ class PlaylistView(QListView):
         return self.model().rowCount()
 
     def open(self):
-        file_urls, _ = QFileDialog.getOpenFileUrls(
+        urls, _ = QFileDialog.getOpenFileUrls(
             self, 'Open File', QDir.homePath(), self.open_file_filter)
 
-        for url in file_urls:
+        for url in urls:
             if not url.isEmpty():
                 self.model().add(url)
 
@@ -103,7 +100,7 @@ class PlaylistView(QListView):
                 if url.isValid():
                     self.model().add(url)
 
-    def current(self):
+    def optimal_current(self):
         selected_url = self.selected()
         if selected_url is not None:
             self.set_current_index(selected_url)
@@ -111,13 +108,22 @@ class PlaylistView(QListView):
             self.set_current_index_from_row(0)
         return self.url(self.current_index)
 
-    def next(self, step=1):
-        self.set_current_index_from_row(self.current_index.row() + step)
+    def current(self):
         return self.url(self.current_index)
 
+    def next(self, step=1):
+        if self.current_index.row() + step < self.count():
+            self.set_current_index_from_row(self.current_index.row() + step)
+            return self.url(self.current_index)
+        else:
+            return None
+
     def previous(self, step=1):
-        self.set_current_index_from_row(self.current_index.row() - step)
-        return self.url(self.current_index)
+        if self.current_index.row() - step >= 0:
+            self.set_current_index_from_row(self.current_index.row() - step)
+            return self.url(self.current_index)
+        else:
+            return None
 
     def selected(self):
         selected_indexes = self.selectedIndexes()
@@ -125,6 +131,9 @@ class PlaylistView(QListView):
             return selected_indexes[0]
         else:
             return None
+
+    def current_row(self):
+        return self.current_index.row()
 
     def url(self, index):
         if isinstance(index, int):
