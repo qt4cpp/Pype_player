@@ -1,5 +1,3 @@
-from email import message
-
 import qtawesome
 from PyQt5.QtCore import QByteArray, QIODevice, QTextStream, QUrl
 from PyQt5.QtWidgets import QAction, QPushButton, QMessageBox
@@ -54,4 +52,3 @@ def convert_from_bytearray(byte_array: QByteArray, delimiter='\n') -> [QUrl]:
         url = QUrl(data.data().decode('utf-8'))
         urls.append(url)
     return urls
-
