@@ -295,6 +295,8 @@ class PlaylistView(QListView):
     def mouseDoubleClickEvent(self, event):
         if event.button() == Qt.LeftButton:
             new_index = self.indexAt(event.pos())
+            if not new_index.isValid():
+                return
             self.set_current_index(new_index)
             self.playlist_double_clicked.emit()
 
