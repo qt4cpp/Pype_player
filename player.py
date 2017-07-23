@@ -125,7 +125,7 @@ class Player(QWidget):
         self.setLayout(layout)
 
     def create_connections(self):
-        self.play_button.clicked.connect(self.play)
+        self.play_button.clicked.connect(self.optimal_play)
         self.stopButton.clicked.connect(self.stop)
         self.backwardButton.clicked.connect(self.backward_short)
         self.forwardButton.clicked.connect(self.forward_short)
@@ -164,6 +164,12 @@ class Player(QWidget):
             self.next_track()
         self.play()
 
+    def optimal_play(self):
+        if self.player.state() == QMediaPlayer.StoppedState:
+            self.load_and_play()
+        else:
+            self.play()
+
     def load_and_play(self):
         self.load(self.playlist.get_new_one())
         self.play()
@@ -181,10 +187,8 @@ class Player(QWidget):
         if self.player.state() == QMediaPlayer.PlayingState:
             self.player.pause()
             return
-        if self.player.mediaStatus() == QMediaPlayer.NoMedia:
-            self.load(self.playlist.get_new_one())
-        elif self.player.mediaStatus() == QMediaPlayer.LoadingMedia\
-        or self.player.mediaStatus() == QMediaPlayer.StalledMedia:
+        if self.player.mediaStatus() == QMediaPlayer.LoadingMedia or\
+                self.player.mediaStatus() == QMediaPlayer.StalledMedia:
             QTimer.singleShot(600, self.player.play)
 
         self.player.play()
