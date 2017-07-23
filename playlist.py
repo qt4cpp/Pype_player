@@ -74,6 +74,15 @@ class Playlist(QWidget):
     def open_directory(self):
         self.playlist().open_directory()
 
+    def get_new_one(self):
+        self.using_playlist = self.playlist()
+        selected_url = self.using_playlist.selected()
+        if selected_url:
+            self.using_playlist.set_current_index(selected_url)
+        elif not self.using_playlist.current_index.isValid():
+            self.using_playlist.set_current_index_from_row(0)
+        return self.current_item()
+
     def current_item(self):
         return self.using_playlist.current()
 
@@ -83,7 +92,7 @@ class Playlist(QWidget):
     def previous(self):
         pass
 
-    def current_index(self):
+    def current_row(self):
         return self.using_playlist.current_row()
 
     def first(self):
@@ -92,6 +101,9 @@ class Playlist(QWidget):
 
     def count(self):
         return self.using_playlist.count()
+
+    def disable_current_index(self):
+        self.using_playlist.set_current_index_from_row(-1)
 
     def handle_double_clicked(self):
         self.using_playlist = self.playlist()

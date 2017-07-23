@@ -150,25 +150,22 @@ class Player(QWidget):
     def autoplay(self):
         """メディアを読み込み、再生する。
 
-        playerがplayingであれば、そのままplayを続ける。
-        nextがあれば、nextから要素を得て、再生をする。
+        order_listに応じて、次に何を再生するかを決める。
         """
         i = self.order_list.currentIndex()
         if i == 1:
+            self.player.stop()
             self.seek(0)
+            self.player.play()
+            return
         elif i == 2:
-            self.load(self.repeat_all())
+            self.repeat_all()
         else:
-            url = self.playlist.next()
-            if url is None:
-                self.stop()
-                return
-            else:
-                self.load(url)
+            self.next_track()
         self.play()
 
     def load_and_play(self):
-        self.load(self.playlist.current_item())
+        self.load(self.playlist.get_new_one())
         self.play()
 
     def load(self, file_url: QUrl):
@@ -184,15 +181,13 @@ class Player(QWidget):
         if self.player.state() == QMediaPlayer.PlayingState:
             self.player.pause()
             return
-        elif self.player.state() == QMediaPlayer.StoppedState:
-            self.load(self.playlist.current_item())
         if self.player.mediaStatus() == QMediaPlayer.NoMedia:
-            self.stop()
+            self.load(self.playlist.get_new_one())
         elif self.player.mediaStatus() == QMediaPlayer.LoadingMedia\
         or self.player.mediaStatus() == QMediaPlayer.StalledMedia:
             QTimer.singleShot(600, self.player.play)
-        else:
-            self.player.play()
+
+        self.player.play()
 
     def stop(self):
         if not self.player.state() == QMediaPlayer.StoppedState:
@@ -241,15 +236,12 @@ class Player(QWidget):
         self.labelCurrentTime.setText(currentTimeStr)
 
 
-    def repeat_track(self):
-        self.seek(0)
-
     def repeat_all(self):
-        if self.playlist.count()-1 == self.playlist.current_index():
-            return self.playlist.first()
+        if self.playlist.count()-1 == self.playlist.current_row():
+            url = self.playlist.first()
+            self.load(url)
         else:
-            return self.playlist.next()
-
+            self.next_track()
 
     def setVolume(self):
         self.player.setVolume(self.volumeBar.sliderPosition())
@@ -296,12 +288,10 @@ class Player(QWidget):
     def mediaStatusChanged(self, status):
         if status == QMediaPlayer.LoadingMedia:
             self.setStatusInfo('Loading...')
-        elif status == QMediaPlayer.LoadedMedia:
-            self.setStatusInfo('Loaded')
         elif status == QMediaPlayer.BufferingMedia:
             self.setStatusInfo('Buffering')
         elif status == QMediaPlayer.EndOfMedia:
-            self.player.stop()
+            # self.player.stop()
             self.autoplay()
         elif status == QMediaPlayer.InvalidMedia:
             self.handleError()
@@ -320,6 +310,16 @@ class Player(QWidget):
         if not message == '':
             self.statusInfoLabel.setText(message)
             QTimer.singleShot(seconds*1000, self.clearStatusInfo)
+
+    def next_track(self):
+        url = self.playlist.next()
+        if url is None:
+            return None
+        else:
+            self.load(url)
+
+    def previous_track(self):
+        pass
 
 
     def forward(self, seconds):

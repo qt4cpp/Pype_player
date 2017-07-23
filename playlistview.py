@@ -100,27 +100,20 @@ class PlaylistView(QListView):
                 if url.isValid():
                     self.model().add(url)
 
-    def optimal_current(self):
-        selected_url = self.selected()
-        if selected_url is not None:
-            self.set_current_index(selected_url)
-        elif not self.current_index.isValid():
-            self.set_current_index_from_row(0)
-        return self.url(self.current_index)
 
     def current(self):
         return self.url(self.current_index)
 
     def next(self, step=1):
-        if self.current_index.row() + step < self.count():
-            self.set_current_index_from_row(self.current_index.row() + step)
+        if self.current_row() + step < self.count():
+            self.set_current_index_from_row(self.current_row() + step)
             return self.url(self.current_index)
         else:
             return None
 
     def previous(self, step=1):
-        if self.current_index.row() - step >= 0:
-            self.set_current_index_from_row(self.current_index.row() - step)
+        if self.current_row() - step >= 0:
+            self.set_current_index_from_row(self.current_row() - step)
             return self.url(self.current_index)
         else:
             return None
@@ -151,7 +144,7 @@ class PlaylistView(QListView):
 
     def set_current_index(self, new_index: QModelIndex):
         self.current_index = new_index
-        self.current_index_changed.emit(self.current_index)
+        self.current_index_changed.emit(new_index)
 
     def mousePressEvent(self, event):
         """左クリックされたらカーソル下にある要素を選択し、ドラッグを認識するために現在の位置を保存する。
