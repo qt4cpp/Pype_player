@@ -102,6 +102,10 @@ class Playlist(QWidget):
     def count(self):
         return self.using_playlist.count()
 
+    def update_listview(self):
+        self.using_playlist.selectAll()
+        self.using_playlist.clearSelection()
+
     def disable_current_index(self):
         self.using_playlist.set_current_index_from_row(-1)
 

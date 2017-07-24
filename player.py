@@ -190,6 +190,7 @@ class Player(QWidget):
             QTimer.singleShot(600, self.player.play)
 
         self.player.play()
+        self.playlist.update_listview()
 
     def stop(self):
         if not self.player.state() == QMediaPlayer.StoppedState:
