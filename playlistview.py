@@ -29,7 +29,7 @@ class PlaylistView(QListView):
         return '\n'
     @property
     def open_file_filter(self):
-        return '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv'
+        return '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv, *.aiff, *.wav'
 
     def __init__(self, parent=None):
         super(PlaylistView, self).__init__(parent)
@@ -62,7 +62,7 @@ class PlaylistView(QListView):
     def open_directory(self):
         directory_url = QFileDialog.getExistingDirectory(self, 'Open directory', QDir.homePath())
         dir = QDir(directory_url)
-        filters = ['*.mp4', '*.m4v', '*.mov', '*.mpg', '*.mpeg', '*.mp3', '*.m4a', '*.wmv']
+        filters = ['*.mp4', '*.m4v', '*.mov', '*.mpg', '*.mpeg', '*.mp3', '*.m4a', '*.wmv', '*.wav', '*.aiff']
         dir.setNameFilters(filters)
         file_list = dir.entryList()
 
