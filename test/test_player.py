@@ -1,4 +1,11 @@
+import sys
+from PyQt5.QtWidgets import QApplication
 
-def read_test_tone():
-    """test/tone ディレクトリからテスト用ファイルを読み込む"""
-    pass
+from main import PypePlayer
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+
+    pypePlayer = PypePlayer()
+    sys.exit(app.exec_())

@@ -154,9 +154,7 @@ class Player(QWidget):
         """
         i = self.order_list.currentIndex()
         if i == 1:
-            self.player.stop()
-            self.seek(0)
-            self.player.play()
+            self.repeat_track()
             return
         elif i == 2:
             self.repeat_all()
@@ -239,6 +237,8 @@ class Player(QWidget):
 
         self.labelCurrentTime.setText(currentTimeStr)
 
+    def repeat_track(self):
+        QTimer.singleShot(100, self.play)
 
     def repeat_all(self):
         if self.playlist.count()-1 == self.playlist.current_row():
