@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSizePol
 
 from playlist import Playlist
 from playlisttab import PlaylistTab
+from utility import make_button_from_fa
 
 
 class SeekStep(IntEnum):
@@ -51,11 +52,19 @@ class Player(QWidget):
 
         std_icon = self.style().standardIcon
         self.play_button = QPushButton(std_icon(QStyle.SP_MediaPlay), '')
+        self.play_button.setFlat(True)
+        self.play_button.setFixedSize(30, 30)
 
         self.stopButton = QPushButton(std_icon(QStyle.SP_MediaStop), '')
+        self.stopButton.setFlat(True)
+        self.stopButton.setFixedSize(30, 30)
 
         self.backwardButton = QPushButton(std_icon(QStyle.SP_MediaSeekBackward), '')
+        self.backwardButton.setFlat(True)
+        self.backwardButton.setFixedSize(30, 30)
         self.forwardButton = QPushButton(std_icon(QStyle.SP_MediaSeekForward), '')
+        self.forwardButton.setFlat(True)
+        self.forwardButton.setFixedSize(30, 30)
 
         self.order_list = QComboBox()
         self.order_list.addItem('No repeat')
@@ -66,6 +75,8 @@ class Player(QWidget):
         self.muteButton = QPushButton()
         self.muteButton.setIcon(std_icon(
             QStyle.SP_MediaVolume if not self.player.isMuted() else QStyle.SP_MediaVolumeMuted))
+        self.muteButton.setFlat(True)
+        self.muteButton.setFixedSize(30, 30)
 
         self.volumeBar = QSlider(Qt.Horizontal)
         self.volumeBar.setRange(0, 100)
@@ -249,7 +260,7 @@ class Player(QWidget):
             self.next_track()
 
     def setVolume(self):
-        self.player.setVolume(self.volumeBar.sliderPosition())
+        self.player.setVolume(self.volumeBar.sliderPosition()*2)
 
 
     def volumeChanged(self):
