@@ -2,7 +2,7 @@ from PyQt5.QtCore import QModelIndex, QRect, QSize, QPoint, pyqtSignal, QDir, Qt
     pyqtSlot
 from PyQt5.QtGui import QDrag
 from PyQt5.QtWidgets import QRubberBand, QFileDialog, QAbstractItemView, QApplication, \
-    QStyle, QTableView
+    QStyle, QTableView, QHeaderView
 
 from playlistmodel import PlaylistModel
 from utility import convert_from_bytearray, convert_to_bytearray
@@ -41,7 +41,10 @@ class PlaylistView(QTableView):
         self.setDropIndicatorShown(True)
         self.setModel(PlaylistModel())
 
-        self.setGridStyle(Qt.NoPen)
+        self.setShowGrid(False)
+        self.verticalHeader().hide()
+        self.horizontalHeader().setStretchLastSection(True)
+        self.horizontalHeader().setMinimumSectionSize(50)
 
         self.current_index = QModelIndex()
         self.previousIndex = QModelIndex()

@@ -1,6 +1,8 @@
 from PyQt5.QtCore import QUrl, QModelIndex, QVariant, Qt, pyqtSignal, pyqtSlot, QAbstractTableModel
 from PyQt5.QtGui import QFont
 
+from pymediainfo import MediaInfo
+
 
 class PlaylistModel(QAbstractTableModel):
 
@@ -94,6 +96,13 @@ class PlaylistModel(QAbstractTableModel):
         self.beginInsertRows(QModelIndex(), position, 1)
 
         self.url_list.insert(position, url)
+
+        media_info = MediaInfo.parse(url.toLocalFile())
+        for track in media_info.tracks:
+            if track.track_type == 'Audio' or track.track_type == 'Video':
+                duration = track.duration / 1000
+                print(duration)
+                print('{0} | {1:.0f}:{2:.0f}'.format(track.Title, duration/60, duration%60))
 
         self.endInsertRows()
         self.rowCount_changed.emit(self.rowCount())
