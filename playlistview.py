@@ -1,14 +1,14 @@
 from PyQt5.QtCore import QModelIndex, QRect, QSize, QPoint, pyqtSignal, QDir, Qt, QMimeData, QUrl, \
-    QByteArray, QTextStream, QIODevice, pyqtSlot, QFile
+    pyqtSlot
 from PyQt5.QtGui import QDrag
-from PyQt5.QtWidgets import QListView, QRubberBand, QFileDialog, QAbstractItemView, QApplication, \
-    QStyle, QInputDialog
+from PyQt5.QtWidgets import QRubberBand, QFileDialog, QAbstractItemView, QApplication, \
+    QStyle, QTableView
 
 from playlistmodel import PlaylistModel
 from utility import convert_from_bytearray, convert_to_bytearray
 
 
-class PlaylistView(QListView):
+class PlaylistView(QTableView):
 
     current_index_changed = pyqtSignal(QModelIndex)
     playlist_double_clicked = pyqtSignal()
@@ -40,6 +40,8 @@ class PlaylistView(QListView):
         self.setDragDropMode(QAbstractItemView.DragDrop)
         self.setDropIndicatorShown(True)
         self.setModel(PlaylistModel())
+
+        self.setGridStyle(Qt.NoPen)
 
         self.current_index = QModelIndex()
         self.previousIndex = QModelIndex()
@@ -139,7 +141,7 @@ class PlaylistView(QListView):
             return None
 
     def set_current_index_from_row(self, row):
-        new_index = self.model().index(row)
+        new_index = self.model().index(row, 0)
         return self.set_current_index(new_index)
 
     def set_current_index(self, new_index: QModelIndex):

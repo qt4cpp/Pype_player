@@ -1,8 +1,8 @@
-from PyQt5.QtCore import QAbstractListModel, QUrl, QModelIndex, QVariant, Qt, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QUrl, QModelIndex, QVariant, Qt, pyqtSignal, pyqtSlot, QAbstractTableModel
 from PyQt5.QtGui import QFont
 
 
-class PlaylistModel(QAbstractListModel):
+class PlaylistModel(QAbstractTableModel):
 
     rowCount_changed = pyqtSignal(int)
     set_current_index = pyqtSlot(QModelIndex)
@@ -15,6 +15,7 @@ class PlaylistModel(QAbstractListModel):
         super(PlaylistModel, self).__init__(parent)
 
         self.url_list = []
+        self.duration = []
         self.headerTitles = ['Title', 'Duration']
         self.current_index = QModelIndex()
 
@@ -27,6 +28,9 @@ class PlaylistModel(QAbstractListModel):
         """
         return len(self.url_list)
 
+    def columnCount(self, parent=None, *args, **kwargs):
+        return 2
+
     def data(self, index: QModelIndex, role: int = None):
         """引数のindexの値をroleにあった形で返す。
 
@@ -34,20 +38,23 @@ class PlaylistModel(QAbstractListModel):
         :param role: int
         :return: QVariant
         """
+        row = index.row()
+        col = index.column()
         if not index.isValid():
             return None
 
-        if index.row() >= self.rowCount():
+        if row >= self.rowCount():
             return None
-
+        elif col == 1:
+            return
         if role == Qt.DisplayRole:
-            return self.url_list[index.row()].fileName()
-        elif role == Qt.FontRole and index.row() == self.current_index.row():
+            return self.url_list[row].fileName()
+        elif role == Qt.FontRole and row == self.current_index.row():
             bold_font = QFont()
             bold_font.setBold(True)
             return bold_font
         elif role == Qt.ToolTipRole or role is None:
-            return self.url_list[index.row()]
+            return self.url_list[row]
         else:
             return QVariant()
 
