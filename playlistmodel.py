@@ -52,7 +52,7 @@ class PlaylistModel(QAbstractTableModel):
                 return self.item_list[row]['duration']
         elif role == Qt.TextAlignmentRole:
             if col == 1:
-                return Qt.AlignRight
+                return Qt.AlignRight | Qt.AlignVCenter
         elif role == Qt.FontRole:
             font = QFont()
             if row == self.current_index.row():
