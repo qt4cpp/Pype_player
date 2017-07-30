@@ -43,6 +43,7 @@ class PlaylistView(QTableView):
 
         self.setShowGrid(False)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.verticalHeader().setDefaultSectionSize(20)
         self.verticalHeader().hide()
         self.horizontalHeader().setStretchLastSection(True)
         self.horizontalHeader().setMinimumSectionSize(50)
