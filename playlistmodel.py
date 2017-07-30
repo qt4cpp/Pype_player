@@ -98,7 +98,7 @@ class PlaylistModel(QAbstractTableModel):
         media_info = MediaInfo.parse(url.toLocalFile())
         for track in media_info.tracks:
             if track.duration is None:
-                duration_str = '00:00'
+                duration_str = '--:--'
             else:
                 duration = track.duration / 1000
                 totalTime = QTime((duration / 3600) % 60, (duration / 60) % 60, (duration % 60),
@@ -110,7 +110,7 @@ class PlaylistModel(QAbstractTableModel):
         if position >= self.rowCount() or position < 0:
             position = self.rowCount()
 
-        self.beginInsertRows(QModelIndex(), position, 1)
+        self.beginInsertRows(QModelIndex(), position, position+1)
 
         media_info = {'url': url, 'duration': duration_str}
         self.item_list.insert(position, media_info)
