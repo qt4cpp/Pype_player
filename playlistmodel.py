@@ -1,6 +1,5 @@
-from PyQt5.QtCore import QUrl, QModelIndex, QVariant, Qt, pyqtSignal, pyqtSlot, QAbstractTableModel
+from PyQt5.QtCore import QUrl, QModelIndex, QVariant, Qt, pyqtSignal, pyqtSlot, QAbstractTableModel, QTime
 from PyQt5.QtGui import QFont
-
 from pymediainfo import MediaInfo
 
 
@@ -16,8 +15,7 @@ class PlaylistModel(QAbstractTableModel):
         """
         super(PlaylistModel, self).__init__(parent)
 
-        self.url_list = []
-        self.duration = []
+        self.item_list = []
         self.headerTitles = ['Title', 'Duration']
         self.current_index = QModelIndex()
 
@@ -28,7 +26,7 @@ class PlaylistModel(QAbstractTableModel):
         :type parent: QModelIndex
         :return int
         """
-        return len(self.url_list)
+        return len(self.item_list)
 
     def columnCount(self, parent=None, *args, **kwargs):
         return 2
@@ -47,16 +45,23 @@ class PlaylistModel(QAbstractTableModel):
 
         if row >= self.rowCount():
             return None
-        elif col == 1:
-            return
         if role == Qt.DisplayRole:
-            return self.url_list[row].fileName()
-        elif role == Qt.FontRole and row == self.current_index.row():
-            bold_font = QFont()
-            bold_font.setBold(True)
-            return bold_font
+            if col == 0:
+                return self.item_list[row]['url'].fileName()
+            elif col == 1:
+                return self.item_list[row]['duration']
+        elif role == Qt.TextAlignmentRole:
+            if col == 1:
+                return Qt.AlignRight
+        elif role == Qt.FontRole:
+            font = QFont()
+            if row == self.current_index.row():
+                font.setBold(True)
+            font.setPointSize(11)
+            return font
+
         elif role == Qt.ToolTipRole or role is None:
-            return self.url_list[row]
+            return self.item_list[row]
         else:
             return QVariant()
 
@@ -90,19 +95,25 @@ class PlaylistModel(QAbstractTableModel):
         if not url.isValid():
             return False
 
+        media_info = MediaInfo.parse(url.toLocalFile())
+        for track in media_info.tracks:
+            if track.duration is None:
+                duration_str = '00:00'
+            else:
+                duration = track.duration / 1000
+                totalTime = QTime((duration / 3600) % 60, (duration / 60) % 60, (duration % 60),
+                                  (duration * 1000) % 1000)
+
+                format = 'hh:mm:ss' if duration > 3600 else 'mm:ss'
+                duration_str = totalTime.toString(format)
+
         if position >= self.rowCount() or position < 0:
             position = self.rowCount()
 
         self.beginInsertRows(QModelIndex(), position, 1)
 
-        self.url_list.insert(position, url)
-
-        media_info = MediaInfo.parse(url.toLocalFile())
-        for track in media_info.tracks:
-            if track.track_type == 'Audio' or track.track_type == 'Video':
-                duration = track.duration / 1000
-                print(duration)
-                print('{0} | {1:.0f}:{2:.0f}'.format(track.Title, duration/60, duration%60))
+        media_info = {'url': url, 'duration': duration_str}
+        self.item_list.insert(position, media_info)
 
         self.endInsertRows()
         self.rowCount_changed.emit(self.rowCount())
@@ -115,7 +126,7 @@ class PlaylistModel(QAbstractTableModel):
             position = self.rowCount() - 1
 
         self.beginRemoveRows(QModelIndex(), position, 1)
-        del(self.url_list[position])
+        del(self.item_list[position])
         self.endRemoveRows()
         self.rowCount_changed.emit(self.rowCount())
         return True
@@ -141,13 +152,13 @@ class PlaylistModel(QAbstractTableModel):
         move_list = []
         delete_index = []
         for index in indexes:
-            move_list.append(self.url_list[index.row()])
+            move_list.append(self.item_list[index.row()])
             delete_index.insert(0, index.row())
         for index in delete_index:
             self.remove(index)
 
         dest = dest - len(move_list) if dest > begin else dest
-        self.url_list[dest:dest] = move_list
+        self.item_list[dest:dest] = move_list
         self.endMoveRows()
         self.rowCount_changed.emit(self.rowCount())
         return True

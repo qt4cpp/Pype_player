@@ -39,7 +39,7 @@ class TestPlaylistModel(unittest.TestCase):
         index = model.index(0, 0)
         data = model.data(index, None)
         self.assertEqual(data, first_file_url)
-        print(model.url_list[0].url)
+        print(model.item_list[0].url)
 
     def test_del(self):
         model: PlaylistModel = self.playListModel
@@ -52,7 +52,7 @@ class TestPlaylistModel(unittest.TestCase):
         self.assertEqual(model.remove(0), True)
         self.assertEqual(model.remove(1), True)
         self.assertEqual(model.remove(model.rowCount()), False)
-        print(model.url_list[0])
+        print(model.item_list[0])
 
 
 
