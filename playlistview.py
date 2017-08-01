@@ -29,7 +29,7 @@ class PlaylistView(QTableView):
         return '\n'
     @property
     def open_file_filter(self):
-        return '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv, *.aiff, *.wav'
+        return '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv *.aiff *.wav'
 
     def __init__(self, parent=None):
         super(PlaylistView, self).__init__(parent)
@@ -43,7 +43,7 @@ class PlaylistView(QTableView):
 
         self.setShowGrid(False)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.verticalHeader().setDefaultSectionSize(20)
+        self.verticalHeader().setDefaultSectionSize(16)
         self.verticalHeader().hide()
         self.horizontalHeader().setStretchLastSection(True)
         self.horizontalHeader().setMinimumSectionSize(50)

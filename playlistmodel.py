@@ -100,7 +100,7 @@ class PlaylistModel(QAbstractTableModel):
             if track.duration is None:
                 duration_str = '--:--'
             else:
-                duration = track.duration / 1000
+                duration = float(track.duration) / 1000
                 totalTime = QTime((duration / 3600) % 60, (duration / 60) % 60, (duration % 60),
                                   (duration * 1000) % 1000)
 
