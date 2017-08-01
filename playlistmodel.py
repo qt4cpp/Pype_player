@@ -61,7 +61,7 @@ class PlaylistModel(QAbstractTableModel):
             return font
 
         elif role == Qt.ToolTipRole or role is None:
-            return self.item_list[row]
+            return self.item_list[row]['url']
         else:
             return QVariant()
 
