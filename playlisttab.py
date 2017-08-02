@@ -113,6 +113,11 @@ class PlaylistTab(QTabWidget):
                 path = self.save_playlist_path + self.tabText(i) + '.m3u'
                 self.widget(i).save(path)
 
+    def load_playlist(self):
+        """現在のplaylistからload()を呼ぶためのインターフェース"""
+        self.current_playlist().load()
+
+
     def remove_files(self):
         """すべてのプレイリストファイルを消去する"""
         import shutil

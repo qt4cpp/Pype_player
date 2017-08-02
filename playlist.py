@@ -56,6 +56,7 @@ class Playlist(QWidget):
                                        self.playlist_tab.remove_playlist)
         save_playlist = createAction(self, 'Save current Playlist',
                                      self.playlist_tab.save_current, 'Ctrl+s')
+        load_playlist = createAction(self, 'Load playlist file', self.playlist_tab.load_playlist, 'Ctrl+l')
 
         file_menu = menubar.addMenu('&File')
         file_menu.addAction(openFile)
@@ -64,6 +65,7 @@ class Playlist(QWidget):
         file_menu.addAction(rename_playlist)
         file_menu.addAction(remove_playlist)
         file_menu.addAction(save_playlist)
+        file_menu.addAction(load_playlist)
 
     def playlist(self):
         return self.playlist_tab.current_playlist()

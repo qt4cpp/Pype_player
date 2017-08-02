@@ -1,3 +1,4 @@
+import os
 from PyQt5.QtCore import QModelIndex, QRect, QSize, QPoint, pyqtSignal, QDir, Qt, QMimeData, QUrl, \
     pyqtSlot
 from PyQt5.QtGui import QDrag
@@ -90,8 +91,8 @@ class PlaylistView(QTableView):
 
         with open(path, 'wt') as fout:
             for i in range(self.model().rowCount()):
-                index = self.model().index(i)
-                print(self.model().data(index).toLocalFile(), file=fout)
+                index = self.model().index(i, 0)
+                print(self.url(index).toLocalFile(), file=fout)
         return True
 
     def load(self, path=None):
@@ -100,12 +101,18 @@ class PlaylistView(QTableView):
         pathが与えられた場合は、そこから読み込み、
         ない場合は、何も読み込まない。"""
         if path is None:
-            return
+            url, ok = QFileDialog.getOpenFileUrl(self, 'open a playlist files')
+            if not ok:
+                return
+            path = url.toLocalFile()
         with open(path, 'rt') as fin:
             for line in fin:
+                path = line[:-1]
                 url = QUrl.fromLocalFile(line[:-1])  # 最後の改行文字を取り除く
-                if url.isValid():
-                    self.model().add(url)
+                print(path, os.path.isfile(path))
+                if url.isLocalFile():
+                    pass
+                    # self.model().add(url)
 
 
     def current(self):
@@ -139,7 +146,7 @@ class PlaylistView(QTableView):
         if isinstance(index, int):
             row = index
             if 0 <= row < self.count():
-                index = self.model().index(row)
+                index = self.model().index(row, 0)
         if isinstance(index, QModelIndex):
             return self.model().data(index)
         else:
