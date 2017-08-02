@@ -102,7 +102,7 @@ class PlaylistView(QTableView):
         pathが与えられた場合は、そこから読み込み、
         ない場合は、何も読み込まない。"""
         if path is None:
-            url, ok = QFileDialog.getOpenFileUrl(self, 'open a playlist files')
+            url, ok = QFileDialog.getOpenFileUrl(self, 'open a playlist files', filter='*.m3u')
             if not ok:
                 return
             path = url.toLocalFile()
