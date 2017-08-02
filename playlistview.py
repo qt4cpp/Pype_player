@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QRubberBand, QFileDialog, QAbstractItemView, QApplic
     QStyle, QTableView, QHeaderView
 
 from playlistmodel import PlaylistModel
-from utility import convert_from_bytearray, convert_to_bytearray
+from utility import convert_from_bytearray, convert_to_bytearray, is_media
 
 
 class PlaylistView(QTableView):
@@ -60,12 +60,12 @@ class PlaylistView(QTableView):
         return self.model().rowCount()
 
     def open(self):
-        urls, _ = QFileDialog.getOpenFileUrls(
+        list, _ = QFileDialog.getOpenFileNames(
             self, 'Open File', QDir.homePath(), self.open_file_filter)
 
-        for url in urls:
-            if not url.isEmpty():
-                self.model().add(url)
+        for path in list:
+            if path:
+                self.add_item(path)
 
     def open_directory(self):
         directory_url = QFileDialog.getExistingDirectory(self, 'Open directory', QDir.homePath())
@@ -76,8 +76,7 @@ class PlaylistView(QTableView):
 
         path = dir.absolutePath() + '/'
         for file in file_list:
-            url = QUrl.fromLocalFile(path + file)
-            self.model().add(url)
+            self.add_item(path + file)
 
     def save(self, path=None):
         """プレイリストを保存する。
@@ -107,11 +106,13 @@ class PlaylistView(QTableView):
             path = url.toLocalFile()
         with open(path, 'rt') as fin:
             for line in fin:
-                path = line[:-1] # 最後の改行文字を取り除く
-                #Todo: check media file or not.
-                if os.path.isfile(path):
-                    url = QUrl.fromLocalFile(line[:-1])
-                    self.model().add(url)
+                self.add_item(line[:-1]) # 最後の改行文字を取り除く
+
+    def add_item(self, path):
+        if is_media(path):
+            self.model().add(QUrl.fromLocalFile(path))
+            return True
+        return False
 
     def current(self):
         return self.url(self.current_index)

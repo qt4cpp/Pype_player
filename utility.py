@@ -60,4 +60,25 @@ def get_mime_type(file_path):
     if os.path.isfile(file_path):
         return mimetypes.guess_type(file_path)[0]
     else:
-        None
+        print('Error (get_mime_type):', file_path)
+        return None
+
+def is_media(file_path):
+    """video/audio であればTrueを返す"""
+    return is_video(file_path) | is_audio(file_path)
+
+def is_video(file_path):
+    """videoファイルであればTrueを返す"""
+    if os.path.isfile(file_path):
+        mime = get_mime_type(file_path)
+        if 'video' in mime:
+            return True
+    return False
+
+def is_audio(file_path):
+    """audio ファイルであればTrueを返す"""
+    if os.path.isfile(file_path):
+        mime = get_mime_type(file_path)
+        if 'audio' in mime:
+            return True
+    return False
