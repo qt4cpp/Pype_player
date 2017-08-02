@@ -87,7 +87,7 @@ class PlaylistModel(QAbstractTableModel):
         :type index: QModelIndex
         """
         if not index.isValid():
-            return 0
+            return Qt.NoItemFlags
 
         return Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
