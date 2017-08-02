@@ -107,13 +107,11 @@ class PlaylistView(QTableView):
             path = url.toLocalFile()
         with open(path, 'rt') as fin:
             for line in fin:
-                path = line[:-1]
-                url = QUrl.fromLocalFile(line[:-1])  # 最後の改行文字を取り除く
-                print(path, os.path.isfile(path))
-                if url.isLocalFile():
-                    pass
-                    # self.model().add(url)
-
+                path = line[:-1] # 最後の改行文字を取り除く
+                #Todo: check media file or not.
+                if os.path.isfile(path):
+                    url = QUrl.fromLocalFile(line[:-1])
+                    self.model().add(url)
 
     def current(self):
         return self.url(self.current_index)
