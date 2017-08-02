@@ -1,3 +1,5 @@
+from venv import create
+
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QApplication
 
@@ -46,7 +48,8 @@ class Playlist(QWidget):
         if menubar is None:
             return
 
-        openFile = createAction(self, 'Open', self.open, 'Ctrl+o')
+        add_file = createAction(self, 'Add file(s)', self.open, 'Ctrl+o')
+        open_directory = createAction(self, 'Open directory', self.open_directory, 'Ctrl+Shift+o')
 
         add_playlist = createAction(self, 'Add playlist',
                                     self.playlist_tab.add_playlist, 'Ctrl+N')
@@ -59,7 +62,8 @@ class Playlist(QWidget):
         load_playlist = createAction(self, 'Load playlist file', self.playlist_tab.load_playlist, 'Ctrl+l')
 
         file_menu = menubar.addMenu('&File')
-        file_menu.addAction(openFile)
+        file_menu.addAction(add_file)
+        file_menu.addAction(open_directory)
         file_menu.addSeparator()
         file_menu.addAction(add_playlist)
         file_menu.addAction(rename_playlist)
