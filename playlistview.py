@@ -61,10 +61,12 @@ class PlaylistView(QTableView):
 
     def open(self):
         list, _ = QFileDialog.getOpenFileNames(
-            self, 'Open File', QDir.homePath(), self.open_file_filter)
+            self, 'Open File', QDir.homePath())
 
         for path in list:
-            if path:
+            if path[-3:] == 'm3u':
+                self.load(path)
+            else:
                 self.add_item(path)
 
     def open_directory(self):

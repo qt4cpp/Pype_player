@@ -71,7 +71,7 @@ def is_video(file_path):
     """videoファイルであればTrueを返す"""
     if os.path.isfile(file_path):
         mime = get_mime_type(file_path)
-        if 'video' in mime:
+        if mime and 'video' in mime:
             return True
     return False
 
@@ -79,6 +79,6 @@ def is_audio(file_path):
     """audio ファイルであればTrueを返す"""
     if os.path.isfile(file_path):
         mime = get_mime_type(file_path)
-        if 'audio' in mime:
+        if mime and 'audio' in mime:
             return True
     return False
