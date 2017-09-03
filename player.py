@@ -346,8 +346,11 @@ class Player(QWidget):
         self.play()
 
     def skip_backward(self):
-        self.previous_track()
-        self.play()
+        if self.seekBar.sliderPosition() > 2:
+            self.seek(0)
+        else:
+            self.previous_track()
+            self.play()
 
     def forward(self, seconds):
         currentPosition = self.seekBar.sliderPosition()
