@@ -59,10 +59,10 @@ class Player(QWidget):
         self.stopButton.setFlat(True)
         self.stopButton.setFixedSize(30, 30)
 
-        self.backwardButton = QPushButton(std_icon(QStyle.SP_MediaSeekBackward), '')
+        self.backwardButton = QPushButton(std_icon(QStyle.SP_MediaSkipBackward), '')
         self.backwardButton.setFlat(True)
         self.backwardButton.setFixedSize(30, 30)
-        self.forwardButton = QPushButton(std_icon(QStyle.SP_MediaSeekForward), '')
+        self.forwardButton = QPushButton(std_icon(QStyle.SP_MediaSkipForward), '')
         self.forwardButton.setFlat(True)
         self.forwardButton.setFixedSize(30, 30)
 
@@ -138,8 +138,8 @@ class Player(QWidget):
     def create_connections(self):
         self.play_button.clicked.connect(self.optimal_play)
         self.stopButton.clicked.connect(self.stop)
-        self.backwardButton.clicked.connect(self.backward_short)
-        self.forwardButton.clicked.connect(self.forward_short)
+        self.backwardButton.clicked.connect(self.previous_track)
+        self.forwardButton.clicked.connect(self.next_track)
         self.muteButton.clicked.connect(self.toggleMute)
 
         self.player.stateChanged.connect(self.playerStateChanged)
