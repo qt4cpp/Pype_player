@@ -138,8 +138,8 @@ class Player(QWidget):
     def create_connections(self):
         self.play_button.clicked.connect(self.optimal_play)
         self.stopButton.clicked.connect(self.stop)
-        self.backwardButton.clicked.connect(self.previous_track)
-        self.forwardButton.clicked.connect(self.next_track)
+        self.backwardButton.clicked.connect(self.skip_backward)
+        self.forwardButton.clicked.connect(self.skip_forward)
         self.muteButton.clicked.connect(self.toggleMute)
 
         self.player.stateChanged.connect(self.playerStateChanged)
@@ -335,8 +335,19 @@ class Player(QWidget):
             self.load(url)
 
     def previous_track(self):
-        pass
+        url = self.playlist.previous()
+        if url is None:
+            return None
+        else:
+            self.load(url)
 
+    def skip_forward(self):
+        self.next_track()
+        self.play()
+
+    def skip_backward(self):
+        self.previous_track()
+        self.play()
 
     def forward(self, seconds):
         currentPosition = self.seekBar.sliderPosition()

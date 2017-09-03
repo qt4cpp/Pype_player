@@ -96,7 +96,7 @@ class Playlist(QWidget):
         return self.using_playlist.next()
 
     def previous(self):
-        pass
+        return self.using_playlist.previous()
 
     def current_row(self):
         return self.using_playlist.current_row()
