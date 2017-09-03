@@ -51,25 +51,25 @@ class Playlist(QWidget):
         add_file = createAction(self, 'Add file(s)', self.open, 'Ctrl+o')
         open_directory = createAction(self, 'Open directory', self.open_directory, 'Ctrl+Shift+o')
 
-        add_playlist = createAction(self, 'Add playlist',
+        add_playlist = createAction(self, 'New Playlist',
                                     self.playlist_tab.add_playlist, 'Ctrl+N')
+        load_playlist = createAction(self, 'Load Playlist file', self.playlist_tab.load_playlist, 'Ctrl+l')
         rename_playlist = createAction(self, 'Rename Playlist',
                                        self.playlist_tab.rename_playlist)
+        save_playlist = createAction(self, 'Save Current Playlist',
+                                     self.playlist_tab.save_current, 'Ctrl+s')
         remove_playlist = createAction(self, 'Remove Playlist',
                                        self.playlist_tab.remove_playlist)
-        save_playlist = createAction(self, 'Save current Playlist',
-                                     self.playlist_tab.save_current, 'Ctrl+s')
-        load_playlist = createAction(self, 'Load playlist file', self.playlist_tab.load_playlist, 'Ctrl+l')
 
         file_menu = menubar.addMenu('&File')
         file_menu.addAction(add_file)
         file_menu.addAction(open_directory)
         file_menu.addSeparator()
         file_menu.addAction(add_playlist)
-        file_menu.addAction(rename_playlist)
-        file_menu.addAction(remove_playlist)
-        file_menu.addAction(save_playlist)
         file_menu.addAction(load_playlist)
+        file_menu.addAction(rename_playlist)
+        file_menu.addAction(save_playlist)
+        file_menu.addAction(remove_playlist)
 
     def playlist(self):
         return self.playlist_tab.current_playlist()

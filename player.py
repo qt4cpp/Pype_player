@@ -70,7 +70,7 @@ class Player(QWidget):
 
         self.muteButton = create_flat_button(std_icon(
             QStyle.SP_MediaVolume if not self.player.isMuted() else QStyle.SP_MediaVolumeMuted))
-        
+
         self.volumeBar = QSlider(Qt.Horizontal)
         self.volumeBar.setRange(0, 100)
         self.volumeBar.setValue(self.volume)
