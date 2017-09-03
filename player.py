@@ -50,21 +50,17 @@ class Player(QWidget):
         self.videoWidget = VideoWidget()
         self.next_url = QUrl()
 
+        def create_flat_button(icon, label=''):
+            button = QPushButton(icon, label)
+            button.setFlat(True)
+            button.setFixedSize(30, 30)
+            return button
+
         std_icon = self.style().standardIcon
-        self.play_button = QPushButton(std_icon(QStyle.SP_MediaPlay), '')
-        self.play_button.setFlat(True)
-        self.play_button.setFixedSize(30, 30)
-
-        self.stopButton = QPushButton(std_icon(QStyle.SP_MediaStop), '')
-        self.stopButton.setFlat(True)
-        self.stopButton.setFixedSize(30, 30)
-
-        self.backwardButton = QPushButton(std_icon(QStyle.SP_MediaSkipBackward), '')
-        self.backwardButton.setFlat(True)
-        self.backwardButton.setFixedSize(30, 30)
-        self.forwardButton = QPushButton(std_icon(QStyle.SP_MediaSkipForward), '')
-        self.forwardButton.setFlat(True)
-        self.forwardButton.setFixedSize(30, 30)
+        self.play_button = create_flat_button(std_icon(QStyle.SP_MediaPlay))
+        self.stopButton = create_flat_button(std_icon(QStyle.SP_MediaStop), '')
+        self.backwardButton = create_flat_button(std_icon(QStyle.SP_MediaSkipBackward), '')
+        self.forwardButton = create_flat_button(std_icon(QStyle.SP_MediaSkipForward), '')
 
         self.order_list = QComboBox()
         self.order_list.addItem('No repeat')
@@ -72,12 +68,9 @@ class Player(QWidget):
         self.order_list.addItem('Repeat all')
         self.order_list.setFixedWidth(115)
 
-        self.muteButton = QPushButton()
-        self.muteButton.setIcon(std_icon(
+        self.muteButton = create_flat_button(std_icon(
             QStyle.SP_MediaVolume if not self.player.isMuted() else QStyle.SP_MediaVolumeMuted))
-        self.muteButton.setFlat(True)
-        self.muteButton.setFixedSize(30, 30)
-
+        
         self.volumeBar = QSlider(Qt.Horizontal)
         self.volumeBar.setRange(0, 100)
         self.volumeBar.setValue(self.volume)
