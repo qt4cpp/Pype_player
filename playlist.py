@@ -74,6 +74,10 @@ class Playlist(QWidget):
     def playlist(self):
         return self.playlist_tab.current_playlist()
 
+    def change_using_playlist(self):
+        self.using_playlist.deactivate()
+        self.using_playlist = self.playlist()
+
     def open(self):
         self.playlist().open()
 
@@ -81,7 +85,8 @@ class Playlist(QWidget):
         self.playlist().open_directory()
 
     def get_new_one(self):
-        self.using_playlist = self.playlist()
+        if self.using_playlist is not self.playlist():
+            self.change_using_playlist()
         selected_url = self.using_playlist.selected()
         if selected_url:
             self.using_playlist.set_current_index(selected_url)
@@ -116,7 +121,7 @@ class Playlist(QWidget):
         self.using_playlist.set_current_index_from_row(-1)
 
     def handle_double_clicked(self):
-        self.using_playlist = self.playlist()
+        self.change_using_playlist()
         self.double_clicked.emit()
 
 if __name__ == '__main__':

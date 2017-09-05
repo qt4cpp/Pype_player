@@ -161,6 +161,9 @@ class PlaylistView(QTableView):
         self.current_index = new_index
         self.current_index_changed.emit(new_index)
 
+    def deactivate(self):
+        self.set_current_index(QModelIndex())
+
     def mousePressEvent(self, event):
         """左クリックされたらカーソル下にある要素を選択し、ドラッグを認識するために現在の位置を保存する。
         :param event: QMousePressEvent

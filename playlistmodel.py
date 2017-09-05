@@ -168,5 +168,4 @@ class PlaylistModel(QAbstractTableModel):
         return True
 
     def set_current_index(self, index: QModelIndex):
-        if index.isValid():
-            self.current_index = index
+        self.current_index = index
