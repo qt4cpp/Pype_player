@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QUrl, QModelIndex, QVariant, Qt, pyqtSignal, pyqtSlot, QAbstractTableModel, QTime
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QBrush, QColor
 from pymediainfo import MediaInfo
 
 
@@ -59,6 +59,10 @@ class PlaylistModel(QAbstractTableModel):
                 font.setBold(True)
             font.setPointSize(11)
             return font
+        elif role == Qt.BackgroundRole:
+            if row == self.current_index.row():
+                brush = QBrush(QColor(210, 230, 250))
+                return brush
 
         elif role == Qt.ToolTipRole or role is None:
             return self.item_list[row]['url']
