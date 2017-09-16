@@ -46,8 +46,9 @@ class PlaylistView(QTableView):
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.verticalHeader().setDefaultSectionSize(16)
         self.verticalHeader().hide()
-        self.horizontalHeader().setStretchLastSection(True)
-        self.horizontalHeader().setMinimumSectionSize(50)
+        self.horizontalHeader().setMinimumSectionSize(30)
+        self.resizeHeaderWidth()
+
 
         self.current_index = QModelIndex()
         self.previousIndex = QModelIndex()
@@ -163,6 +164,17 @@ class PlaylistView(QTableView):
 
     def deactivate(self):
         self.set_current_index(QModelIndex())
+
+    def resizeHeaderWidth(self):
+        length = self.width()
+        print(length)
+        title_width_rate = 0.7
+        self.horizontalHeader().resizeSection(0, int(length * title_width_rate))
+        self.horizontalHeader().resizeSection(1, int(length-length*title_width_rate)-2)
+
+    def resizeEvent(self, event):
+        self.resizeHeaderWidth()
+        super().resizeEvent(event)
 
     def mousePressEvent(self, event):
         """左クリックされたらカーソル下にある要素を選択し、ドラッグを認識するために現在の位置を保存する。
