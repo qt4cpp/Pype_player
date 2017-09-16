@@ -1,9 +1,9 @@
 import os
 from PyQt5.QtCore import QModelIndex, QRect, QSize, QPoint, pyqtSignal, QDir, Qt, QMimeData, QUrl, \
     pyqtSlot
-from PyQt5.QtGui import QDrag
+from PyQt5.QtGui import QDrag, QKeySequence
 from PyQt5.QtWidgets import QRubberBand, QFileDialog, QAbstractItemView, QApplication, \
-    QStyle, QTableView, QHeaderView
+    QStyle, QTableView, QHeaderView, QAction
 
 from playlistmodel import PlaylistModel
 from utility import convert_from_bytearray, convert_to_bytearray, is_media
@@ -201,7 +201,7 @@ class PlaylistView(QTableView):
 
         if self.isDragging:
             indexes = self.selectedIndexes()
-            urls = self.pack_urls(indexes)
+            urls = self.url_list(indexes)
 
             mimeData = QMimeData()
             mimeData.setData(self.mime_URLS, convert_to_bytearray(urls))
@@ -335,15 +335,16 @@ class PlaylistView(QTableView):
             for item, i in items, range(start, len(items)):
                 self.model().add(item, i)
 
-
-    def delete_items(self, indexes: [QModelIndex]):
+    def delete_items(self):
         """渡されたインデックスを順番に消していく。
 
         :param indexes: 消すためのインデックス
         """
-        for index in indexes:
-            self.model().remove(index.row())
-
+        indexes = self.selectedIndexes()
+        if indexes:
+            self.model().remove_items(indexes)
+        else:
+            return
 
     def move_items(self, indexes: [QModelIndex], dest: QModelIndex):
         self.model().move(indexes, dest.row())
@@ -378,3 +379,9 @@ class PlaylistView(QTableView):
         top_left = item_rect.topLeft()
         size = QSize(item_rect.width(), 3)
         return QRect(top_left, size)
+
+    def url_list(self, indexes):
+        urls = []
+        for index in indexes:
+            urls.append(self.model().data(index))
+        return urls

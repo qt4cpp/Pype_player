@@ -129,11 +129,18 @@ class PlaylistModel(QAbstractTableModel):
         elif position == -1:
             position = self.rowCount() - 1
 
-        self.beginRemoveRows(QModelIndex(), position, 1)
+        self.beginRemoveRows(QModelIndex(), position, position+1)
         del(self.item_list[position])
         self.endRemoveRows()
         self.rowCount_changed.emit(self.rowCount())
         return True
+
+    def remove_items(self, indexes: [QModelIndex]):
+        rows = []
+        for index in indexes:
+            rows.append(index.row())
+        for row in reversed(list(set(rows))):
+            self.remove(row)
 
     def move(self, indexes: [QModelIndex], dest=-1) -> bool:
         """要素を指定された場所へ移動させる。

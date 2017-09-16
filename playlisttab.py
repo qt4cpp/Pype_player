@@ -1,8 +1,9 @@
 import os
 
 from PyQt5.QtCore import (Qt, QModelIndex, pyqtSignal, pyqtSlot)
+from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import (QApplication, QPushButton, QLabel, QTabWidget, QInputDialog,
-                             QMessageBox, QFileDialog)
+                             QMessageBox, QFileDialog, QAction)
 
 from playlistview import PlaylistView
 from utility import dialog_for_message
@@ -27,6 +28,16 @@ class PlaylistTab(QTabWidget):
         self.load_playlists()
 
         self.show()
+
+    def create_menu(self, menubar=None):
+        delete_act = QAction('delete item', parent=self)
+        delete_act.setShortcut(QKeySequence.fromString('Ctrl+d'))
+        delete_act.triggered.connect(self.delete_items)
+
+        if menubar is None:
+            return
+        edit_menu = menubar.addMenu('&Edit')
+        edit_menu.addAction(delete_act)
 
     def url(self, index=0):
         self.playListView.url(index)
@@ -153,6 +164,9 @@ class PlaylistTab(QTabWidget):
             if name == self.tabText(i):
                 return True
         return False
+
+    def delete_items(self):
+        self.currentWidget().delete_items()
 
     def handle_playlist_double_clicked(self):
         self.double_clicked.emit()

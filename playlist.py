@@ -71,6 +71,8 @@ class Playlist(QWidget):
         file_menu.addAction(save_playlist)
         file_menu.addAction(remove_playlist)
 
+        self.playlist_tab.create_menu(menubar)
+
     def playlist(self):
         return self.playlist_tab.current_playlist()
 
