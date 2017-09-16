@@ -47,8 +47,9 @@ class PlaylistView(QTableView):
         self.verticalHeader().setDefaultSectionSize(16)
         self.verticalHeader().hide()
         self.horizontalHeader().setMinimumSectionSize(30)
-        self.resizeHeaderWidth()
+        self.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
 
+        self.resizeHeaderWidth()
 
         self.current_index = QModelIndex()
         self.previousIndex = QModelIndex()
@@ -167,10 +168,9 @@ class PlaylistView(QTableView):
 
     def resizeHeaderWidth(self):
         length = self.width()
-        print(length)
-        title_width_rate = 0.7
-        self.horizontalHeader().resizeSection(0, int(length * title_width_rate))
-        self.horizontalHeader().resizeSection(1, int(length-length*title_width_rate)-2)
+        first_width = int(length * 0.7)
+        self.horizontalHeader().resizeSection(0, first_width)
+        self.horizontalHeader().resizeSection(1, length-first_width-2)
 
     def resizeEvent(self, event):
         self.resizeHeaderWidth()
