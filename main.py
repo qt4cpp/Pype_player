@@ -10,12 +10,15 @@ class PypePlayer(QMainWindow):
     def __init__(self, parent=None):
         super(PypePlayer, self).__init__(parent)
 
-        self.player = Player()
+        self.player = Player(parent=self)
         self.setCentralWidget(self.player)
         self.create_menus()
 
+        self.player.media_loaded.connect(self.set_window_title)
+        self.player.stopped.connect(self.set_window_title)
+
         self.resize(600, 360)
-        self.setWindowTitle('Pype Player')
+        self.set_window_title('')
         self.show()
 
     def create_menus(self):
@@ -31,10 +34,15 @@ class PypePlayer(QMainWindow):
         backward_verylong = createAction(self, 'Very Long Backward',
                                          self.player.backward_verylong, 'Shift+Ctrl+Left')
 
+        play_and_pause = createAction(self, 'Play', self.player.optimal_play, 'Space')
+        load_and_play = createAction(self, 'Load and Play', self.player.load_and_play, 'Return')
+        self.addAction(load_and_play)
+
         menubar = self.menuBar()
         self.player.playlist.create_menu(menubar)
 
         playbackMenu = menubar.addMenu('&Playback')
+        playbackMenu.addAction(play_and_pause)
         jumpMenu = playbackMenu.addMenu('Jump')
         jumpMenu.addAction(forward_short)
         jumpMenu.addAction(forward_medium)
@@ -45,6 +53,12 @@ class PypePlayer(QMainWindow):
         jumpMenu.addAction(backward_medium)
         jumpMenu.addAction(backward_long)
         jumpMenu.addAction(backward_verylong)
+
+    def set_window_title(self, str=''):
+        if str:
+            self.setWindowTitle('{0} - Pype Player'.format(str))
+        else:
+            self.setWindowTitle('Pype Player')
         
     def closeEvent(self, event):
         # self.player.playlist.save_all()

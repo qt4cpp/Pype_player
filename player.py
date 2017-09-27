@@ -35,8 +35,8 @@ class VideoWidget(QVideoWidget):
 
 class Player(QWidget):
 
-    media_loaded = pyqtSignal()
-    stop = pyqtSignal()
+    media_loaded = pyqtSignal(str)
+    stopped = pyqtSignal(str)
     handle_double_click = pyqtSlot()
 
     def __init__(self, parent=None):
@@ -182,7 +182,7 @@ class Player(QWidget):
         if file_url.isValid():
             c = QMediaContent(file_url)
             self.player.setMedia(c)
-            self.media_loaded.emit()
+            self.media_loaded.emit(file_url.fileName())
             self.enableInterface()
 
     def play(self):
@@ -201,6 +201,7 @@ class Player(QWidget):
             self.player.stop()
             self.seek(0)
             self.setStatusInfo('Stopped')
+            self.stopped.emit('')
 
     def playerStateChanged(self, state):
         if state == QMediaPlayer.PlayingState:
