@@ -38,18 +38,21 @@ class MenuController(QObject):
         return self.registered_menu[hierarchy]
 
     def add_new_menu(self, menu, hierarchy) -> QMenu:
-        """menu に name で渡された名前の"""
+        """menu に hierarchyの最下層を取りだして、 menu に追加する。"""
         name = hierarchy.rsplit('/')[-1]
         new = menu.addMenu(name)
         self.registered_menu[hierarchy] = new
         return new
 
     def hierarchic_menu(self, top_menu: QMenu, hierarchy: str):
+        """'/'で区切られた文字列を階層と見なし、menu階層を作る。"""
         if self.is_exist(hierarchy):
             return self.registered_menu[hierarchy]
         if '/' in hierarchy:
             higher = hierarchy.rsplit('/', 1)[0]
+            # 再帰して存在しない階層を追加していく。
             self.hierarchic_menu(top_menu, higher)
+            # 存在しない階層のmenuはこの時点ですべて登録されているはず。
             self.add_new_menu(self.registered_menu[higher], hierarchy)
         else:
             self.add_new_menu(top_menu, hierarchy)
