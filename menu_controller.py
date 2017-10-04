@@ -31,16 +31,6 @@ class MenuController(QObject):
             return top_menu
 
         self.hierarchic_menu(top_menu, hierarchy)
-        #
-        # menu_list = top_menu.findChildren(QMenu)
-        # for title in hierarchy:
-        #     menu = self.search(menu_list)
-        #     if menu is None:
-        #
-        #     for menu in menu_list:
-        #         if menu.title() == title:
-        #
-        #     menu = self.add_new_menu(top_menu, title)
         return self.registered_menu[hierarchy]
 
     def add_new_menu(self, menu, hierarchy) -> QMenu:
@@ -60,7 +50,6 @@ class MenuController(QObject):
         else:
             self.add_new_menu(top_menu, hierarchy)
         return self.registered_menu[hierarchy]
-
 
     def is_exist(self, hierarchy):
         return hierarchy in self.registered_menu
