@@ -34,10 +34,20 @@ class PlaylistTab(QTabWidget):
         delete_act.setShortcut(QKeySequence.fromString('Ctrl+d'))
         delete_act.triggered.connect(self.delete_items)
 
+        next_tab_act = QAction('Next Tab', parent=self)
+        next_tab_act.setShortcut(QKeySequence.fromString('Meta+tab'))
+        next_tab_act.triggered.connect(self.next_tab)
+        previous_tab_act = QAction('Preivous Tab', parent=self)
+        previous_tab_act.setShortcut(QKeySequence.fromString('Meta+Shift+tab'))
+        previous_tab_act.triggered.connect(self.previous_tab)
+
         if menubar is None:
             return
         edit_menu = menubar.addMenu('&Edit')
         edit_menu.addAction(delete_act)
+        view_menu = menubar.addMenu('&View')
+        view_menu.addAction(next_tab_act)
+        view_menu.addAction(previous_tab_act)
 
     def url(self, index=0):
         self.playListView.url(index)
@@ -170,6 +180,20 @@ class PlaylistTab(QTabWidget):
 
     def handle_playlist_double_clicked(self):
         self.double_clicked.emit()
+
+    def next_tab(self):
+        i = self.currentIndex()
+        if i == self.count()-1:
+            self.setCurrentIndex(0)
+        else:
+            self.setCurrentIndex(i+1)
+
+    def previous_tab(self):
+        i = self.currentIndex()
+        if i == 0:
+            self.setCurrentIndex(self.count()-1)
+        else:
+            self.setCurrentIndex(i-1)
 
 if __name__ == '__main__':
     import sys
