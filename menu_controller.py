@@ -22,7 +22,7 @@ class MenuController(QObject):
         for action in action_list:
             self.add_action(hierarchy, action)
 
-    def add_seprator(self, hierarchy):
+    def add_separator(self, hierarchy):
         menu: QMenu = self.registered_menu[hierarchy]
         menu.addSeparator()
 

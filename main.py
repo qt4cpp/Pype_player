@@ -40,11 +40,11 @@ class PypePlayer(QMainWindow):
         load_and_play = createAction(self, 'Load and Play', self.player.load_and_play, 'Return')
         self.addAction(load_and_play)
 
-        self.player.playlist.create_menu(self.menu_controller.menubar)
+        self.player.playlist.create_menu(self.menu_controller)
 
         self.menu_controller.add_action(hierarchy='Playback', action=play_and_pause)
         self.menu_controller.add_action_list('Playback/Jump', [forward_short, forward_medium, forward_long, forward_verylong])
-        self.menu_controller.add_seprator('Playback/Jump')
+        self.menu_controller.add_separator('Playback/Jump')
         self.menu_controller.add_action_list('Playback/Jump', [backward_short, backward_medium, backward_long, backward_verylong])
 
     def set_window_title(self, str=''):

@@ -44,8 +44,8 @@ class Playlist(QWidget):
         self.setLayout(layout)
         self.show()
 
-    def create_menu(self, menubar=None):
-        if menubar is None:
+    def create_menu(self, controller):
+        if controller is None:
             return
 
         add_file = createAction(self, 'Add file(s)', self.open, 'Ctrl+o')
@@ -61,17 +61,11 @@ class Playlist(QWidget):
         remove_playlist = createAction(self, 'Remove Playlist',
                                        self.playlist_tab.remove_playlist)
 
-        file_menu = menubar.addMenu('&File')
-        file_menu.addAction(add_file)
-        file_menu.addAction(open_directory)
-        file_menu.addSeparator()
-        file_menu.addAction(add_playlist)
-        file_menu.addAction(load_playlist)
-        file_menu.addAction(rename_playlist)
-        file_menu.addAction(save_playlist)
-        file_menu.addAction(remove_playlist)
+        controller.add_action_list('File', [add_file, open_directory])
+        controller.add_separator('File')
+        controller.add_action_list('File', [add_playlist, load_playlist, rename_playlist, save_playlist, remove_playlist])
 
-        self.playlist_tab.create_menu(menubar)
+        self.playlist_tab.create_menu(controller)
 
     def playlist(self):
         return self.playlist_tab.current_playlist()

@@ -29,7 +29,7 @@ class PlaylistTab(QTabWidget):
 
         self.show()
 
-    def create_menu(self, menubar=None):
+    def create_menu(self, controller):
         delete_act = QAction('delete item', parent=self)
         delete_act.setShortcut(QKeySequence.fromString('Ctrl+d'))
         delete_act.triggered.connect(self.delete_items)
@@ -41,13 +41,10 @@ class PlaylistTab(QTabWidget):
         previous_tab_act.setShortcut(QKeySequence.fromString('Meta+Shift+tab'))
         previous_tab_act.triggered.connect(self.previous_tab)
 
-        if menubar is None:
+        if controller is None:
             return
-        edit_menu = menubar.addMenu('&Edit')
-        edit_menu.addAction(delete_act)
-        view_menu = menubar.addMenu('&View')
-        view_menu.addAction(next_tab_act)
-        view_menu.addAction(previous_tab_act)
+        controller.add_action('Edit', delete_act)
+        controller.add_action_list('View', [next_tab_act, previous_tab_act])
 
     def url(self, index=0):
         self.playListView.url(index)
