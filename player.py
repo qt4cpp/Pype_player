@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSizePol
 
 from playlist import Playlist
 from playlisttab import PlaylistTab
-from utility import make_button_from_fa
+from utility import make_button_from_fa, createAction
 
 
 class SeekStep(IntEnum):
@@ -150,6 +150,31 @@ class Player(QWidget):
         self.seekBar.sliderReleased.connect(self.seekBarClicked)
 
         self.playlist.double_clicked.connect(self.load_and_play)
+
+    def create_menus(self, controller):
+        forward_short = createAction(self, 'Short Forward', self.forward_short, 'Right')
+        forward_medium = createAction(self, 'Forward', self.forward_medium, 'Shift+Right')
+        forward_long = createAction(self, 'Long Forward', self.forward_long, 'Ctrl+Right')
+        forward_verylong = createAction(self, 'Very Long Forward',
+                                        self.forward_verylong, 'Shift+Ctrl+Right')
+        backward_short = createAction(self, 'Short Backward', self.backward_short, 'Left')
+        backward_medium = createAction(self, 'Backward', self.backward_medium, 'Shift+Left')
+        backward_long = createAction(self, 'Long Backward', self.backward_long, 'Ctrl+Left')
+        backward_verylong = createAction(self, 'Very Long Backward',
+                                         self.backward_verylong, 'Shift+Ctrl+Left')
+
+        play_and_pause = createAction(self, 'Play', self.optimal_play, 'Space')
+        load_and_play = createAction(self, 'Load and Play', self.load_and_play, 'Return')
+
+        self.addAction(load_and_play)
+        controller.add_action(hierarchy='Playback', action=play_and_pause)
+        controller.add_action_list('Playback/Jump',
+                                             [forward_short, forward_medium, forward_long, forward_verylong])
+        controller.add_separator('Playback/Jump')
+        controller.add_action_list('Playback/Jump',
+                                             [backward_short, backward_medium, backward_long, backward_verylong])
+
+        self.playlist.create_menu(controller)
 
     def autoplay(self):
         """メディアを読み込み、再生する。
