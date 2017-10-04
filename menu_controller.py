@@ -14,9 +14,13 @@ class MenuController(QObject):
         self._menubar = menubar
         self.registered_menu = {}
 
-    def register(self, *, hierarchy, action):
+    def register(self, hierarchy, action):
         menu = self.menu(hierarchy)
         menu.addAction(action)
+
+    def register_list(self, hierarchy, action_list):
+        for action in action_list:
+            self.register(hierarchy, action)
 
     def menu(self, hierarchy):
         """入力例(File/Settings/Keybinds) ->

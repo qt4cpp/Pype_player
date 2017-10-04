@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QMainWindow, QApplication
 
+from menu_controller import MenuController
 from player import Player
 from utility import createAction
 
@@ -12,6 +13,7 @@ class PypePlayer(QMainWindow):
 
         self.player = Player(parent=self)
         self.setCentralWidget(self.player)
+        self.menu_controller = MenuController(self, self.menuBar())
         self.create_menus()
 
         self.player.media_loaded.connect(self.set_window_title)
@@ -38,21 +40,12 @@ class PypePlayer(QMainWindow):
         load_and_play = createAction(self, 'Load and Play', self.player.load_and_play, 'Return')
         self.addAction(load_and_play)
 
-        menubar = self.menuBar()
-        self.player.playlist.create_menu(menubar)
+        self.player.playlist.create_menu(self.menu_controller.menubar)
 
-        playbackMenu = menubar.addMenu('&Playback')
-        playbackMenu.addAction(play_and_pause)
-        jumpMenu = playbackMenu.addMenu('Jump')
-        jumpMenu.addAction(forward_short)
-        jumpMenu.addAction(forward_medium)
-        jumpMenu.addAction(forward_long)
-        jumpMenu.addAction(forward_verylong)
-        jumpMenu.addSeparator()
-        jumpMenu.addAction(backward_short)
-        jumpMenu.addAction(backward_medium)
-        jumpMenu.addAction(backward_long)
-        jumpMenu.addAction(backward_verylong)
+        self.menu_controller.register(hierarchy='Playback', action=play_and_pause)
+        self.menu_controller.register_list('Playback/Jump', [forward_short, forward_medium, forward_long, forward_verylong])
+        self.menu_controller.register_list('Playback/Jump', [backward_short, backward_medium, backward_long, backward_verylong])
+        # jumpMenu.addSeparator()
 
     def set_window_title(self, str=''):
         if str:
