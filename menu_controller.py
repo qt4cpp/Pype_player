@@ -14,6 +14,10 @@ class MenuController(QObject):
         self._menubar = menubar
         self.registered_menu = {}
 
+        self.add_new_menu(self._menubar, 'File')
+        self.add_new_menu(self._menubar, 'Edit')
+        self.add_new_menu(self._menubar, 'View')
+
     def add_action(self, hierarchy, action):
         menu = self.menu(hierarchy)
         menu.addAction(action)
@@ -30,7 +34,7 @@ class MenuController(QObject):
         """入力例(File/Settings/Keybinds) ->
         File - Settings - Keybinds のQMenuを返す
         """
-        title  = hierarchy.split('/', maxsplit=1)[0]
+        title = hierarchy.split('/', maxsplit=1)[0]
         if title in self.registered_menu:
             top_menu = self.registered_menu[title]
         else:
