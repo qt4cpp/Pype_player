@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (QApplication, QPushButton, QLabel, QTabWidget, QInp
                              QMessageBox, QFileDialog, QAction)
 
 from playlistview import PlaylistView
-from utility import dialog_for_message
+from utility import dialog_for_message, createAction
 
 
 class PlaylistTab(QTabWidget):
@@ -30,16 +30,9 @@ class PlaylistTab(QTabWidget):
         self.show()
 
     def create_menu(self, controller):
-        delete_act = QAction('delete item', parent=self)
-        delete_act.setShortcut(QKeySequence.fromString('Ctrl+d'))
-        delete_act.triggered.connect(self.delete_items)
-
-        next_tab_act = QAction('Next Tab', parent=self)
-        next_tab_act.setShortcut(QKeySequence.fromString('Meta+tab'))
-        next_tab_act.triggered.connect(self.next_tab)
-        previous_tab_act = QAction('Preivous Tab', parent=self)
-        previous_tab_act.setShortcut(QKeySequence.fromString('Meta+Shift+tab'))
-        previous_tab_act.triggered.connect(self.previous_tab)
+        delete_act = createAction(self, 'Delete item', self.delete_items, 'Ctrl+d')
+        next_tab_act = createAction(self, 'Next Tab', self.next_tab, 'Meta+tab')
+        previous_tab_act = createAction(self, 'Preivous Tab', self.previous_tab, 'Meta+Shift+tab')
 
         if controller is None:
             return
