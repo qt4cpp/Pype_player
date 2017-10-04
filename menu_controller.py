@@ -22,6 +22,10 @@ class MenuController(QObject):
         for action in action_list:
             self.add_action(hierarchy, action)
 
+    def add_seprator(self, hierarchy):
+        menu: QMenu = self.registered_menu[hierarchy]
+        menu.addSeparator()
+
     def menu(self, hierarchy):
         """入力例(File/Settings/Keybinds) ->
         File - Settings - Keybinds のQMenuを返す

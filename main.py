@@ -44,8 +44,8 @@ class PypePlayer(QMainWindow):
 
         self.menu_controller.add_action(hierarchy='Playback', action=play_and_pause)
         self.menu_controller.add_action_list('Playback/Jump', [forward_short, forward_medium, forward_long, forward_verylong])
+        self.menu_controller.add_seprator('Playback/Jump')
         self.menu_controller.add_action_list('Playback/Jump', [backward_short, backward_medium, backward_long, backward_verylong])
-        # jumpMenu.addSeparator()
 
     def set_window_title(self, str=''):
         if str:
