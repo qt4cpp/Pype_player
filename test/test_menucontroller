@@ -1,0 +1,59 @@
+import sys
+
+from PyQt5.QtGui import QKeySequence
+from PyQt5.QtWidgets import QApplication, QMainWindow, QAction
+
+from menu_controller import MenuController
+
+
+class TestMenu(QMainWindow):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        menu_controller = MenuController(parent, self.menuBar())
+
+        def new_action(title, shortcut, func):
+            act = QAction(title, parent=self)
+            act.setShortcut(QKeySequence.fromString(shortcut))
+            act.triggered.connect(func)
+            return act
+
+        dummy_act = new_action('Dummy Action', 'Meta+h', self.dummy_func)
+        new_act = new_action('New', 'Ctrl+n', self.new_func)
+        print_act = new_action('Print', 'Ctrl+p', self.print)
+        setting_act = new_action('Settings', 'Ctrl+.', self.settings)
+        zoom_act = new_action('Zoom', 'Ctrl++', self.zoom)
+        dummy2_act = new_action('Dummy2', 'Ctrl+e', self.dummy_func)
+        dummy3_act = new_action('Dummy3', 'Ctrl+d', self.dummy_func)
+
+        menu_controller.register(hierarchy='File/Dummy/Keybinds', action=dummy_act)
+        menu_controller.register(hierarchy='File', action=new_act)
+        menu_controller.register(hierarchy='File', action=print_act)
+        menu_controller.register(hierarchy='File/Puppuka', action=setting_act)
+        menu_controller.register(hierarchy='Window', action=zoom_act)
+        menu_controller.register(hierarchy='File/Dummy', action=dummy2_act)
+        menu_controller.register(hierarchy='File/Dummy/new/Fire', action=dummy3_act)
+
+        print(menu_controller.registered_menu)
+        self.show()
+
+    def dummy_func(self):
+        pass
+
+    def new_func(self):
+        pass
+
+    def print(self):
+        pass
+
+    def settings(self):
+        pass
+
+    def zoom(self):
+        pass
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+
+    test = TestMenu()
+    sys.exit(app.exec_())
