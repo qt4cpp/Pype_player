@@ -164,15 +164,17 @@ class Player(QWidget):
                                          self.backward_verylong, 'Shift+Ctrl+Left')
 
         play_and_pause = createAction(self, 'Play', self.optimal_play, 'Space')
-        load_and_play = createAction(self, 'Load and Play', self.load_and_play, 'Return')
+        stop = createAction(self, 'Stop', self.stop, 'Ctrl+.')
 
-        self.addAction(load_and_play)
-        controller.add_action(hierarchy='Playback', action=play_and_pause)
+        controller.add_action_list('Playback', [play_and_pause, stop])
         controller.add_action_list('Playback/Jump',
                                              [forward_short, forward_medium, forward_long, forward_verylong])
         controller.add_separator('Playback/Jump')
         controller.add_action_list('Playback/Jump',
-                                             [backward_short, backward_medium, backward_long, backward_verylong])
+                                   [backward_short, backward_medium, backward_long, backward_verylong])
+
+        load_and_play = createAction(self, 'Load and Play', self.load_and_play, 'Return')
+        self.addAction(load_and_play)
 
         self.playlist.create_menu(controller)
 
