@@ -19,25 +19,8 @@ class Playlist(QWidget):
         self.playlist_tab.double_clicked.connect(self.handle_double_clicked)
         self.using_playlist: PlaylistView = self.playlist_tab.widget(0)
 
-        self.add_playlist_button = make_button_from_fa('fa.plus', tooltip='Add new playlist')
-        self.add_playlist_button.clicked.connect(self.playlist_tab.add_playlist)
-        self.remove_playlist_button = make_button_from_fa('fa.minus', tooltip='Remove current playlist')
-        self.remove_playlist_button.clicked.connect(self.playlist_tab.remove_playlist)
-        self.open_directory_button = make_button_from_fa('fa.folder-open-o', tooltip='Add media files from directory')
-        self.open_directory_button.clicked.connect(self.open_directory)
-        self.add_file_button = make_button_from_fa('fa.file-o', tooltip='Add media file')
-        self.add_file_button.clicked.connect(self.open)
-
-        button_layout = QHBoxLayout()
-        button_layout.addWidget(self.add_playlist_button)
-        button_layout.addWidget(self.remove_playlist_button)
-        button_layout.addWidget(self.open_directory_button)
-        button_layout.addWidget(self.add_file_button)
-        button_layout.setSpacing(0)
-
         layout = QVBoxLayout()
         layout.addWidget(self.playlist_tab)
-        layout.addLayout(button_layout)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
