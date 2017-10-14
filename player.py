@@ -25,7 +25,7 @@ class VideoWidget(QVideoWidget):
     def __init__(self, parent=None):
         super(VideoWidget, self).__init__(parent)
 
-        self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
+        #self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
 
         p = self.palette()
         p.setColor(QPalette.Window, Qt.black)
@@ -49,6 +49,7 @@ class Player(QWidget):
         self.playlist = Playlist()
         self.videoWidget = VideoWidget()
         self.next_url = QUrl()
+        self.context_menu = QMenu(self)
 
         self.setAcceptDrops(True)
 
@@ -178,7 +179,12 @@ class Player(QWidget):
         load_and_play = createAction(self, 'Load and Play', self.load_and_play, 'Return')
         self.addAction(load_and_play)
 
+        self.context_menu.addActions([play_and_pause, stop])
+
         self.playlist.create_menu(controller)
+
+    def contextMenuEvent(self, event):
+        self.context_menu.exec(event.globalPos())
 
     def autoplay(self):
         """メディアを読み込み、再生する。
