@@ -50,6 +50,8 @@ class Player(QWidget):
         self.videoWidget = VideoWidget()
         self.next_url = QUrl()
 
+        self.setAcceptDrops(True)
+
         def create_flat_button(icon, label=''):
             button = QPushButton(icon, label)
             button.setFlat(True)
@@ -415,4 +417,19 @@ class Player(QWidget):
 
     def backward_verylong(self):
         self.backward(SeekStep.VERYLONG)
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.accept()
+
+    def dragMoveEvent(self, event):
+        if event.mimeData().hasUrls():
+            event.accept()
+
+    def dropEvent(self, event):
+        if event.mimeData().hasUrls():
+            urls = event.mimeData().urls()
+            self.load(urls[0])
+            # self.stop()
+            self.play()
 
