@@ -1,7 +1,8 @@
 from venv import create
 
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QApplication
+from PyQt5.QtGui import QContextMenuEvent
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QApplication, QMenu
 
 from playlisttab import PlaylistTab
 from playlistview import PlaylistView
@@ -14,8 +15,10 @@ class Playlist(QWidget):
 
     def __init__(self, parent=None):
         super(Playlist, self).__init__(parent)
-        
-        self.playlist_tab = PlaylistTab()
+
+        self.context_menu = QMenu(self)
+
+        self.playlist_tab = PlaylistTab(parent=self)
         self.playlist_tab.double_clicked.connect(self.handle_double_clicked)
         self.using_playlist: PlaylistView = self.playlist_tab.widget(0)
 
@@ -49,6 +52,11 @@ class Playlist(QWidget):
         controller.add_action_list('File', [add_playlist, load_playlist, rename_playlist, save_playlist, remove_playlist])
 
         self.playlist_tab.create_menu(controller)
+
+        self.context_menu.addActions([add_playlist, remove_playlist, save_playlist])
+
+    def contextMenuEvent(self, event: QContextMenuEvent):
+        self.context_menu.exec(event.globalPos())
 
     def playlist(self):
         return self.playlist_tab.current_playlist()

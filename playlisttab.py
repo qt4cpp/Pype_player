@@ -3,7 +3,7 @@ import os
 from PyQt5.QtCore import (Qt, QModelIndex, pyqtSignal, pyqtSlot)
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import (QApplication, QPushButton, QLabel, QTabWidget, QInputDialog,
-                             QMessageBox, QFileDialog, QAction)
+                             QMessageBox, QFileDialog, QAction, QMenu)
 
 from playlistview import PlaylistView
 from utility import dialog_for_message, createAction
@@ -25,6 +25,8 @@ class PlaylistTab(QTabWidget):
         self.setMovable(True)
         self.setElideMode(Qt.ElideNone)
 
+        self.context_menu = parent.context_menu
+
         self.load_playlists()
 
         self.show()
@@ -38,6 +40,11 @@ class PlaylistTab(QTabWidget):
             return
         controller.add_action('Edit', delete_act)
         controller.add_action_list('View', [next_tab_act, previous_tab_act])
+
+        self.context_menu.addActions([delete_act])
+
+    def contextMenuEvent(self, event):
+        self.context_menu.exec(event.globalPos())
 
     def url(self, index=0):
         self.playListView.url(index)

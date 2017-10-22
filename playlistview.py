@@ -3,7 +3,7 @@ from PyQt5.QtCore import QModelIndex, QRect, QSize, QPoint, pyqtSignal, QDir, Qt
     pyqtSlot
 from PyQt5.QtGui import QDrag, QKeySequence
 from PyQt5.QtWidgets import QRubberBand, QFileDialog, QAbstractItemView, QApplication, \
-    QStyle, QTableView, QHeaderView, QAction
+    QStyle, QTableView, QHeaderView, QAction, QMenu
 
 from playlistmodel import PlaylistModel
 from utility import convert_from_bytearray, convert_to_bytearray, is_media
@@ -55,6 +55,7 @@ class PlaylistView(QTableView):
         self.previousIndex = QModelIndex()
         self.rubberBand: QRubberBand = QRubberBand(QRubberBand.Rectangle, self)
         self.isDragging = False
+        self.context_menu = QMenu(self)
 
         self.current_index_changed.connect(self.model().set_current_index)
 
