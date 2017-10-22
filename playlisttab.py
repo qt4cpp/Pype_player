@@ -38,7 +38,7 @@ class PlaylistTab(QTabWidget):
         self.context_menu.addAction(createAction(self, 'Save', self.save_current))
         self.context_menu.addAction(createAction(self, 'Open', self.load_playlist))
         self.context_menu.addSeparator()
-        self.context_menu.addAction(createAction(self, 'Remove', self.remove_playlist))
+        self.context_menu.addAction(createAction(self, 'Remove Playlist', self.remove_playlist))
 
     def contextMenuEvent(self, event):
         self.context_menu.exec(event.globalPos())
