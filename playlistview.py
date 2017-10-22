@@ -55,9 +55,19 @@ class PlaylistView(QTableView):
         self.previousIndex = QModelIndex()
         self.rubberBand: QRubberBand = QRubberBand(QRubberBand.Rectangle, self)
         self.isDragging = False
+
         self.context_menu = QMenu(self)
+        self.create_context_menu()
 
         self.current_index_changed.connect(self.model().set_current_index)
+
+    def create_context_menu(self):
+        add_file = createAction(self, 'Add File(s)', self.open)
+        delete_selected = createAction(self, 'Delete selected', self.delete_items)
+        self.context_menu.addActions([add_file, delete_selected])
+
+    def contextMenuEvent(self, event):
+        self.context_menu.exec(event.globalPos())
 
     def count(self):
         return self.model().rowCount()
