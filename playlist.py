@@ -16,8 +16,6 @@ class Playlist(QWidget):
     def __init__(self, parent=None):
         super(Playlist, self).__init__(parent)
 
-        self.context_menu = QMenu(self)
-
         self.playlist_tab = PlaylistTab(parent=self)
         self.playlist_tab.double_clicked.connect(self.handle_double_clicked)
         self.using_playlist: PlaylistView = self.playlist_tab.widget(0)
@@ -47,16 +45,13 @@ class Playlist(QWidget):
         remove_playlist = createAction(self, 'Remove Playlist',
                                        self.playlist_tab.remove_playlist)
 
+        next_tab_act = createAction(self, 'Next Tab', self.playlist_tab.next_tab, 'Meta+tab')
+        previous_tab_act = createAction(self, 'Preivous Tab', self.playlist_tab.previous_tab, 'Meta+Shift+tab')
+
         controller.add_action_list('File', [add_file, open_directory])
-        controller.add_separator('File')
-        controller.add_action_list('File', [add_playlist, load_playlist, rename_playlist, save_playlist, remove_playlist])
-
-        self.playlist_tab.create_menu(controller)
-
-        self.context_menu.addActions([add_playlist, remove_playlist, save_playlist])
-
-    def contextMenuEvent(self, event: QContextMenuEvent):
-        self.context_menu.exec(event.globalPos())
+        controller.add_action_list('Playlist', [next_tab_act, previous_tab_act])
+        controller.add_separator('Playlist')
+        controller.add_action_list('Playlist', [add_playlist, load_playlist, rename_playlist, save_playlist, remove_playlist])
 
     def playlist(self):
         return self.playlist_tab.current_playlist()

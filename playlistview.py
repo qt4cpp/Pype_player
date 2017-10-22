@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QRubberBand, QFileDialog, QAbstractItemView, QApplic
     QStyle, QTableView, QHeaderView, QAction, QMenu
 
 from playlistmodel import PlaylistModel
-from utility import convert_from_bytearray, convert_to_bytearray, is_media
+from utility import convert_from_bytearray, convert_to_bytearray, is_media, createAction
 
 
 class PlaylistView(QTableView):

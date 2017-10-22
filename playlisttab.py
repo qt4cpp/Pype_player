@@ -25,23 +25,20 @@ class PlaylistTab(QTabWidget):
         self.setMovable(True)
         self.setElideMode(Qt.ElideNone)
 
-        self.context_menu = parent.context_menu
+        self.context_menu = QMenu(self)
+        self.create_context_menu()
 
         self.load_playlists()
 
         self.show()
 
-    def create_menu(self, controller):
-        delete_act = createAction(self, 'Delete item', self.delete_items, 'Ctrl+d')
-        next_tab_act = createAction(self, 'Next Tab', self.next_tab, 'Meta+tab')
-        previous_tab_act = createAction(self, 'Preivous Tab', self.previous_tab, 'Meta+Shift+tab')
-
-        if controller is None:
-            return
-        controller.add_action('Edit', delete_act)
-        controller.add_action_list('View', [next_tab_act, previous_tab_act])
-
-        self.context_menu.addActions([delete_act])
+    def create_context_menu(self):
+        self.context_menu.addAction(createAction(self, 'Add Playlist', self.add_playlist))
+        self.context_menu.addAction(createAction(self, 'Rename', self.rename_playlist))
+        self.context_menu.addAction(createAction(self, 'Save', self.save_current))
+        self.context_menu.addAction(createAction(self, 'Open', self.load_playlist))
+        self.context_menu.addSeparator()
+        self.context_menu.addAction(createAction(self, 'Remove', self.remove_playlist))
 
     def contextMenuEvent(self, event):
         self.context_menu.exec(event.globalPos())

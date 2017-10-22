@@ -4,3 +4,4 @@ dummyfile
 *.app/
 .vscode/
 playlist/
+test/tone/*
