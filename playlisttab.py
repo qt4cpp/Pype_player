@@ -56,7 +56,10 @@ class PlaylistTab(QTabWidget):
     def current_playlist(self):
         return self.currentWidget()
 
-    def add_playlist(self):
+    def add_playlist(self, title=''):
+        if title and not self.is_used(title):
+            self.addTab(self.create_new(), title)
+            return True
         while True:
             title, ok = QInputDialog.getText(self, 'New Playlist name', 'New Playlist name')
             if not ok or not title:
@@ -135,7 +138,14 @@ class PlaylistTab(QTabWidget):
         url, ok = QFileDialog.getOpenFileUrl(self, 'open a playlist files', filter='*.m3u *.m3u8')
         if not ok:
             return
-        self.current_playlist().load(url.toLocalFile())
+        file_name = url.fileName()
+        file_name = file_name[:file_name.find('.')]  # remove extension from file_name
+        if self.is_used(file_name):
+            return
+        new_playlist = self.create_new()
+        self.addTab(new_playlist, file_name)
+        new_playlist.load(url.toLocalFile())
+        self.setCurrentIndex(self.count()-1)
 
     def remove_files(self):
         """すべてのプレイリストファイルを消去する"""
@@ -154,7 +164,7 @@ class PlaylistTab(QTabWidget):
         files = os.listdir(path)
 
         for file in files:
-            if os.path.isdir(file) or 'm3u' in file[-4:]:
+            if os.path.isdir(file) or 'm3u' not in file[-4:]:
                 continue
             new_playlist = self.create_new()
             self.addTab(new_playlist, file[:-4])
