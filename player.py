@@ -37,6 +37,7 @@ class Player(QWidget):
 
     media_loaded = pyqtSignal(str)
     stopped = pyqtSignal(str)
+    playlist_size_changed = pyqtSignal(int)
     handle_double_click = pyqtSlot()
 
     def __init__(self, parent=None):

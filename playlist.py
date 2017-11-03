@@ -27,6 +27,7 @@ class Playlist(QWidget):
 
         self.setLayout(layout)
         self.show()
+        print(self.width())
 
     def create_menu(self, controller):
         if controller is None:
@@ -52,6 +53,10 @@ class Playlist(QWidget):
 
     def playlist(self):
         return self.playlist_tab.current_playlist()
+
+    def resizeEvent(self, event):
+        self.playlist_tab.currentWidget().resizeHeaderWidth(self.width()-10)
+        super().resizeEvent(event)
 
     def change_using_playlist(self):
         self.using_playlist.deactivate()

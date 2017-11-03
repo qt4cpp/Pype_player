@@ -47,9 +47,7 @@ class PlaylistView(QTableView):
         self.verticalHeader().setDefaultSectionSize(16)
         self.verticalHeader().hide()
         self.horizontalHeader().setMinimumSectionSize(30)
-        self.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
-
-        self.resizeHeaderWidth()
+        self.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
 
         self.current_index = QModelIndex()
         self.previousIndex = QModelIndex()
@@ -173,15 +171,14 @@ class PlaylistView(QTableView):
     def deactivate(self):
         self.set_current_index(QModelIndex())
 
-    def resizeHeaderWidth(self):
-        length = self.width()
-        first_width = int(length * 0.7)
-        self.horizontalHeader().resizeSection(0, first_width)
-        self.horizontalHeader().resizeSection(1, length-first_width-2)
+    def resizeHeaderWidth(self, width: int):
+        duration_width = 60
+        self.horizontalHeader().resizeSection(0, width - duration_width)
+        self.horizontalHeader().resizeSection(1, duration_width)
 
-    def resizeEvent(self, event):
-        self.resizeHeaderWidth()
-        super().resizeEvent(event)
+    # def resizeEvent(self, event):
+    #     self.resizeHeaderWidth()
+    #     super().resizeEvent(event)
 
     def mousePressEvent(self, event):
         """左クリックされたらカーソル下にある要素を選択し、ドラッグを認識するために現在の位置を保存する。

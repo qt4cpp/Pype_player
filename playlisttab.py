@@ -72,7 +72,7 @@ class PlaylistTab(QTabWidget):
                 return True
 
     def create_new(self):
-        new = PlaylistView()
+        new = PlaylistView(self)
         new.playlist_double_clicked.connect(self.handle_playlist_double_clicked)
         return new
 
