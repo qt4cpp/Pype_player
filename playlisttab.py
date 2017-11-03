@@ -29,7 +29,7 @@ class PlaylistTab(QTabWidget):
         self.context_menu = QMenu(self)
         self.create_context_menu()
 
-        self.load_playlists()
+        self.autoload_playlists()
 
         self.show()
 
@@ -152,7 +152,7 @@ class PlaylistTab(QTabWidget):
         import shutil
         shutil.rmtree(self.save_playlist_path)
 
-    def load_playlists(self):
+    def autoload_playlists(self):
         """プレイリストをフォルダから読み込む。
 
         デフォルトではplaylist/から読み込もうとする。"""
@@ -167,7 +167,7 @@ class PlaylistTab(QTabWidget):
             if os.path.isdir(file) or 'm3u' not in file[-4:]:
                 continue
             new_playlist = self.create_new()
-            self.addTab(new_playlist, file[:-4])
+            self.addTab(new_playlist, file[:file.find('.')])
             new_playlist.load(path+file)
 
         return True
