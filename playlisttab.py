@@ -134,7 +134,7 @@ class PlaylistTab(QTabWidget):
                 self.widget(i).save(path)
 
     def load_playlist(self):
-        """現在のplaylistからload()を呼ぶためのインターフェース"""
+        """ファイルを開いて、タブを追加する"""
         url, ok = QFileDialog.getOpenFileUrl(self, 'open a playlist files', filter='*.m3u *.m3u8')
         if not ok:
             return
