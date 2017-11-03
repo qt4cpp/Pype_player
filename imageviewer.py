@@ -12,6 +12,7 @@ class ImageViewer(QLabel):
         # check file exists
         pixmap = QPixmap()
         pixmap.load(path)
+        # check null
         self.setPixmap(pixmap)
         return pixmap
 
