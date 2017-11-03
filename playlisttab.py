@@ -132,8 +132,10 @@ class PlaylistTab(QTabWidget):
 
     def load_playlist(self):
         """現在のplaylistからload()を呼ぶためのインターフェース"""
-        self.current_playlist().load()
-
+        url, ok = QFileDialog.getOpenFileUrl(self, 'open a playlist files', filter='*.m3u *.m3u8')
+        if not ok:
+            return
+        self.current_playlist().load(url.toLocalFile())
 
     def remove_files(self):
         """すべてのプレイリストファイルを消去する"""

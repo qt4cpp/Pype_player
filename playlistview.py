@@ -114,11 +114,7 @@ class PlaylistView(QTableView):
 
         pathが与えられた場合は、そこから読み込み、
         ない場合は、何も読み込まない。"""
-        if path is None:
-            url, ok = QFileDialog.getOpenFileUrl(self, 'open a playlist files', filter='*.m3u *.m3u8')
-            if not ok:
-                return
-            path = url.toLocalFile()
+
         with open(path, 'rt') as fin:
             for line in fin:
                 self.add_item(line[:-1]) # 最後の改行文字を取り除く
