@@ -12,6 +12,7 @@ from utility import dialog_for_message, createAction
 class PlaylistTab(QTabWidget):
 
     double_clicked = pyqtSignal()
+    playlist_ext = '.m3u8'
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -113,7 +114,8 @@ class PlaylistTab(QTabWidget):
         タイトルをファイル名として、パスをファイルの各行に書き出す。
         """
         name = self.tabText(self.currentIndex())
-        url, ok = QFileDialog.getSaveFileUrl(self, 'Save File', name+'.m3u', 'playlist(*.m3u')
+        url, ok = QFileDialog.getSaveFileUrl(
+            self, 'Save File', name+self.playlist_ext, 'playlist(*{}'.format(self.playlist_ext))
         if not ok:
             return False
         url = url.toLocalFile()
@@ -125,7 +127,7 @@ class PlaylistTab(QTabWidget):
         for i in range(self.count()):
             title = self.tabText(i)
             if not title == 'temp':
-                path = self.save_playlist_path + self.tabText(i) + '.m3u'
+                path = self.save_playlist_path + self.tabText(i) + self.playlist_ext
                 self.widget(i).save(path)
 
     def load_playlist(self):
@@ -150,7 +152,7 @@ class PlaylistTab(QTabWidget):
         files = os.listdir(path)
 
         for file in files:
-            if os.path.isdir(file) or file[-3:] != 'm3u':
+            if os.path.isdir(file) or 'm3u' in file[-4:]:
                 continue
             new_playlist = self.create_new()
             self.addTab(new_playlist, file[:-4])

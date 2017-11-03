@@ -30,7 +30,7 @@ class PlaylistView(QTableView):
         return '\n'
     @property
     def open_file_filter(self):
-        return '*.mp4 *.m4v *.mov *.mpg *.mpeg *.mp3 *.m4a *.wmv *.aiff *.wav'
+        return '*.mp4 *.m4v *.mov *.mpg *.mpeg *. mp3 *.m4a *.wmv *.aiff *.wav'
 
     def __init__(self, parent=None):
         super(PlaylistView, self).__init__(parent)
@@ -115,7 +115,7 @@ class PlaylistView(QTableView):
         pathが与えられた場合は、そこから読み込み、
         ない場合は、何も読み込まない。"""
         if path is None:
-            url, ok = QFileDialog.getOpenFileUrl(self, 'open a playlist files', filter='*.m3u')
+            url, ok = QFileDialog.getOpenFileUrl(self, 'open a playlist files', filter='*.m3u *.m3u8')
             if not ok:
                 return
             path = url.toLocalFile()
