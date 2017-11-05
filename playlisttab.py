@@ -29,7 +29,7 @@ class PlaylistTab(QTabWidget):
         self.context_menu = QMenu(self)
         self.create_context_menu()
 
-        self.autoload_playlists()
+        #self.autoload_playlists()
 
         self.show()
 

@@ -11,7 +11,8 @@ class TestPlaylist(unittest.TestCase):
 
     def setUp(self):
         self.playlist = Playlist()
-        self.save_path = 'playlist/'
+        self.save_path = 'test_playlist/'
+        self.extension = '.m3u8'
 
     def test_playlists(self):
         self.assertEqual(self.playlist.playlist_tab.count(), 1)
@@ -30,7 +31,7 @@ class TestPlaylist(unittest.TestCase):
         title = self.playlist.playlist_tab.tabText(1)
         self.playlist.playlist_tab.save_all()
         file_list = os.listdir(self.save_path)
-        self.assertEqual(title+'.m3u', file_list[0])
+        self.assertEqual(title+self.extension, file_list[0])
         self.remove_saved_files()
 
     def remove_saved_files(self):

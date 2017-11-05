@@ -17,23 +17,15 @@ class ImageViewer(QLabel):
         return pixmap
 
     def resize_keep_aspect_ratio(self, base_size=500):
-        pixmap = self.pixmap()
-        height = pixmap.height()
-        width = pixmap.width()
+        height = self.pixmap().height()
+        width = self.pixmap().width()
         if height > width:
-            self.resize(base_size, base_size*self.aspect_ratio(height, width))
+            self.resize(base_size, base_size*self.aspect_ratio())
         else:
-            self.resize(base_size*self.aspect_ratio(height, width), base_size)
+            self.resize(base_size*self.aspect_ratio(), base_size)
 
-    def aspect_ratio(self, height, width):
-        return max(height, width) / min(height, width)
+    def aspect_ratio(self):
+        width = self.pixmap().width()
+        height = self.pixmap().height()
+        return max(width, height) / min(width, height)
 
-if __name__ == '__main__':
-    import sys
-    app = QApplication(sys.argv)
-
-    image_viewer = ImageViewer()
-    image_viewer.load_image('test/image/duo-270.png')
-    image_viewer.resize_keep_aspect_ratio(base_size=600)
-    image_viewer.show()
-    sys.exit(app.exec_())
