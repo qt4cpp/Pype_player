@@ -1,3 +1,4 @@
+from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QLabel
 
@@ -29,6 +30,13 @@ class ImageViewer(QLabel):
             self.resize(base_size, base_size*self.aspect_ratio())
         else:
             self.resize(base_size*self.aspect_ratio(), base_size)
+
+    def aspect_fit(self, size: QSize):
+        if self.pixmap().width() > self.pixmap().height():
+            self.scale_image(size.width() / self.width())
+        else:
+            self.scale_image(size.height() / self.height())
+            print(self.factor)
 
     def aspect_ratio(self):
         width = self.pixmap().width()

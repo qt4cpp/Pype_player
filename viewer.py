@@ -43,8 +43,10 @@ class Viewer(QWidget):
         zoom_in_act = createAction(self, 'Zoom In', self.zoom_in, 'Ctrl++')
         zoom_out_act = createAction(self, 'Zoom Out', self.zoom_out, 'Ctrl+-')
         normal_size_act = createAction(self, 'Normal size', self.normal_size, 'Ctrl+0')
+        fit_window_act = createAction(self, 'Fit window', self.fit_to_window, 'Ctrl+l')
         self.context_menu.addActions(
-            [next_act, previous_act, zoom_in_act, zoom_out_act, normal_size_act])
+            [next_act, previous_act, zoom_in_act, zoom_out_act, normal_size_act,
+             fit_window_act])
 
     def contextMenuEvent(self, event):
         self.context_menu.exec(event.globalPos())
@@ -70,7 +72,7 @@ class Viewer(QWidget):
         self.image_viewer.adjustSize()
         self.index = index
         self.show()
-        self.image_viewer.resize_keep_aspect_ratio(min(self.width(), self.height()))
+        self.image_viewer.aspect_fit(self.scroll_area.size())
 
     def next(self, step=1):
         self.set_image(self.index+step)
@@ -87,6 +89,9 @@ class Viewer(QWidget):
     def normal_size(self):
         self.image_viewer.adjustSize()
         self.image_viewer.factor = 1.0
+
+    def fit_to_window(self):
+        self.image_viewer.aspect_fit(self.scroll_area.size())
 
 if __name__ == '__main__':
     import sys
