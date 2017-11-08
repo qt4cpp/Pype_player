@@ -8,7 +8,7 @@ class ImageViewer(QLabel):
         super().__init__(parent)
         self.setScaledContents(True)
 
-    def load_image(self, path='', ):
+    def set_image(self, path='', ):
         # check file exists
         pixmap = QPixmap()
         pixmap.load(path)

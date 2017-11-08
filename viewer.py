@@ -2,9 +2,10 @@ from ensurepip import __main__
 
 from PyQt5.QtCore import QDir
 from PyQt5.QtGui import QImageReader
-from PyQt5.QtWidgets import QWidget, QScrollArea, QVBoxLayout, QApplication, QSizePolicy, QFileDialog
+from PyQt5.QtWidgets import QWidget, QScrollArea, QVBoxLayout, QApplication, QSizePolicy, QFileDialog, QAction, QMenu
 
 from imageviewer import ImageViewer
+from utility import createAction
 
 
 class Viewer(QWidget):
@@ -24,9 +25,11 @@ class Viewer(QWidget):
         self.scroll_area.setWidget(self.image_viewer)
         self.scroll_area.setWidgetResizable(True)
 
+        self.context_menu = QMenu(self)
+        self.create_actions()
+
         layout = QVBoxLayout()
         layout.addWidget(self.scroll_area)
-
         self.setLayout(layout)
 
     def init_filters(self):
@@ -34,8 +37,13 @@ class Viewer(QWidget):
         for f in formats:
             self.filters.append('*.' + f.data().decode('utf-8'))
 
-    def init_action(self):
-        pass
+    def create_actions(self):
+        next_act = createAction(self, 'next', self.next, 'Alt+Right')
+        previous_act = createAction(self, 'previous', self.previous, 'Alt+Left')
+        self.context_menu.addActions([next_act, previous_act])
+
+    def contextMenuEvent(self, event):
+        self.context_menu.exec(event.globalPos())
 
     def open_directory(self, path=''):
         if not path:
@@ -54,15 +62,15 @@ class Viewer(QWidget):
     def set_image(self, index):
         if index < 0 or index >= len(self.image_list):
             return None
-        self.image_viewer.load_image(self.image_list[index])
+        self.image_viewer.set_image(self.image_list[index])
         self.index = index
         self.show()
 
-    def next(self):
-        self.set_image(self.index+1)
+    def next(self, step=1):
+        self.set_image(self.index+step)
 
-    def previous(self):
-        self.set_image(self.index-1)
+    def previous(self, step=1):
+        self.set_image(self.index-step)
 
 if __name__ == '__main__':
     import sys
@@ -71,6 +79,5 @@ if __name__ == '__main__':
 
     viewer = Viewer()
     viewer.open_directory()
-    viewer.resize(400, 400 * viewer.image_viewer.aspect_ratio())
-    viewer.set_image(1)
+    viewer.set_image(0)
     sys.exit(app.exec_())

@@ -13,7 +13,7 @@ class TestViewer(unittest.TestCase):
         self.image_path = 'image/duo-270.png'
 
     def test_load_image(self):
-        pixmap = self.viewer.image_viewer.load_image(self.image_path)
+        pixmap = self.viewer.image_viewer.set_image(self.image_path)
         self.assertNotEqual(pixmap, False)
         self.viewer.resize(400, 400*self.viewer.image_viewer.aspect_ratio())
         self.assertEqual(min(self.viewer.width(), self.viewer.height()), 400)
