@@ -6,6 +6,8 @@ class ImageViewer(QLabel):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+
+        self.factor = 1.0
         self.setScaledContents(True)
 
     def set_image(self, path='', ):
@@ -15,6 +17,10 @@ class ImageViewer(QLabel):
         # check null
         self.setPixmap(pixmap)
         return pixmap
+
+    def scale_image(self, factor):
+        self.factor *= factor
+        self.resize(self.factor * self.pixmap().size())
 
     def resize_keep_aspect_ratio(self, base_size=500):
         height = self.pixmap().height()
