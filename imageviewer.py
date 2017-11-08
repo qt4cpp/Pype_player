@@ -20,8 +20,14 @@ class ImageViewer(QLabel):
         return pixmap
 
     def scale_image(self, factor):
-        self.factor *= factor
+        if self.factor * factor > 4.76:
+            self.factor = 4.76
+        elif self.factor * factor < 0.1:
+            self.factor = 0.1
+        else:
+            self.factor = round(factor * self.factor, 2)
         self.resize(self.factor * self.pixmap().size())
+        print(self.factor)
 
     def resize_keep_aspect_ratio(self, base_size=500):
         height = self.pixmap().height()
