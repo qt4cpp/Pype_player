@@ -55,6 +55,13 @@ class Viewer(QWidget):
     def contextMenuEvent(self, event):
         self.context_menu.exec(event.globalPos())
 
+    def setup(self):
+        if not self.image_list:
+            self.open_directory()
+        if not self.image_viewer.pixmap():
+            self.set_image(0)
+        self.show()
+
     def open_directory(self, path=''):
         if not path:
             path = QFileDialog.getExistingDirectory(self, 'Open Directory',
@@ -70,13 +77,10 @@ class Viewer(QWidget):
             self.image_list.append(path)
 
     def set_image(self, index):
-        if not self.image_list:
-            self.open_directory()
         if index < 0 or index >= len(self.image_list):
             return None
         self.image_viewer.set_image(self.image_list[index])
         self.index = index
-        self.resize(300, 500)
         self.pix_is_ready.emit()
 
     def next(self):
