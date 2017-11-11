@@ -46,9 +46,10 @@ class Viewer(QWidget):
         zoom_out_act = createAction(self, 'Zoom Out', self.zoom_out, 'Ctrl+-')
         normal_size_act = createAction(self, 'Normal size', self.normal_size, 'Ctrl+0')
         fit_window_act = createAction(self, 'Fit window', self.fit_to_window, 'Ctrl+l')
+        show_act = createAction(self, 'Show', self.show)
         close_window_act = createAction(self, 'Close', self.close, 'Ctrl+c')
         viewer_act = [next_act, previous_act, zoom_in_act, zoom_out_act, normal_size_act,
-             fit_window_act, close_window_act]
+             fit_window_act, show_act, close_window_act]
         self.context_menu.addActions(viewer_act)
         controller.add_action_list('Viewer', viewer_act)
 
@@ -113,7 +114,7 @@ class Viewer(QWidget):
         self.setVisible(True)
 
     def close(self):
-        self.close()
+        self.hide()
 
 if __name__ == '__main__':
     import sys
