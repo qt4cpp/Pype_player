@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication
 from menu_controller import MenuController
 from player import Player
 from utility import createAction
+from viewer import Viewer
 
 
 class PypePlayer(QMainWindow):
@@ -19,10 +20,14 @@ class PypePlayer(QMainWindow):
         self.player.media_loaded.connect(self.set_window_title)
         self.player.stopped.connect(self.set_window_title)
 
+        self.viewer = Viewer()
+        self.viewer.create_menus(self.menu_controller)
+        self.viewer.open_directory()
+        self.viewer.set_image(5)
+
         self.resize(600, 360)
         self.set_window_title('')
         self.show()
-
 
 
     def set_window_title(self, str=''):

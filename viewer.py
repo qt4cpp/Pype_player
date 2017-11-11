@@ -1,6 +1,6 @@
 from ensurepip import __main__
 
-from PyQt5.QtCore import QDir
+from PyQt5.QtCore import QDir, pyqtSignal
 from PyQt5.QtGui import QImageReader
 from PyQt5.QtWidgets import QWidget, QScrollArea, QVBoxLayout, QApplication, QSizePolicy, QFileDialog, QAction, QMenu
 
@@ -9,6 +9,7 @@ from utility import createAction
 
 
 class Viewer(QWidget):
+    pix_is_ready = pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -23,30 +24,33 @@ class Viewer(QWidget):
 
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidget(self.image_viewer)
-        #self.scroll_area.setWidgetResizable(True)
 
         self.context_menu = QMenu(self)
-        self.create_actions()
+        #self.create_menus()
 
         layout = QVBoxLayout()
         layout.addWidget(self.scroll_area)
         self.setLayout(layout)
+        self.pix_is_ready.connect(self.show)
 
     def init_filters(self):
         formats = QImageReader.supportedImageFormats()
         for f in formats:
             self.filters.append('*.' + f.data().decode('utf-8'))
 
-    def create_actions(self):
+    def create_menus(self, controller):
+        viewer_act = []
         next_act = createAction(self, 'next', self.next, 'Alt+Right')
         previous_act = createAction(self, 'previous', self.previous, 'Alt+Left')
         zoom_in_act = createAction(self, 'Zoom In', self.zoom_in, 'Ctrl++')
         zoom_out_act = createAction(self, 'Zoom Out', self.zoom_out, 'Ctrl+-')
         normal_size_act = createAction(self, 'Normal size', self.normal_size, 'Ctrl+0')
         fit_window_act = createAction(self, 'Fit window', self.fit_to_window, 'Ctrl+l')
-        self.context_menu.addActions(
-            [next_act, previous_act, zoom_in_act, zoom_out_act, normal_size_act,
-             fit_window_act])
+        close_window_act = createAction(self, 'Close', self.close, 'Ctrl+c')
+        viewer_act = [next_act, previous_act, zoom_in_act, zoom_out_act, normal_size_act,
+             fit_window_act, close_window_act]
+        self.context_menu.addActions(viewer_act)
+        controller.add_action_list('Viewer', viewer_act)
 
     def contextMenuEvent(self, event):
         self.context_menu.exec(event.globalPos())
@@ -66,19 +70,20 @@ class Viewer(QWidget):
             self.image_list.append(path)
 
     def set_image(self, index):
+        if not self.image_list:
+            self.open_directory()
         if index < 0 or index >= len(self.image_list):
             return None
         self.image_viewer.set_image(self.image_list[index])
-        self.image_viewer.adjustSize()
         self.index = index
-        self.show()
-        self.image_viewer.aspect_fit(self.scroll_area.size())
+        self.resize(300, 500)
+        self.pix_is_ready.emit()
 
-    def next(self, step=1):
-        self.set_image(self.index+step)
+    def next(self):
+        self.set_image(self.index+1)
 
-    def previous(self, step=1):
-        self.set_image(self.index-step)
+    def previous(self):
+        self.set_image(self.index-1)
 
     def zoom_in(self):
         self.image_viewer.scale_image(1.25)
@@ -92,6 +97,19 @@ class Viewer(QWidget):
 
     def fit_to_window(self):
         self.image_viewer.aspect_fit(self.scroll_area.size())
+
+    def visible(self):
+        if not self.image_viewer.pixmap():
+            if self.image_list:
+                self.set_image(0)
+            else:
+                self.open_directory()
+                self.set_image(0)
+            self.image_viewer.adjustSize()
+        self.setVisible(True)
+
+    def close(self):
+        self.close()
 
 if __name__ == '__main__':
     import sys

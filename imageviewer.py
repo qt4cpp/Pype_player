@@ -17,6 +17,7 @@ class ImageViewer(QLabel):
         pixmap.load(path)
         # check null
         self.setPixmap(pixmap)
+        self.adjustSize()
         return pixmap
 
     def scale_image(self, factor):
@@ -38,10 +39,11 @@ class ImageViewer(QLabel):
             self.resize(base_size*self.aspect_ratio(), base_size)
 
     def aspect_fit(self, size: QSize):
+        scrollbar_pixel = 20
         if self.pixmap().width() > self.pixmap().height():
-            self.scale_image(size.width() / self.width())
+            self.scale_image((size.width()-scrollbar_pixel) / self.width())
         else:
-            self.scale_image(size.height() / self.height())
+            self.scale_image((size.height()-scrollbar_pixel) / self.height())
             print(self.factor)
 
     def aspect_ratio(self):
