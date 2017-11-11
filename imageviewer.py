@@ -39,12 +39,14 @@ class ImageViewer(QLabel):
             self.resize(base_size*self.aspect_ratio(), base_size)
 
     def aspect_fit(self, size: QSize):
-        scrollbar_pixel = 20
-        if self.pixmap().width() > self.pixmap().height():
-            self.scale_image((size.width()-scrollbar_pixel) / self.width())
+        win_gradient = size.height() / size.width()
+        pix_gradient = self.pixmap().height() / self.pixmap().width()
+        if win_gradient > pix_gradient:
+            self.resize(size.width(), int(size.width() * pix_gradient))
+            self.factor = round(size.width() / self.pixmap().width(), 2)
         else:
-            self.scale_image((size.height()-scrollbar_pixel) / self.height())
-            print(self.factor)
+            self.resize(int(size.height() / pix_gradient), size.height())
+            self.factor = round(size.height() / self.pixmap().height(), 2)
 
     def aspect_ratio(self):
         width = self.pixmap().width()
