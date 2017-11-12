@@ -86,15 +86,17 @@ class Viewer(QWidget):
 
     def next(self):
         self.set_image(self.index+1)
+        self.image_viewer.scale_image_by_factor(self.image_viewer.factor)
 
     def previous(self):
         self.set_image(self.index-1)
+        self.image_viewer.scale_image_by_factor(self.image_viewer.factor)
 
     def zoom_in(self):
-        self.image_viewer.scale_image(1.25)
+        self.image_viewer.scale_image_by_rate(1.25)
 
     def zoom_out(self):
-        self.image_viewer.scale_image(0.8)
+        self.image_viewer.scale_image_by_rate(0.8)
 
     def normal_size(self):
         self.image_viewer.adjustSize()
