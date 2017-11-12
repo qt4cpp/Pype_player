@@ -26,7 +26,6 @@ class Viewer(QWidget):
         self.scroll_area.setWidget(self.image_viewer)
 
         self.context_menu = QMenu(self)
-        #self.create_menus()
 
         layout = QVBoxLayout()
         layout.addWidget(self.scroll_area)
@@ -37,21 +36,6 @@ class Viewer(QWidget):
         formats = QImageReader.supportedImageFormats()
         for f in formats:
             self.filters.append('*.' + f.data().decode('utf-8'))
-
-    def create_menus(self, controller):
-        change_act = createAction(self, 'Change Refernce', self.change_reference)
-        next_act = createAction(self, 'next', self.next, 'Alt+Right')
-        previous_act = createAction(self, 'previous', self.previous, 'Alt+Left')
-        zoom_in_act = createAction(self, 'Zoom In', self.zoom_in, 'Ctrl++')
-        zoom_out_act = createAction(self, 'Zoom Out', self.zoom_out, 'Ctrl+-')
-        normal_size_act = createAction(self, 'Normal size', self.normal_size, 'Ctrl+0')
-        fit_window_act = createAction(self, 'Fit window', self.fit_to_window, 'Ctrl+l')
-        show_act = createAction(self, 'Show', self.show)
-        close_window_act = createAction(self, 'Close', self.close, 'Ctrl+c')
-        viewer_act = [show_act, change_act, next_act, previous_act, zoom_in_act, zoom_out_act, normal_size_act,
-             fit_window_act, show_act, close_window_act]
-        self.context_menu.addActions(viewer_act)
-        controller.add_action_list('Viewer', viewer_act)
 
     def contextMenuEvent(self, event):
         self.context_menu.exec(event.globalPos())

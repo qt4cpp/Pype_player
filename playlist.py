@@ -29,28 +29,6 @@ class Playlist(QWidget):
         self.show()
         print(self.width())
 
-    def create_menu(self, controller):
-        if controller is None:
-            return
-
-        add_file = createAction(self, 'Add file(s)', self.open, 'Ctrl+o')
-        open_directory = createAction(self, 'Open directory', self.open_directory, 'Ctrl+Shift+o')
-
-        add_playlist = createAction(self, 'New Playlist', self.playlist_tab.add_playlist, 'Ctrl+N')
-        load_playlist = createAction(self, 'Load Playlist file', self.playlist_tab.load_playlist, 'Ctrl+l')
-        rename_playlist = createAction(self, 'Rename Playlist', self.playlist_tab.rename_playlist)
-        save_playlist = createAction(self, 'Save Current Playlist', self.playlist_tab.save_current, 'Ctrl+s')
-        remove_playlist = createAction(self, 'Remove Playlist', self.playlist_tab.remove_playlist)
-
-        next_tab_act = createAction(self, 'Next Tab', self.playlist_tab.next_tab, 'Meta+tab')
-        previous_tab_act = createAction(self, 'Preivous Tab', self.playlist_tab.previous_tab, 'Meta+Shift+tab')
-
-        controller.add_action_list('File', [add_file, open_directory])
-        controller.add_action_list('Playlist', [next_tab_act, previous_tab_act])
-        controller.add_separator('Playlist')
-        controller.add_action_list('Playlist',
-                                   [add_playlist, load_playlist, rename_playlist, save_playlist, remove_playlist])
-
     def playlist(self):
         return self.playlist_tab.current_playlist()
 
