@@ -39,7 +39,7 @@ class Viewer(QWidget):
             self.filters.append('*.' + f.data().decode('utf-8'))
 
     def create_menus(self, controller):
-        viewer_act = []
+        change_act = createAction(self, 'Change Refernce', self.change_reference)
         next_act = createAction(self, 'next', self.next, 'Alt+Right')
         previous_act = createAction(self, 'previous', self.previous, 'Alt+Left')
         zoom_in_act = createAction(self, 'Zoom In', self.zoom_in, 'Ctrl++')
@@ -48,7 +48,7 @@ class Viewer(QWidget):
         fit_window_act = createAction(self, 'Fit window', self.fit_to_window, 'Ctrl+l')
         show_act = createAction(self, 'Show', self.show)
         close_window_act = createAction(self, 'Close', self.close, 'Ctrl+c')
-        viewer_act = [next_act, previous_act, zoom_in_act, zoom_out_act, normal_size_act,
+        viewer_act = [show_act, change_act, next_act, previous_act, zoom_in_act, zoom_out_act, normal_size_act,
              fit_window_act, show_act, close_window_act]
         self.context_menu.addActions(viewer_act)
         controller.add_action_list('Viewer', viewer_act)
@@ -67,11 +67,18 @@ class Viewer(QWidget):
         if not path:
             path = QFileDialog.getExistingDirectory(self, 'Open Directory',
                                                     '.', QFileDialog.ShowDirsOnly)
+            if not path:
+                return
         directory = QDir(path)
         directory.setNameFilters(self.filters)
+        self.image_list = []
         image_files = directory.entryList()
         for file in image_files:
             self.add_item(directory.absolutePath() + '/' + file)
+
+    def change_reference(self):
+        self.open_directory()
+        self.set_image(0)
 
     def add_item(self, path=''):
         if path:

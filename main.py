@@ -22,7 +22,6 @@ class PypePlayer(QMainWindow):
 
         self.viewer = Viewer()
         self.viewer.create_menus(self.menu_controller)
-        self.viewer.setup()
 
         self.resize(600, 360)
         self.set_window_title('')
