@@ -75,6 +75,7 @@ class Viewer(QDockWidget):
         self.image_viewer.set_image(self.image_list[index])
         self.index = index
         self.pix_is_ready.emit()
+        self.setWindowTitle(self.image_list[index])
         self.parent().update_actions()
 
     def next(self):
