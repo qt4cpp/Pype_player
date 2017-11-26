@@ -1,18 +1,20 @@
 from ensurepip import __main__
 
-from PyQt5.QtCore import QDir, pyqtSignal
+from PyQt5.QtCore import QDir, pyqtSignal, Qt
 from PyQt5.QtGui import QImageReader
-from PyQt5.QtWidgets import QWidget, QScrollArea, QVBoxLayout, QApplication, QSizePolicy, QFileDialog, QAction, QMenu
+from PyQt5.QtWidgets import QWidget, QScrollArea, QVBoxLayout, QApplication, QSizePolicy, QFileDialog, QAction, QMenu, \
+    QDockWidget
 
 from imageviewer import ImageViewer
 from utility import createAction
 
 
-class Viewer(QWidget):
+class Viewer(QDockWidget):
     pix_is_ready = pyqtSignal()
 
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super().__init__('Viewer', parent)
+        self.setAllowedAreas(Qt.NoDockWidgetArea)
 
         self.image_list = []
         self.index = 0
@@ -24,13 +26,12 @@ class Viewer(QWidget):
 
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidget(self.image_viewer)
+        self.setWidget(self.scroll_area)
+        self.hide()
+        self.setFloating(True)
 
         self.context_menu = QMenu(self)
-
-        layout = QVBoxLayout()
-        layout.addWidget(self.scroll_area)
-        self.setLayout(layout)
-        self.pix_is_ready.connect(self.show)
+        self.pix_is_ready.connect(self.image_viewer.show)
 
     def init_filters(self):
         formats = QImageReader.supportedImageFormats()
@@ -94,9 +95,10 @@ class Viewer(QWidget):
         self.image_viewer.factor = 1.0
 
     def fit_to_window(self):
-        self.image_viewer.aspect_fit(self.scroll_area.size())
+        if self.parent().viewer_act[7].isChecked():
+            self.image_viewer.aspect_fit(self.scroll_area.size())
 
-    def visible(self):
+    def show(self):
         if not self.image_viewer.pixmap():
             if self.image_list:
                 self.set_image(0)
@@ -108,6 +110,10 @@ class Viewer(QWidget):
 
     def close(self):
         self.hide()
+
+    def resizeEvent(self, event):
+        self.fit_to_window()
+        super().resizeEvent(event)
 
 if __name__ == '__main__':
     import sys

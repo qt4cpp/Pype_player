@@ -1,5 +1,6 @@
 import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtWidgets import QMainWindow, QApplication, QDockWidget
+from PyQt5.QtCore import Qt
 
 from menu_controller import MenuController
 from player import Player
@@ -14,7 +15,7 @@ class PypePlayer(QMainWindow):
 
         self.player = Player(parent=self)
         self.setCentralWidget(self.player)
-        self.viewer = Viewer()
+        self.viewer = Viewer(parent=self)
 
         self.menu_controller = MenuController(self, self.menuBar())
         self.create_menu()
@@ -76,20 +77,21 @@ class PypePlayer(QMainWindow):
         zoom_in_act = createAction(self.viewer, 'Zoom In', self.viewer.zoom_in, 'Ctrl++')
         zoom_out_act = createAction(self.viewer, 'Zoom Out', self.viewer.zoom_out, 'Ctrl+-')
         normal_size_act = createAction(self.viewer, 'Normal size', self.viewer.normal_size, 'Ctrl+0')
-        fit_window_act = createAction(self.viewer, 'Fit window', self.viewer.fit_to_window, 'Ctrl+l')
+        fit_to_window_act = createAction(self.viewer, 'Fit to window', self.viewer.fit_to_window)
+        fit_to_window_act.setCheckable(True)
         show_act = createAction(self.viewer, 'Show', self.viewer.show)
-        close_window_act = createAction(self.viewer, 'Close', self.viewer.close, 'Ctrl+c')
-        viewer_act = [show_act, change_act, next_act, previous_act, zoom_in_act, zoom_out_act, normal_size_act,
-                      fit_window_act, show_act, close_window_act]
-        self.viewer.context_menu.addActions(viewer_act)
-        self.menu_controller.add_action_list('Viewer', viewer_act)
+        close_window_act = createAction(self.viewer, 'Close', self.viewer.hide, 'Ctrl+c')
+        self.viewer_act = [show_act, change_act, next_act, previous_act, zoom_in_act, zoom_out_act, normal_size_act,
+                           fit_to_window_act, show_act, close_window_act]
+        self.viewer.context_menu.addActions(self.viewer_act)
+        self.menu_controller.add_action_list('Viewer', self.viewer_act)
 
     def set_window_title(self, str=''):
         if str:
             self.setWindowTitle('{0} - Pype Player'.format(str))
         else:
             self.setWindowTitle('Pype Player')
-        
+
     def closeEvent(self, event):
         # self.player.playlist.save_all()
         super(PypePlayer, self).closeEvent(event)
