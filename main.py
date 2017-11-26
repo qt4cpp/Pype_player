@@ -71,7 +71,7 @@ class PypePlayer(QMainWindow):
                                    [add_playlist, load_playlist, rename_playlist, save_playlist, remove_playlist])
 
         # Viewer
-        change_act = createAction(self.viewer, 'Change Reference', self.viewer.change_reference)
+        set_reference_act = createAction(self.viewer, 'Set Reference', self.viewer.set_reference)
         next_act = createAction(self.viewer, 'next', self.viewer.next, 'Alt+Right')
         previous_act = createAction(self.viewer, 'previous', self.viewer.previous, 'Alt+Left')
         zoom_in_act = createAction(self.viewer, 'Zoom In', self.viewer.zoom_in, 'Ctrl++')
@@ -81,7 +81,7 @@ class PypePlayer(QMainWindow):
         fit_to_window_act.setCheckable(True)
         show_act = createAction(self.viewer, 'Show', self.viewer.show)
         close_window_act = createAction(self.viewer, 'Close', self.viewer.hide, 'Ctrl+c')
-        self.viewer_act = [show_act, change_act, next_act, previous_act, zoom_in_act, zoom_out_act, normal_size_act,
+        self.viewer_act = [show_act, set_reference_act, next_act, previous_act, zoom_in_act, zoom_out_act, normal_size_act,
                            fit_to_window_act, show_act, close_window_act]
         self.viewer.context_menu.addActions(self.viewer_act)
         self.menu_controller.add_action_list('Viewer', self.viewer_act)

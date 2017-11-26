@@ -61,7 +61,7 @@ class Viewer(QDockWidget):
         for file in image_files:
             self.add_item(directory.absolutePath() + '/' + file)
 
-    def change_reference(self):
+    def set_reference(self):
         self.open_directory()
         self.set_image(0)
 
