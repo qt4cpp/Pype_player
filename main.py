@@ -19,6 +19,7 @@ class PypePlayer(QMainWindow):
 
         self.menu_controller = MenuController(self, self.menuBar())
         self.create_menu()
+        self.update_actions()
 
         self.player.media_loaded.connect(self.set_window_title)
         self.player.stopped.connect(self.set_window_title)
@@ -81,7 +82,7 @@ class PypePlayer(QMainWindow):
         fit_to_window_act.setCheckable(True)
         show_act = createAction(self.viewer, 'Show', self.viewer.show)
         close_window_act = createAction(self.viewer, 'Close', self.viewer.hide, 'Ctrl+c')
-        self.viewer_act = [show_act, set_reference_act, next_act, previous_act, zoom_in_act, zoom_out_act, normal_size_act,
+        self.viewer_act = [set_reference_act, next_act, previous_act, zoom_in_act, zoom_out_act, normal_size_act,
                            fit_to_window_act, show_act, close_window_act]
         self.viewer.context_menu.addActions(self.viewer_act)
         self.menu_controller.add_action_list('Viewer', self.viewer_act)
@@ -96,6 +97,9 @@ class PypePlayer(QMainWindow):
         # self.player.playlist.save_all()
         super(PypePlayer, self).closeEvent(event)
 
+    def update_actions(self):
+        for a in self.viewer_act[1:]:
+            a.setEnabled(self.viewer.isReady())
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -75,6 +75,7 @@ class Viewer(QDockWidget):
         self.image_viewer.set_image(self.image_list[index])
         self.index = index
         self.pix_is_ready.emit()
+        self.parent().update_actions()
 
     def next(self):
         self.set_image(self.index+1)
@@ -95,7 +96,7 @@ class Viewer(QDockWidget):
         self.image_viewer.factor = 1.0
 
     def fit_to_window(self):
-        if self.parent().viewer_act[7].isChecked():
+        if self.parent().viewer_act[6].isChecked():
             self.image_viewer.aspect_fit(self.scroll_area.size())
 
     def show(self):
@@ -114,6 +115,12 @@ class Viewer(QDockWidget):
     def resizeEvent(self, event):
         self.fit_to_window()
         super().resizeEvent(event)
+
+    def isReady(self):
+        if self.image_viewer.pixmap():
+            return True
+        else:
+            return False
 
 if __name__ == '__main__':
     import sys
