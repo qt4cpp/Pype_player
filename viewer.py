@@ -1,18 +1,20 @@
 from ensurepip import __main__
 
-from PyQt5.QtCore import QDir, pyqtSignal
+from PyQt5.QtCore import QDir, pyqtSignal, Qt
 from PyQt5.QtGui import QImageReader
-from PyQt5.QtWidgets import QWidget, QScrollArea, QVBoxLayout, QApplication, QSizePolicy, QFileDialog, QAction, QMenu
+from PyQt5.QtWidgets import QWidget, QScrollArea, QVBoxLayout, QApplication, QSizePolicy, QFileDialog, QAction, QMenu, \
+    QDockWidget
 
 from imageviewer import ImageViewer
 from utility import createAction
 
 
-class Viewer(QWidget):
+class Viewer(QDockWidget):
     pix_is_ready = pyqtSignal()
 
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super().__init__('Viewer', parent)
+        self.setAllowedAreas(Qt.NoDockWidgetArea)
 
         self.image_list = []
         self.index = 0
@@ -24,34 +26,17 @@ class Viewer(QWidget):
 
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidget(self.image_viewer)
+        self.setWidget(self.scroll_area)
+        self.hide()
+        self.setFloating(True)
 
         self.context_menu = QMenu(self)
-        #self.create_menus()
-
-        layout = QVBoxLayout()
-        layout.addWidget(self.scroll_area)
-        self.setLayout(layout)
-        self.pix_is_ready.connect(self.show)
+        self.pix_is_ready.connect(self.image_viewer.show)
 
     def init_filters(self):
         formats = QImageReader.supportedImageFormats()
         for f in formats:
             self.filters.append('*.' + f.data().decode('utf-8'))
-
-    def create_menus(self, controller):
-        change_act = createAction(self, 'Change Refernce', self.change_reference)
-        next_act = createAction(self, 'next', self.next, 'Alt+Right')
-        previous_act = createAction(self, 'previous', self.previous, 'Alt+Left')
-        zoom_in_act = createAction(self, 'Zoom In', self.zoom_in, 'Ctrl++')
-        zoom_out_act = createAction(self, 'Zoom Out', self.zoom_out, 'Ctrl+-')
-        normal_size_act = createAction(self, 'Normal size', self.normal_size, 'Ctrl+0')
-        fit_window_act = createAction(self, 'Fit window', self.fit_to_window, 'Ctrl+l')
-        show_act = createAction(self, 'Show', self.show)
-        close_window_act = createAction(self, 'Close', self.close, 'Ctrl+c')
-        viewer_act = [show_act, change_act, next_act, previous_act, zoom_in_act, zoom_out_act, normal_size_act,
-             fit_window_act, show_act, close_window_act]
-        self.context_menu.addActions(viewer_act)
-        controller.add_action_list('Viewer', viewer_act)
 
     def contextMenuEvent(self, event):
         self.context_menu.exec(event.globalPos())
@@ -76,7 +61,7 @@ class Viewer(QWidget):
         for file in image_files:
             self.add_item(directory.absolutePath() + '/' + file)
 
-    def change_reference(self):
+    def set_reference(self):
         self.open_directory()
         self.set_image(0)
 
@@ -90,6 +75,8 @@ class Viewer(QWidget):
         self.image_viewer.set_image(self.image_list[index])
         self.index = index
         self.pix_is_ready.emit()
+        self.setWindowTitle(self.image_list[index])
+        self.parent().update_actions()
 
     def next(self):
         self.set_image(self.index+1)
@@ -110,9 +97,10 @@ class Viewer(QWidget):
         self.image_viewer.factor = 1.0
 
     def fit_to_window(self):
-        self.image_viewer.aspect_fit(self.scroll_area.size())
+        if self.parent().viewer_act[6].isChecked():
+            self.image_viewer.aspect_fit(self.scroll_area.size())
 
-    def visible(self):
+    def show(self):
         if not self.image_viewer.pixmap():
             if self.image_list:
                 self.set_image(0)
@@ -124,6 +112,16 @@ class Viewer(QWidget):
 
     def close(self):
         self.hide()
+
+    def resizeEvent(self, event):
+        self.fit_to_window()
+        super().resizeEvent(event)
+
+    def isReady(self):
+        if self.image_viewer.pixmap():
+            return True
+        else:
+            return False
 
 if __name__ == '__main__':
     import sys

@@ -1,6 +1,7 @@
 from PyQt5.QtCore import QUrl
 from pymediainfo import MediaInfo
 
+
 class MediaContent():
 
     def __init__(self, ):
