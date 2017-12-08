@@ -1,12 +1,8 @@
-from venv import create
-
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtGui import QContextMenuEvent
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QApplication, QMenu
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QApplication
 
 from playlisttab import PlaylistTab
 from playlistview import PlaylistView
-from utility import make_button_from_fa, createAction
 
 
 class Playlist(QWidget):

@@ -1,16 +1,13 @@
 from enum import IntEnum
 
-import qtawesome
-from PyQt5.QtCore import (QUrl, Qt, QTime, QTimer, pyqtSignal, pyqtSlot, QSize)
-from PyQt5.QtGui import (QPalette, QCloseEvent)
+from PyQt5.QtCore import (QUrl, Qt, QTime, QTimer, pyqtSignal, pyqtSlot)
+from PyQt5.QtGui import (QPalette)
 from PyQt5.QtMultimedia import (QMediaContent, QMediaPlayer)
 from PyQt5.QtMultimediaWidgets import QVideoWidget
-from PyQt5.QtWidgets import (QWidget, QLabel, QHBoxLayout, QVBoxLayout, QSizePolicy, QPushButton,
+from PyQt5.QtWidgets import (QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton,
                              QStyle, QSlider, QSplitter, QMenu, QComboBox)
 
 from playlist import Playlist
-from playlisttab import PlaylistTab
-from utility import make_button_from_fa, createAction
 
 
 class SeekStep(IntEnum):

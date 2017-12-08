@@ -1,6 +1,6 @@
 import sys
-from PyQt5.QtWidgets import QMainWindow, QApplication, QDockWidget
-from PyQt5.QtCore import Qt
+
+from PyQt5.QtWidgets import QMainWindow, QApplication
 
 from menu_controller import MenuController
 from player import Player

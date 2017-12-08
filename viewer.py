@@ -1,12 +1,9 @@
-from ensurepip import __main__
-
 from PyQt5.QtCore import QDir, pyqtSignal, Qt
 from PyQt5.QtGui import QImageReader
-from PyQt5.QtWidgets import QWidget, QScrollArea, QVBoxLayout, QApplication, QSizePolicy, QFileDialog, QAction, QMenu, \
+from PyQt5.QtWidgets import QScrollArea, QApplication, QSizePolicy, QFileDialog, QMenu, \
     QDockWidget
 
 from imageviewer import ImageViewer
-from utility import createAction
 
 
 class Viewer(QDockWidget):
