@@ -66,10 +66,11 @@ class PypePlayer(QMainWindow):
         previous_tab_act = createAction(self.player.playlist, 'Preivous Tab', self.player.playlist.playlist_tab.previous_tab, 'Meta+Shift+tab')
 
         self.menu_controller.add_action_list('File', [add_file, open_directory])
-        self.menu_controller.add_action_list('Playlist', [next_tab_act, previous_tab_act])
-        self.menu_controller.add_separator('Playlist')
-        self.menu_controller.add_action_list('Playlist',
-                                   [add_playlist, load_playlist, rename_playlist, save_playlist, remove_playlist])
+        self.menu_controller.add_separator('File')
+        self.menu_controller.add_action_list('File',
+                                             [add_playlist, load_playlist, save_playlist, rename_playlist,
+                                              remove_playlist])
+        self.menu_controller.add_action_list('Window', [next_tab_act, previous_tab_act])
 
         # Viewer
         set_reference_act = createAction(self.viewer, 'Set Reference', self.viewer.set_reference)
