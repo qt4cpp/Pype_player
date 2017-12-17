@@ -8,15 +8,22 @@ Usage:
 from setuptools import setup
 
 
-#MODULES = ['pymediainfo']
 PACKAGES = ['pymediainfo']
 
 APP = ['main.py']
+APP_NAME = 'Pype Player'
 DATA_FILES = []
+
 OPTIONS = {
-    #'includes': MODULES,
     'packages': PACKAGES,
+    'plist': {
+        'CFBundleName': APP_NAME,
+        'CFBundleDisplayName': APP_NAME,
+        'CFBundleGetInfoString': 'Media player with pictures',
+        'CFBundleIdentifier': 'com.qt4cpp.osx.pype_player',
+        'NSHumanReadableCopyright': 'Copyright  © 2017, Tatsuhiko Ikemoto, All Rights Reserved'
     }
+}
 
 setup(
     app=APP,
