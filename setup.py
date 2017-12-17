@@ -7,9 +7,16 @@ Usage:
 
 from setuptools import setup
 
+
+#MODULES = ['pymediainfo']
+PACKAGES = ['pymediainfo']
+
 APP = ['main.py']
 DATA_FILES = []
-OPTIONS = {}
+OPTIONS = {
+    #'includes': MODULES,
+    'packages': PACKAGES,
+    }
 
 setup(
     app=APP,

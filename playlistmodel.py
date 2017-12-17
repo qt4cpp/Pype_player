@@ -1,5 +1,6 @@
 from PyQt5.QtCore import QUrl, QModelIndex, QVariant, Qt, pyqtSignal, pyqtSlot, QAbstractTableModel, QTime
 from PyQt5.QtGui import QFont, QBrush, QColor
+
 from pymediainfo import MediaInfo
 
 
@@ -96,6 +97,7 @@ class PlaylistModel(QAbstractTableModel):
         return Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
     def add(self, url: QUrl, position: int = -1) -> bool:
+
         if not url.isValid():
             return False
 
