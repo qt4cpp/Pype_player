@@ -5,3 +5,5 @@ dummyfile
 .vscode/
 playlist/
 test/tone/*
+dist/
+build/

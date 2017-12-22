@@ -1,8 +1,12 @@
 from PyQt5.QtCore import QUrl
-from pymediainfo import MediaInfo
+
+try:
+    from pymediainfo import MediaInfo
+except ImportError:
+    mediainfo = None
 
 
-class MediaContent():
+class MediaContent(object):
 
     def __init__(self, ):
         self.url: QUrl = ''
@@ -13,6 +17,8 @@ class MediaContent():
 
     def set_url(self, url: QUrl):
         if not url.isValid():
+            return
+        if mediainfo is None:
             return
         media_info = MediaInfo.parse(url.toLocalFile())
         for track in media_info.tracks:
