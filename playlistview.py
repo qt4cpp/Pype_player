@@ -401,4 +401,4 @@ class PlaylistView(QTableView):
         urls = []
         for index in indexes:
             urls.append(self.model().data(index))
-        return urls
+        return sorted(set(urls), key=urls.index)
