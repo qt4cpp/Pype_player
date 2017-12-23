@@ -212,7 +212,7 @@ class PlaylistTab(QTabWidget):
         :param QDragEnterEvent event:
         :return: None
         '''
-        if event.mimeData().hasUrls() : #or event.mimeData().hasFormat(self.mime_URLS):
+        if event.mimeData().hasUrls() and self.index_at(event.pos()) != self.currentIndex():
             if event.source() is self:
                 event.setDropAction(Qt.MoveAction)
                 event.accept()
@@ -227,7 +227,7 @@ class PlaylistTab(QTabWidget):
         :param QDragMoveEvent event:
         :return:
         """
-        if event.mimeData().hasUrls() : #or event.mimeData().hasFormat(self.mime_URLS):
+        if event.mimeData().hasUrls() and self.index_at(event.pos()) != self.currentIndex():
             if event.source() is self:
                 event.setDropAction(Qt.MoveAction)
                 event.accept()
@@ -242,11 +242,14 @@ class PlaylistTab(QTabWidget):
         :param QDropEvent event: contains url list.
         :return:
         """
-        index = self.indexAt(event.pos())
+        index = self.index_at(event.pos())
+        if index < 0:
+            event.ignore()
+        else:
+            self.widget(index).add_items(event.mimeData().urls())
+            event.acceptProposedAction()
 
-        print(len(event.mimeData().urls()))
-
-    def indexAt(self, pos):
+    def index_at(self, pos):
         """return tab index.
 
         :param QPoint pos:
