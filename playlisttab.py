@@ -1,9 +1,9 @@
 import os
 
-from PyQt5.QtCore import (Qt, QModelIndex, pyqtSignal, pyqtSlot)
+from PyQt5.QtCore import (Qt, QModelIndex, pyqtSignal, pyqtSlot, QPoint)
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import (QApplication, QPushButton, QLabel, QTabWidget, QInputDialog,
-                             QMessageBox, QFileDialog, QAction, QMenu)
+                             QMessageBox, QFileDialog, QAction, QMenu, QTabBar)
 
 from playlistview import PlaylistView
 from utility import dialog_for_message, createAction
@@ -25,6 +25,9 @@ class PlaylistTab(QTabWidget):
         self.setAcceptDrops(True)
         self.setMovable(True)
         self.setElideMode(Qt.ElideNone)
+
+        self.setStyleSheet("QTabWidget::tab-bar {alignment: Center}")
+        self.setTabShape(QTabWidget.Rounded)
 
         self.context_menu = QMenu(self)
         self.create_context_menu()
@@ -202,6 +205,65 @@ class PlaylistTab(QTabWidget):
             self.setCurrentIndex(self.count()-1)
         else:
             self.setCurrentIndex(i-1)
+
+    def dragEnterEvent(self, event):
+        '''whether accept drag or not.
+
+        :param QDragEnterEvent event:
+        :return: None
+        '''
+        if event.mimeData().hasUrls() : #or event.mimeData().hasFormat(self.mime_URLS):
+            if event.source() is self:
+                event.setDropAction(Qt.MoveAction)
+                event.accept()
+            else:
+                event.acceptProposedAction()
+        else:
+            event.ignore()
+
+    def dragMoveEvent(self, event):
+        """
+
+        :param QDragMoveEvent event:
+        :return:
+        """
+        if event.mimeData().hasUrls() : #or event.mimeData().hasFormat(self.mime_URLS):
+            if event.source() is self:
+                event.setDropAction(Qt.MoveAction)
+                event.accept()
+            else:
+                event.acceptProposedAction()
+        else:
+            event.ignore()
+
+    def dropEvent(self, event):
+        """Extract dropped data
+
+        :param QDropEvent event: contains url list.
+        :return:
+        """
+        index = self.indexAt(event.pos())
+
+        print(len(event.mimeData().urls()))
+
+    def indexAt(self, pos):
+        """return tab index.
+
+        :param QPoint pos:
+        :return int:
+        """
+        return self.tabBar().tabAt(pos - QPoint(self.left_space(), 0))
+
+    def left_space(self):
+        """Return left margin.
+
+        :rtype int:
+        """
+        tabs_width = 0
+        for i in range(self.count()):
+            tabs_width += self.tabBar().tabRect(i).width()
+        return (self.width() - tabs_width) / 2 if self.width() > tabs_width else 0
+
 
 if __name__ == '__main__':
     import sys

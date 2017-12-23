@@ -220,7 +220,8 @@ class PlaylistView(QTableView):
             urls = self.url_list(indexes)
 
             mimeData = QMimeData()
-            mimeData.setData(self.mime_URLS, convert_to_bytearray(urls))
+            # mimeData.setData(self.mime_URLS, convert_to_bytearray(urls))
+            mimeData.setUrls(urls)
 
             file_icon = self.style().standardIcon(QStyle.SP_FileIcon)
             pixmap = file_icon.pixmap(32, 32)
