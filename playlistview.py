@@ -172,7 +172,8 @@ class PlaylistView(QTableView):
         self.set_current_index(QModelIndex())
 
     def resizeHeaderWidth(self, width: int):
-        duration_width = 60
+        width = self.width()
+        duration_width = 80
         self.horizontalHeader().resizeSection(0, width - duration_width)
         self.horizontalHeader().resizeSection(1, duration_width)
 
