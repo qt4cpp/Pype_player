@@ -171,19 +171,13 @@ class PlaylistView(QTableView):
     def deactivate(self):
         self.set_current_index(QModelIndex())
 
-    def resizeHeaderWidth(self, width: int):
+    def auto_resize_header(self):
         """auto resize Header width on table view.
-
-        :type width: int
         """
         width = self.viewport().width()
         duration_width = 60
         self.horizontalHeader().resizeSection(0, width - duration_width)
         self.horizontalHeader().resizeSection(1, duration_width)
-
-    # def resizeEvent(self, event):
-    #     self.resizeHeaderWidth()
-    #     super().resizeEvent(event)
 
     def mousePressEvent(self, event):
         """左クリックされたらカーソル下にある要素を選択し、ドラッグを認識するために現在の位置を保存する。

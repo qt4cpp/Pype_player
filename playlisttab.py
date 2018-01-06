@@ -208,13 +208,11 @@ class PlaylistTab(QTabWidget):
         else:
             self.setCurrentIndex(i-1)
 
-    def adjust_header_size(self, index):
+    def adjust_header_size(self):
         """adjust header size
-
-        :param int index:
         :return: Nothing
         """
-        self.currentWidget().resizeHeaderWidth(self.width())
+        self.currentWidget().auto_resize_header()
 
 
     def dragEnterEvent(self, event):
