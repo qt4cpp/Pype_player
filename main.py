@@ -58,11 +58,11 @@ class PypePlayer(QMainWindow):
         add_file = createAction(playlist, 'Add file(s)', playlist.open, 'Ctrl+o')
         open_directory = createAction(playlist, 'Open directory', playlist.open_directory, 'Ctrl+Shift+o')
 
-        add_playlist = createAction(playlist, 'New Playlist', playlist.playlist_tab.add_playlist, 'Ctrl+N')
-        load_playlist = createAction(playlist, 'Load Playlist file', playlist.playlist_tab.load_playlist, 'Ctrl+l')
-        rename_playlist = createAction(playlist, 'Rename Playlist', playlist.playlist_tab.rename_playlist)
-        save_playlist = createAction(playlist, 'Save Current Playlist', playlist.playlist_tab.save_current, 'Ctrl+s')
-        remove_playlist = createAction(playlist, 'Remove Playlist', playlist.playlist_tab.remove_playlist)
+        add_playlist = createAction(playlist, 'New', playlist.playlist_tab.add_playlist, 'Ctrl+N')
+        load_playlist = createAction(playlist, 'Load', playlist.playlist_tab.load_playlist, 'Ctrl+l')
+        save_playlist = createAction(playlist, 'Save Current', playlist.playlist_tab.save_current, 'Ctrl+s')
+        rename_playlist = createAction(playlist, 'Rename', playlist.playlist_tab.rename_playlist)
+        remove_playlist = createAction(playlist, 'Remove Current', playlist.playlist_tab.remove_playlist)
 
         next_tab_act = createAction(playlist, 'Next Tab', playlist.playlist_tab.next_tab, 'Meta+tab')
         previous_tab_act = createAction(playlist, 'Preivous Tab', playlist.playlist_tab.previous_tab, 'Meta+Shift+tab')
@@ -72,10 +72,11 @@ class PypePlayer(QMainWindow):
 
         self.menu_controller.add_action_list('File', [add_file, open_directory])
         self.menu_controller.add_separator('File')
-        self.menu_controller.add_action_list('File',
-                                             [add_playlist, load_playlist, save_playlist, rename_playlist,
+        self.menu_controller.add_action_list('Playlist',
+                                             [add_playlist, load_playlist, rename_playlist,save_playlist,
                                               remove_playlist])
-        self.menu_controller.add_action_list('Window', [next_tab_act, previous_tab_act, self.adjust_header_act])
+        self.menu_controller.add_separator('Playlist')
+        self.menu_controller.add_action_list('Playlist', [next_tab_act, previous_tab_act, self.adjust_header_act])
 
         # Viewer
         set_reference_act = createAction(self.viewer, 'Set Reference', self.viewer.set_reference)
