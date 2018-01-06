@@ -44,7 +44,7 @@ class Player(QWidget):
         self.volume = 50
 
         self.player = QMediaPlayer()
-        self.playlist = Playlist()
+        self.playlist = Playlist(self)
         self.videoWidget = VideoWidget()
         self.next_url = QUrl()
         self.context_menu = QMenu(self)

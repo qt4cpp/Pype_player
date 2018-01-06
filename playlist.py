@@ -23,7 +23,6 @@ class Playlist(QWidget):
 
         self.setLayout(layout)
         self.show()
-        self.playlist_tab.adjust_header_size()
 
     def playlist(self):
         return self.playlist_tab.current_playlist()
