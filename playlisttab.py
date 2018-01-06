@@ -32,6 +32,8 @@ class PlaylistTab(QTabWidget):
         self.context_menu = QMenu(self)
         self.create_context_menu()
 
+        self.currentChanged[int].connect(self.adjust_header_size)
+
         #self.autoload_playlists()
 
         self.show()
@@ -205,6 +207,13 @@ class PlaylistTab(QTabWidget):
             self.setCurrentIndex(self.count()-1)
         else:
             self.setCurrentIndex(i-1)
+
+    def adjust_header_size(self):
+        """adjust header size
+        :return: Nothing
+        """
+        if self.parent().parent().parent().parent().adjust_header_act.isChecked():
+            self.currentWidget().auto_resize_header()
 
     def dragEnterEvent(self, event):
         '''whether accept drag or not.

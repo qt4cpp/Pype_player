@@ -23,13 +23,12 @@ class Playlist(QWidget):
 
         self.setLayout(layout)
         self.show()
-        print(self.width())
 
     def playlist(self):
         return self.playlist_tab.current_playlist()
 
     def resizeEvent(self, event):
-        self.playlist_tab.currentWidget().resizeHeaderWidth(self.width()-10)
+        self.playlist_tab.adjust_header_size()
         super().resizeEvent(event)
 
     def change_using_playlist(self):
