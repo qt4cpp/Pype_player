@@ -51,7 +51,7 @@ class PlaylistView(QTableView):
 
         self.current_index = QModelIndex()
         self.previousIndex = QModelIndex()
-        self.rubberBand: QRubberBand = QRubberBand(QRubberBand.Rectangle, self)
+        self.rubberBand: QRubberBand = QRubberBand(QRubberBand.Rectangle, self.viewport())
         self.isDragging = False
 
         self.context_menu = QMenu(self)
@@ -388,6 +388,7 @@ class PlaylistView(QTableView):
         幅が表示領域、縦1pixelの棒で表示する。
         """
         item_rect = self.visualRect(index)
+        print(item_rect.top())
         top_left = item_rect.topLeft()
         size = QSize(item_rect.width(), 3)
         return QRect(top_left, size)
