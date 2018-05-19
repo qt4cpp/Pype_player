@@ -50,7 +50,7 @@ class PlaylistView(QTableView):
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
 
         self.current_index = QModelIndex()
-        self.previousIndex = QModelIndex() # TODO: Delete
+        self.previousIndex = QModelIndex()
         self.rubberBand: QRubberBand = QRubberBand(QRubberBand.Rectangle, self.viewport())
         self.isDragging = False
 
