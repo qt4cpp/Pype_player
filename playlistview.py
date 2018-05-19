@@ -189,14 +189,11 @@ class PlaylistView(QTableView):
             self.dragStartPosition = event.pos()
 
             index = self.indexAt(self.dragStartPosition)
-            if index.row() == -1:
-                self.clearSelection()
+            #if index.row() == -1:
+            #    self.clearSelection()
             if index in self.selectedIndexes():
                 self.isDragging = True
                 return
-
-            self.rubberBand.setGeometry(QRect(self.dragStartPosition, QSize()))
-            self.rubberBand.show()
 
         super(PlaylistView, self).mousePressEvent(event)
 
@@ -235,7 +232,7 @@ class PlaylistView(QTableView):
                 pass
 
         else:
-            self.rubberBand.setGeometry(QRect(self.dragStartPosition, event.pos()).normalized())
+            # self.rubberBand.setGeometry(QRect(self.dragStartPosition, event.pos()).normalized())
             super(PlaylistView, self).mouseMoveEvent(event)
 
 
@@ -294,8 +291,7 @@ class PlaylistView(QTableView):
 
         :param event:
         """
-        self.rubberBand.hide()
-        if Qt.LeftButton == event.button():
+        if Qt.LeftButton == event.button() and event.modifiers() == Qt.NoModifier:
             if event.pos() == self.dragStartPosition:
                 self.setCurrentIndex(self.indexAt(event.pos()))
         super(PlaylistView, self).mouseReleaseEvent(event)

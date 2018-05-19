@@ -7,23 +7,9 @@ Usage:
 
 from setuptools import setup
 
-
-PACKAGES = ['pymediainfo']
-
-APP = ['main.py']
-APP_NAME = 'Pype Player'
+APP = ['pype_player.py']
 DATA_FILES = []
-
-OPTIONS = {
-    'packages': PACKAGES,
-    'plist': {
-        'CFBundleName': APP_NAME,
-        'CFBundleDisplayName': APP_NAME,
-        'CFBundleGetInfoString': 'Media player with pictures',
-        'CFBundleIdentifier': 'com.qt4cpp.osx.pype_player',
-        'NSHumanReadableCopyright': 'Copyright  © 2017, Tatsuhiko Ikemoto, All Rights Reserved'
-    }
-}
+OPTIONS = {}
 
 setup(
     app=APP,

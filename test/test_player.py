@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication
 
-from main import PypePlayer
+from pype_player import PypePlayer
 
 
 if __name__ == '__main__':
