@@ -304,22 +304,21 @@ class PlaylistView(QTableView):
 
         ファイルへのパスと移動前に登録してあった要素のindexを取り出す。
         """
-        self.rubberBand.hide()
-        if event.mimeData().hasUrls() or event.mimeData().hasFormat(self.mime_URLS):
-            if event.mimeData().hasUrls():
-                urls = event.mimeData().urls()
-            else:
-                urls = convert_from_bytearray(event.mimeData().data(self.mime_URLS))
-            index = self.index_for_dropping_pos(event.pos())
-            if event.source() is self:
-                self.move_items(self.selectedIndexes(), index)
-                event.setDropAction(Qt.MoveAction)
-                event.accept()
-            else:
-                self.add_items(urls)
-                event.acceptProposedAction()
-        else:
+        if not event.mimeData().hasUrls() and not event.mimeData().hasFormat(self.mime_URLS):
             event.ignore()
+
+        if event.mimeData().hasUrls():
+            urls = event.mimeData().urls()
+        else:
+            urls = convert_from_bytearray(event.mimeData().data(self.mime_URLS))
+        index = self.index_for_dropping_pos(event.pos())
+        if event.source() is self:
+            self.move_items(self.selectedIndexes(), index)
+            event.setDropAction(Qt.MoveAction)
+            event.accept()
+        else:
+            self.add_items(urls)
+            event.acceptProposedAction()
 
 
     def mouseDoubleClickEvent(self, event):
