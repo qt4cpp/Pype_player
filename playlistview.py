@@ -313,12 +313,19 @@ class PlaylistView(QTableView):
             urls = convert_from_bytearray(event.mimeData().data(self.mime_URLS))
         index = self.index_for_dropping_pos(event.pos())
         if event.source() is self:
-            self.move_items(self.selectedIndexes(), index)
+            self.move_items(self.remove_index_same_row(self.selectedIndexes()), index)
             event.setDropAction(Qt.MoveAction)
             event.accept()
         else:
             self.add_items(urls)
             event.acceptProposedAction()
+
+    def remove_index_same_row(self, indexes: [QModelIndex]):
+        removed_indexes = []
+        for index in indexes:
+            if index.column() == 0:
+                removed_indexes.append(index)
+        return removed_indexes
 
 
     def mouseDoubleClickEvent(self, event):
