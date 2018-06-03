@@ -161,7 +161,7 @@ class PlaylistModel(QAbstractTableModel):
 
         begin = max_index.row()
         end = min_index.row()
-        self.beginMoveRows(QModelIndex(), begin, end, QModelIndex(), dest)
+        self.beginMoveRows(QModelIndex(), min_index.row(), max_index.row(), QModelIndex(), dest)
         move_list = []
         delete_index = []
         for index in indexes:

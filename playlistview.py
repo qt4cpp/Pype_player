@@ -304,6 +304,7 @@ class PlaylistView(QTableView):
 
         ファイルへのパスと移動前に登録してあった要素のindexを取り出す。
         """
+        self.rubberBand.hide()
         if not event.mimeData().hasUrls() and not event.mimeData().hasFormat(self.mime_URLS):
             event.ignore()
 
