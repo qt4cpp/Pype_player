@@ -159,8 +159,6 @@ class PlaylistModel(QAbstractTableModel):
         elif min_index.row() <= dest <= max_index.row()+1:
             return False
 
-        begin = max_index.row()
-        end = min_index.row()
         self.beginMoveRows(QModelIndex(), min_index.row(), max_index.row(), QModelIndex(), dest)
         move_list = []
         delete_index = []
@@ -170,7 +168,7 @@ class PlaylistModel(QAbstractTableModel):
         for index in delete_index:
             self.remove(index)
 
-        dest = dest - len(move_list) if dest > begin else dest
+        dest = dest - len(move_list) if dest > max_index.row() else dest
         self.item_list[dest:dest] = move_list
         self.endMoveRows()
         self.rowCount_changed.emit(self.rowCount())

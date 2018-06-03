@@ -314,8 +314,8 @@ class PlaylistView(QTableView):
             urls = convert_from_bytearray(event.mimeData().data(self.mime_URLS))
         dest = self.index_for_dropping_pos(event.pos())
         if event.source() is self:
-            selected = self.selectedIndexes()
-            self.move_items([indexes for indexes in selected if indexes.column() == 0], dest)
+            indexes = [index for index in self.selectedIndexes() if index.column() == 0]
+            self.move_items(sorted(indexes), dest)
             event.setDropAction(Qt.MoveAction)
             event.accept()
         else:
