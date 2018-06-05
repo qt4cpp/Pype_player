@@ -152,14 +152,14 @@ class PlaylistModel(QAbstractTableModel):
         :return: 成功すればTrue, それ以外はFalse
         要素を消してから移動させる。消すときインデックスが変わってしまうので、大きいインデックスから消していく。
         """
-        max_index = max(indexes)
-        min_index = min(indexes)
+        max_row = max(indexes).row()
+        min_row = min(indexes).row()
         if dest < 0:
             dest = self.rowCount()
-        elif min_index.row() <= dest <= max_index.row()+1:
+        elif min_row <= dest <= max_row+1:
             return False
 
-        self.beginMoveRows(QModelIndex(), min_index.row(), max_index.row(), QModelIndex(), dest)
+        self.beginMoveRows(QModelIndex(), min_row, max_row, QModelIndex(), dest)
         move_list = []
         delete_index = []
         for index in indexes:
@@ -168,7 +168,7 @@ class PlaylistModel(QAbstractTableModel):
         for index in delete_index:
             self.remove(index)
 
-        dest = dest - len(move_list) if dest > max_index.row() else dest
+        dest = dest - len(move_list) if dest > max_row else dest
         self.item_list[dest:dest] = move_list
         self.endMoveRows()
         self.rowCount_changed.emit(self.rowCount())
