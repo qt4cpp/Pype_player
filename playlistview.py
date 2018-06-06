@@ -359,7 +359,8 @@ class PlaylistView(QTableView):
             return
 
     def move_items(self, indexes: [QModelIndex], dest: QModelIndex):
-        self.model().move(indexes, dest.row())
+        dest_row = dest.row() if dest.row() >= 0 else self.model().rowCount()
+        self.model().move(indexes, dest_row)
 
 
     def index_for_dropping_pos(self, pos: QPoint) -> QModelIndex:
@@ -383,7 +384,6 @@ class PlaylistView(QTableView):
         Geometryに渡されるので、表示位置となるようにQRectを作成する。
         幅が表示領域、縦1pixelの棒で表示する。
         """
-        print(index.row())
         if index.row() >= 0:
             item_rect = self.visualRect(index)
             size = QSize(self.width(), 3)

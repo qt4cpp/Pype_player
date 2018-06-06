@@ -154,9 +154,7 @@ class PlaylistModel(QAbstractTableModel):
         """
         max_row = max(indexes).row()
         min_row = min(indexes).row()
-        if dest < 0:
-            dest = self.rowCount()
-        elif min_row <= dest <= max_row+1:
+        if min_row <= dest <= max_row+1:
             return False
 
         parent_index = QModelIndex()
