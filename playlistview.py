@@ -370,10 +370,6 @@ class PlaylistView(QTableView):
         挿入や移動のために、要素の間を意識している。
         """
         index = self.indexAt(pos)
-        if index.row() < 0:
-            new_index = self.model().index(self.model().rowCount(), 0)
-            return new_index
-
         item_rect = self.visualRect(index)
         pos_in_rect = pos.y() - item_rect.top()
         if pos_in_rect < (item_rect.height() / 2):
