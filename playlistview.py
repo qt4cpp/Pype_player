@@ -372,7 +372,7 @@ class PlaylistView(QTableView):
         index = self.indexAt(pos)
         item_rect = self.visualRect(index)
         pos_in_rect = pos.y() - item_rect.top()
-        if pos_in_rect < (item_rect.height() / 2):
+        if pos_in_rect < (item_rect.height() / 2) or index.row() < 0:
             return index
         else:
             return self.model().index(index.row() + 1, 0)
@@ -383,9 +383,16 @@ class PlaylistView(QTableView):
         Geometryに渡されるので、表示位置となるようにQRectを作成する。
         幅が表示領域、縦1pixelの棒で表示する。
         """
-        item_rect = self.visualRect(index)
-        size = QSize(self.width(), 3)
-        return QRect(item_rect.topLeft(), size)
+        print(index.row())
+        if index.row() >= 0:
+            item_rect = self.visualRect(index)
+            size = QSize(self.width(), 3)
+            return QRect(item_rect.topLeft(), size)
+        else:
+            model = self.model()
+            item_rect = self.visualRect(model.index(model.rowCount()-1, 0))
+            size = QSize(self.width(), 3)
+            return QRect(item_rect.bottomLeft(), size)
 
     def url_list(self, indexes):
         urls = []
