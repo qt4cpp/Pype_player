@@ -1,13 +1,13 @@
-from PyQt5.QtCore import QUrl, QModelIndex, QVariant, Qt, pyqtSignal, pyqtSlot, QAbstractTableModel, QTime
-from PyQt5.QtGui import QFont, QBrush, QColor
+from PySide2.QtCore import QUrl, QModelIndex, Qt, Signal, Slot, QAbstractTableModel, QTime
+from PySide2.QtGui import QFont, QBrush, QColor
 
 from pymediainfo import MediaInfo
 
 
 class PlaylistModel(QAbstractTableModel):
 
-    rowCount_changed = pyqtSignal(int)
-    set_current_index = pyqtSlot(QModelIndex)
+    rowCount_changed = Signal(int)
+    set_current_index = Slot(QModelIndex)
 
     def __init__(self, parent: object = None):
         """
@@ -68,7 +68,7 @@ class PlaylistModel(QAbstractTableModel):
         elif role == Qt.ToolTipRole or role is None:
             return self.item_list[row]['url']
         else:
-            return QVariant()
+            return 0
 
     def headerData(self, section: int, orientation, role: int =None):
         """
@@ -79,7 +79,7 @@ class PlaylistModel(QAbstractTableModel):
         
         """
         if role != Qt.DisplayRole:
-            return QVariant()
+            return 0
 
         if orientation == Qt.Horizontal:
             return self.headerTitles[section]

@@ -1,5 +1,5 @@
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QApplication
+from PySide2.QtCore import Signal
+from PySide2.QtWidgets import QWidget, QVBoxLayout, QApplication
 
 from playlisttab import PlaylistTab
 from playlistview import PlaylistView
@@ -7,7 +7,7 @@ from playlistview import PlaylistView
 
 class Playlist(QWidget):
 
-    double_clicked = pyqtSignal()
+    double_clicked = Signal()
 
     def __init__(self, parent=None):
         super(Playlist, self).__init__(parent)

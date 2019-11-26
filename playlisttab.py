@@ -1,8 +1,8 @@
 import os
 
-from PyQt5.QtCore import (Qt, QModelIndex, pyqtSignal, pyqtSlot, QPoint)
-from PyQt5.QtGui import QKeySequence
-from PyQt5.QtWidgets import (QApplication, QPushButton, QLabel, QTabWidget, QInputDialog,
+from PySide2.QtCore import (Qt, QModelIndex, Signal, Slot, QPoint)
+from PySide2.QtGui import QKeySequence
+from PySide2.QtWidgets import (QApplication, QPushButton, QLabel, QTabWidget, QInputDialog,
                              QMessageBox, QFileDialog, QAction, QMenu, QTabBar)
 
 from playlistview import PlaylistView
@@ -11,7 +11,7 @@ from utility import dialog_for_message, createAction
 
 class PlaylistTab(QTabWidget):
 
-    double_clicked = pyqtSignal()
+    double_clicked = Signal()
     playlist_ext = '.m3u8'
 
     def __init__(self, parent=None):

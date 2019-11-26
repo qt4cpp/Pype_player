@@ -1,6 +1,6 @@
-from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QLabel
+from PySide2.QtCore import QSize
+from PySide2.QtGui import QPixmap
+from PySide2.QtWidgets import QLabel
 
 
 class ImageViewer(QLabel):

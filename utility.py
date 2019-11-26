@@ -1,8 +1,8 @@
 import mimetypes
 import os
 import qtawesome
-from PyQt5.QtCore import QByteArray, QIODevice, QTextStream, QUrl
-from PyQt5.QtWidgets import QAction, QPushButton, QMessageBox
+from PySide2.QtCore import QByteArray, QIODevice, QTextStream, QUrl
+from PySide2.QtWidgets import QAction, QPushButton, QMessageBox
 
 
 def createAction(obj, name, function, shortcut=''):

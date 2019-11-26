@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QUrl
+from PySide2.QtCore import QUrl
 
 try:
     from pymediainfo import MediaInfo

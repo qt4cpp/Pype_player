@@ -1,13 +1,13 @@
-from PyQt5.QtCore import QDir, pyqtSignal, Qt
-from PyQt5.QtGui import QImageReader
-from PyQt5.QtWidgets import QScrollArea, QApplication, QSizePolicy, QFileDialog, QMenu, \
+from PySide2.QtCore import QDir, Signal, Qt
+from PySide2.QtGui import QImageReader
+from PySide2.QtWidgets import QScrollArea, QApplication, QSizePolicy, QFileDialog, QMenu, \
     QDockWidget
 
 from imageviewer import ImageViewer
 
 
 class Viewer(QDockWidget):
-    pix_is_ready = pyqtSignal()
+    pix_is_ready = Signal()
 
     def __init__(self, parent=None):
         super().__init__('Viewer', parent)

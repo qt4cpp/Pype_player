@@ -1,10 +1,10 @@
 from enum import IntEnum
 
-from PyQt5.QtCore import (QUrl, Qt, QTime, QTimer, pyqtSignal, pyqtSlot)
-from PyQt5.QtGui import (QPalette)
-from PyQt5.QtMultimedia import (QMediaContent, QMediaPlayer)
-from PyQt5.QtMultimediaWidgets import QVideoWidget
-from PyQt5.QtWidgets import (QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton,
+from PySide2.QtCore import (QUrl, Qt, QTime, QTimer, Signal, Slot)
+from PySide2.QtGui import (QPalette)
+from PySide2.QtMultimedia import (QMediaContent, QMediaPlayer)
+from PySide2.QtMultimediaWidgets import QVideoWidget
+from PySide2.QtWidgets import (QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton,
                              QStyle, QSlider, QSplitter, QMenu, QComboBox)
 
 from playlist import Playlist
@@ -32,10 +32,10 @@ class VideoWidget(QVideoWidget):
 
 class Player(QWidget):
 
-    media_loaded = pyqtSignal(str)
-    stopped = pyqtSignal(str)
-    playlist_size_changed = pyqtSignal(int)
-    handle_double_click = pyqtSlot()
+    media_loaded = Signal(str)
+    stopped = Signal(str)
+    playlist_size_changed = Signal(int)
+    handle_double_click = Slot()
 
     def __init__(self, parent=None):
         super(Player, self).__init__(parent)

@@ -1,8 +1,8 @@
 import os
-from PyQt5.QtCore import QModelIndex, QRect, QSize, QPoint, pyqtSignal, QDir, Qt, QMimeData, QUrl, \
-    pyqtSlot
-from PyQt5.QtGui import QDrag, QKeySequence
-from PyQt5.QtWidgets import QRubberBand, QFileDialog, QAbstractItemView, QApplication, \
+from PySide2.QtCore import QModelIndex, QRect, QSize, QPoint, Signal, QDir, Qt, QMimeData, QUrl, \
+    Slot
+from PySide2.QtGui import QDrag, QKeySequence
+from PySide2.QtWidgets import QRubberBand, QFileDialog, QAbstractItemView, QApplication, \
     QStyle, QTableView, QHeaderView, QAction, QMenu
 
 from playlistmodel import PlaylistModel
@@ -11,10 +11,10 @@ from utility import convert_from_bytearray, convert_to_bytearray, is_media, crea
 
 class PlaylistView(QTableView):
 
-    current_index_changed = pyqtSignal(QModelIndex)
-    playlist_double_clicked = pyqtSignal()
-    next = pyqtSlot(int)
-    previous = pyqtSlot(int)
+    current_index_changed = Signal(QModelIndex)
+    playlist_double_clicked = Signal()
+    next = Slot(int)
+    previous = Slot(int)
 
     @property
     def mime_Index(self):
@@ -65,7 +65,7 @@ class PlaylistView(QTableView):
         self.context_menu.addActions([add_file, delete_selected])
 
     def contextMenuEvent(self, event):
-        self.context_menu.exec(event.globalPos())
+        self.context_menu.exec_(event.globalPos())
 
     def count(self):
         return self.model().rowCount()
