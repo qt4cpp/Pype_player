@@ -81,9 +81,11 @@ class PlaylistView(QTableView):
                 self.add_item(path)
 
     def open_directory(self):
-        directory_url = QFileDialog.getExistingDirectory(self, 'Open directory', QDir.homePath())
+        directory_url = QFileDialog.getExistingDirectory(
+            self, '0Open directory', QDir.homePath())
         dir = QDir(directory_url)
-        filters = ['*.mp4', '*.m4v', '*.mov', '*.mpg', '*.mpeg', '*.mp3', '*.m4a', '*.wmv', '*.wav', '*.aiff']
+        filters = ['*.mp4', '*.m4v', '*.mov', '*.mpg', '*.mpeg', '*.mp3',
+                   '*.m4a', '*.wmv', '*.wav', '*.aiff']
         dir.setNameFilters(filters)
         file_list = dir.entryList()
 
@@ -230,7 +232,7 @@ class PlaylistView(QTableView):
             drag.setPixmap(pixmap)
             drag.setHotSpot(QPoint(0, 0))
 
-            dropAction = drag.exec(Qt.CopyAction | Qt.MoveAction, Qt.CopyAction)
+            dropAction = drag.exec_(Qt.CopyAction | Qt.MoveAction, Qt.CopyAction)
             if dropAction == Qt.MoveAction:
                 pass
 

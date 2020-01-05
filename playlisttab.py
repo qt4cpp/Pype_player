@@ -19,7 +19,7 @@ class PlaylistTab(QTabWidget):
 
         self.save_playlist_path = 'playlist/'
 
-        self.addTab(self.create_new(), 'temp')
+        self.addTab(self.create_new(), 'Queue')
         self.setCurrentIndex(0)
         self.setUsesScrollButtons(True)
         self.setAcceptDrops(True)
@@ -47,7 +47,7 @@ class PlaylistTab(QTabWidget):
         self.context_menu.addAction(createAction(self, 'Remove Playlist', self.remove_playlist))
 
     def contextMenuEvent(self, event):
-        self.context_menu.exec(event.globalPos())
+        self.context_menu.exec_(event.globalPos())
 
     def url(self, index=0):
         self.playListView.url(index)

@@ -153,7 +153,7 @@ class Player(QWidget):
         self.playlist.double_clicked.connect(self.load_and_play)
 
     def contextMenuEvent(self, event):
-        self.context_menu.exec(event.globalPos())
+        self.context_menu.exec_(event.globalPos())
 
     def autoplay(self):
         """メディアを読み込み、再生する。
