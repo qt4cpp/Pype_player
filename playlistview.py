@@ -1,12 +1,11 @@
-import os
-from PySide2.QtCore import QModelIndex, QRect, QSize, QPoint, Signal, QDir, Qt, QMimeData, QUrl, \
-    Slot
-from PySide2.QtGui import QDrag, QKeySequence
-from PySide2.QtWidgets import QRubberBand, QFileDialog, QAbstractItemView, QApplication, \
-    QStyle, QTableView, QHeaderView, QAction, QMenu
+from PySide2.QtCore import QModelIndex, QRect, QSize, QPoint, Signal, QDir,\
+    Qt, QMimeData, QUrl, Slot
+from PySide2.QtWidgets import QRubberBand, QFileDialog, QAbstractItemView,\
+    QApplication, QStyle, QTableView, QHeaderView, QMenu
+from PySide2.QtGui import QDrag
 
 from playlistmodel import PlaylistModel
-from utility import convert_from_bytearray, convert_to_bytearray, is_media, createAction
+from utility import convert_from_bytearray, is_media, createAction
 
 
 class PlaylistView(QTableView):
@@ -19,15 +18,19 @@ class PlaylistView(QTableView):
     @property
     def mime_Index(self):
         return 'application/x-original_index'
+
     @property
     def mime_URLS(self):
         return 'application/x-file-urls'
+
     @property
     def mime_url_count(self):
         return 'application/x-urls-count'
+
     @property
     def url_delimiter(self):
         return '\n'
+
     @property
     def open_file_filter(self):
         return '*.mp4 *.m4v *.mov *.mpg *.mpeg *. mp3 *.m4a *.wmv *.aiff *.wav'
@@ -117,7 +120,7 @@ class PlaylistView(QTableView):
 
         with open(path, 'rt') as fin:
             for line in fin:
-                self.add_item(line[:-1]) # 最後の改行文字を取り除く
+                self.add_item(line[:-1])  # 最後の改行文字を取り除く
 
     def add_item(self, path):
         if is_media(path):
@@ -202,7 +205,6 @@ class PlaylistView(QTableView):
 
         super(PlaylistView, self).mousePressEvent(event)
 
-
     def mouseMoveEvent(self, event):
         """start Drag and prepare for Drop.
 
@@ -240,7 +242,6 @@ class PlaylistView(QTableView):
             self.rubberBand.setGeometry(QRect(self.dragStartPosition, event.pos()).normalized())
             super(PlaylistView, self).mouseMoveEvent(event)
 
-
     def dragEnterEvent(self, event):
         """ドラッグした状態でWidgetに入った縁で呼ばれる関数。
         :param event: QDragEvent
@@ -258,7 +259,6 @@ class PlaylistView(QTableView):
                 event.acceptProposedAction()
         else:
             event.ignore()
-
 
     def dragMoveEvent(self, event):
         """ドラッグした状態でWidget内を移動したときに呼ばれる。
@@ -281,14 +281,12 @@ class PlaylistView(QTableView):
         else:
             event.ignore()
 
-
     def dragLeaveEvent(self, event):
         """ドラッグしたままWidget内を出たときにドラッグ下にあった要素の背景色の色を元に戻す。
         :param event: QDragLeaveEvent
         :return: nothing
         """
         self.rubberBand.hide()
-
 
     def mouseReleaseEvent(self, event):
         """マウスを離したときにQRubberBandを隠す。
@@ -301,7 +299,6 @@ class PlaylistView(QTableView):
             if event.pos() == self.dragStartPosition:
                 self.setCurrentIndex(self.indexAt(event.pos()))
         super(PlaylistView, self).mouseReleaseEvent(event)
-
 
     def dropEvent(self, event):
         """Dropされたらデータを取り出して、新たに登録する。
@@ -327,7 +324,6 @@ class PlaylistView(QTableView):
         else:
             event.ignore()
 
-
     def mouseDoubleClickEvent(self, event):
         if event.button() == Qt.LeftButton:
             new_index = self.indexAt(event.pos())
@@ -335,7 +331,6 @@ class PlaylistView(QTableView):
                 return
             self.set_current_index(new_index)
             self.playlist_double_clicked.emit()
-
 
     def add_items(self, items: [QUrl], start: int = -1):
         """渡された要素をmodelに追加する。
@@ -367,7 +362,6 @@ class PlaylistView(QTableView):
     def move_items(self, indexes: [QModelIndex], dest: QModelIndex):
         self.model().move(indexes, dest.row())
 
-
     def index_for_dropping_pos(self, pos: QPoint) -> QModelIndex:
         """dropした場所のindexを返す。ただし、要素の高さ半分より下にある場合は、下の要素を返す。
 
@@ -386,7 +380,6 @@ class PlaylistView(QTableView):
             return index
         else:
             return self.model().index(index.row() + 1, 0)
-
 
     def rectForDropIndicator(self, index: QModelIndex) -> QRect:
         """QRubberBand を DropIndicatorとして表示するためのQRectを返す。

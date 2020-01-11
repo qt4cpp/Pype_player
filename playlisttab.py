@@ -34,7 +34,7 @@ class PlaylistTab(QTabWidget):
 
         self.currentChanged[int].connect(self.adjust_header_size)
 
-        #self.autoload_playlists()
+        self.autoload_playlists()
 
         self.show()
 
@@ -118,7 +118,7 @@ class PlaylistTab(QTabWidget):
 
     def save_current(self):
         """現在のPlaylistを保存する
-        
+
         タイトルをファイル名として、パスをファイルの各行に書き出す。
         """
         name = self.tabText(self.currentIndex())
@@ -134,7 +134,7 @@ class PlaylistTab(QTabWidget):
         os.makedirs(self.save_playlist_path, exist_ok=True)
         for i in range(self.count()):
             title = self.tabText(i)
-            if not title == 'temp':
+            if not title == 'Queue':
                 path = self.save_playlist_path + self.tabText(i) + self.playlist_ext
                 self.widget(i).save(path)
 

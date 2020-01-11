@@ -101,7 +101,7 @@ class PypePlayer(QMainWindow):
             self.setWindowTitle('Pype Player')
 
     def closeEvent(self, event):
-        # self.player.playlist.save_all()
+        self.player.playlist.save_all()
         super(PypePlayer, self).closeEvent(event)
 
     def update_actions(self):

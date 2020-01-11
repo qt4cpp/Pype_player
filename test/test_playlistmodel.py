@@ -55,6 +55,5 @@ class TestPlaylistModel(unittest.TestCase):
         print(model.item_list[0])
 
 
-
 if __name__ == '__main__':
     unittest.main()
