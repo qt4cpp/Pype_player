@@ -242,6 +242,19 @@ class PlaylistView(QTableView):
             self.rubberBand.setGeometry(QRect(self.dragStartPosition, event.pos()).normalized())
             super(PlaylistView, self).mouseMoveEvent(event)
 
+    def mouseReleaseEvent(self, event):
+        '''マウスを離したときにQRubberBandを隠す。
+        左クリックをpress と release がだいたい同じ位置であれば、その要素を1つだけ選択する。
+
+        :param event:
+        '''
+        self.rubberBand.hide()
+        if Qt.LeftButton == event.button() and Qt.NoModifier == event.modifiers():
+            if (event.pos() - self.dragStartPosition).manhattanLength() \
+               < QApplication.startDragDistance():
+                self.setCurrentIndex(self.indexAt(event.pos()))
+        super(PlaylistView, self).mouseReleaseEvent(event)
+
     def dragEnterEvent(self, event):
         """ドラッグした状態でWidgetに入った縁で呼ばれる関数。
         :param event: QDragEvent
@@ -287,18 +300,6 @@ class PlaylistView(QTableView):
         :return: nothing
         """
         self.rubberBand.hide()
-
-    def mouseReleaseEvent(self, event):
-        """マウスを離したときにQRubberBandを隠す。
-        左クリックを押した位置と話した位置が同じであれば、その要素を選択する。
-
-        :param event:
-        """
-        self.rubberBand.hide()
-        if Qt.LeftButton == event.button():
-            if event.pos() == self.dragStartPosition:
-                self.setCurrentIndex(self.indexAt(event.pos()))
-        super(PlaylistView, self).mouseReleaseEvent(event)
 
     def dropEvent(self, event):
         """Dropされたらデータを取り出して、新たに登録する。
