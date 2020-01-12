@@ -56,6 +56,7 @@ class PlaylistView(QTableView):
         self.previousIndex = QModelIndex()
         self.rubberBand: QRubberBand = QRubberBand(QRubberBand.Rectangle, self)
         self.isDragging = False
+        self.wasSelected = False
 
         self.context_menu = QMenu(self)
         self.create_context_menu()
@@ -194,10 +195,9 @@ class PlaylistView(QTableView):
             self.dragStartPosition = event.pos()
 
             index = self.indexAt(self.dragStartPosition)
-            if index.row() == -1:
-                self.clearSelection()
             if index in self.selectedIndexes():
                 self.isDragging = True
+                self.wasSelected = True
                 return
 
             self.rubberBand.setGeometry(QRect(self.dragStartPosition, QSize()))
@@ -250,9 +250,15 @@ class PlaylistView(QTableView):
         '''
         self.rubberBand.hide()
         if Qt.LeftButton == event.button() and Qt.NoModifier == event.modifiers():
-            if (event.pos() - self.dragStartPosition).manhattanLength() \
-               < QApplication.startDragDistance():
+            if self.indexAt(event.pos()).row() == -1 and \
+               self.indexAt(self.dragStartPosition).row() == -1:
+                self.clearSelection()
+            elif len(self.selectedIndexes())/2 == 1 and self.wasSelected == True:
+                self.clearSelection()
+            elif (event.pos() - self.dragStartPosition).manhattanLength() \
+                 < QApplication.startDragDistance():
                 self.setCurrentIndex(self.indexAt(event.pos()))
+        self.wasSelected = False
         super(PlaylistView, self).mouseReleaseEvent(event)
 
     def dragEnterEvent(self, event):
