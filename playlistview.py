@@ -336,7 +336,7 @@ class PlaylistView(QTableView):
             new_index = self.indexAt(event.pos())
             if not new_index.isValid():
                 return
-            self.set_current_index(new_index)
+            self.selectRow(new_index.row())
             self.playlist_double_clicked.emit()
 
     def add_items(self, items: [QUrl], start: int = -1):
