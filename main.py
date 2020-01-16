@@ -65,7 +65,7 @@ class PypePlayer(QMainWindow):
         remove_playlist = createAction(playlist, 'Remove Current', playlist.playlist_tab.remove_playlist)
 
         next_tab_act = createAction(playlist, 'Next Tab', playlist.playlist_tab.next_tab, 'Meta+tab')
-        previous_tab_act = createAction(playlist, 'Preivous Tab', playlist.playlist_tab.previous_tab, 'Meta+Shift+tab')
+        previous_tab_act = createAction(playlist, 'Previous Tab', playlist.playlist_tab.previous_tab, 'Meta+Shift+tab')
 
         self.adjust_header_act = createAction(playlist, 'Auto Adjust Header', playlist.playlist_tab.adjust_header_size)
         self.adjust_header_act.setCheckable(True)

@@ -75,7 +75,7 @@ class Playlist(QWidget):
         self.using_playlist.clearSelection()
 
     def save_all(self):
-        self.playlist_tab.save_all
+        self.playlist_tab.save_all()
 
     def disable_current_index(self):
         self.using_playlist.set_current_index_from_row(-1)
