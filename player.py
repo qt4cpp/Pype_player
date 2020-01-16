@@ -202,8 +202,8 @@ class Player(QWidget):
 
     def stop(self):
         if not self.player.state() == QMediaPlayer.StoppedState:
-            self.player.stop()
             self.seek(0)
+            self.player.stop()
             self.setStatusInfo('Stopped')
             self.stopped.emit('')
 
