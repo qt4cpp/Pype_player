@@ -19,6 +19,8 @@ class SeekStep(IntEnum):
 
 class VideoWidget(QVideoWidget):
 
+    double_clicked = Signal()
+
     def __init__(self, parent=None):
         super(VideoWidget, self).__init__(parent)
 
@@ -28,6 +30,10 @@ class VideoWidget(QVideoWidget):
         p.setColor(QPalette.Window, Qt.black)
         self.setPalette(p)
         self.setMinimumWidth(150)
+
+    def mouseDoubleClickEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.double_clicked.emit()
 
 
 class Player(QWidget):
@@ -115,14 +121,14 @@ class Player(QWidget):
         controlLayout.addLayout(seekBarLayout)
         controlLayout.addLayout(controlWithoutSeekBarLayout)
 
-        display_splitter = QSplitter(Qt.Horizontal)
-        display_splitter.setOpaqueResize(False)
-        display_splitter.addWidget(self.videoWidget)
-        display_splitter.addWidget(self.playlist)
-        display_splitter.setSizes([300, 200])
+        self.display_splitter = QSplitter(Qt.Horizontal)
+        self.display_splitter.setOpaqueResize(False)
+        self.display_splitter.addWidget(self.videoWidget)
+        self.display_splitter.addWidget(self.playlist)
+        self.display_splitter.setSizes([300, 200])
 
         layout = QVBoxLayout()
-        layout.addWidget(display_splitter, 1)
+        layout.addWidget(self.display_splitter, 1)
         layout.addLayout(controlLayout)
         layout.addWidget(self.statusInfoLabel)
         layout.setSpacing(5)
@@ -152,8 +158,13 @@ class Player(QWidget):
 
         self.playlist.double_clicked.connect(self.load_and_play)
 
+        self.videoWidget.double_clicked.connect(self.no_future)
+
     def contextMenuEvent(self, event):
         self.context_menu.exec_(event.globalPos())
+
+    def no_future(self):
+        self.display_splitter.moveSplitter(0, 1)
 
     def autoplay(self):
         """メディアを読み込み、再生する。

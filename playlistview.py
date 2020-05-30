@@ -181,7 +181,7 @@ class PlaylistView(QTableView):
         """auto resize Header width on table view.
         """
         width = self.viewport().width()
-        duration_width = 60
+        duration_width = 120
         self.horizontalHeader().resizeSection(0, width - duration_width)
         self.horizontalHeader().resizeSection(1, duration_width)
 
