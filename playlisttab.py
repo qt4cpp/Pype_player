@@ -102,7 +102,7 @@ class PlaylistTab(QTabWidget):
 
         current = self.currentIndex()
         title = self.tabText(current)
-        msg_box = dialog_for_message('Do you really want to remove \'{0}\' ?'.format(title),
+        msg_box = dialog_for_message('Do you want to remove \'{0}\' permanently?'.format(title),
                                      QMessageBox.Cancel | QMessageBox.Ok)
         ret = msg_box.exec()
         if ret == QMessageBox.Ok:
@@ -111,8 +111,8 @@ class PlaylistTab(QTabWidget):
             return title
 
     def remove_file(self, name=''):
-        if os.path.exists(self.save_playlist_path + name):
-            os.remove(self.save_playlist_path + name)
+        if os.path.exists('./' + self.save_playlist_path + name):
+            os.remove('./' + self.save_playlist_path + name)
             return name
         return False
 

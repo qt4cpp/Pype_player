@@ -48,7 +48,7 @@ class PlaylistModel(QAbstractTableModel):
             return None
         if role == Qt.DisplayRole:
             if col == 0:
-                return self.item_list[row]['url'].fileName()
+                return self.item_list[row]['title']
             elif col == 1:
                 return self.item_list[row]['duration']
         elif role == Qt.TextAlignmentRole:
@@ -102,23 +102,28 @@ class PlaylistModel(QAbstractTableModel):
             return False
 
         media_info = MediaInfo.parse(url.toLocalFile())
-        for track in media_info.tracks:
-            if track.duration is None:
-                duration_str = '--:--'
-            else:
-                duration = float(track.duration) / 1000
-                totalTime = QTime((duration / 3600) % 60, (duration / 60) % 60, (duration % 60),
-                                  (duration * 1000) % 1000)
+        track = media_info.tracks[0]
+        if track.title is None:
+            title = url.fileName()
+        else:
+            title = track.title
 
-                format = 'hh:mm:ss' if duration > 3600 else 'mm:ss'
-                duration_str = totalTime.toString(format)
+        if track.duration is None:
+            duration_str = '--:--'
+        else:
+            duration = float(track.duration) / 1000
+            totalTime = QTime((duration / 3600) % 60, (duration / 60) % 60, (duration % 60),
+                              (duration * 1000) % 1000)
+
+            format = 'hh:mm:ss' if duration > 3600 else 'mm:ss'
+            duration_str = totalTime.toString(format)
 
         if position >= self.rowCount() or position < 0:
             position = self.rowCount()
 
         self.beginInsertRows(QModelIndex(), position, position+1)
 
-        media_info = {'url': url, 'duration': duration_str}
+        media_info = {'url': url, 'title': title, 'duration': duration_str}
         self.item_list.insert(position, media_info)
 
         self.endInsertRows()
