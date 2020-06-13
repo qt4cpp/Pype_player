@@ -1,10 +1,8 @@
 import os
 
-from PySide2.QtCore import (Qt, QModelIndex, Signal, Slot, QPoint)
-from PySide2.QtGui import QKeySequence
-from PySide2.QtWidgets import (QApplication, QPushButton, QLabel, QTabWidget, QInputDialog,
-                             QMessageBox, QFileDialog, QAction, QMenu, QTabBar)
-
+from PySide2.QtCore import (Qt, Signal, QPoint)
+from PySide2.QtWidgets import (QApplication, QTabWidget, QInputDialog,
+                               QMessageBox, QFileDialog, QMenu)
 from playlistview import PlaylistView
 from utility import dialog_for_message, createAction
 
@@ -25,9 +23,6 @@ class PlaylistTab(QTabWidget):
         self.setAcceptDrops(True)
         self.setMovable(True)
         self.setElideMode(Qt.ElideNone)
-
-        self.setStyleSheet("QTabWidget::tab-bar {alignment: Center}")
-        self.setTabShape(QTabWidget.Rounded)
 
         self.context_menu = QMenu(self)
         self.create_context_menu()

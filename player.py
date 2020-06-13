@@ -24,8 +24,6 @@ class VideoWidget(QVideoWidget):
     def __init__(self, parent=None):
         super(VideoWidget, self).__init__(parent)
 
-        #self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
-
         p = self.palette()
         p.setColor(QPalette.Window, Qt.black)
         self.setPalette(p)

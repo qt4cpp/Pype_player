@@ -1,3 +1,4 @@
+import os
 import sys
 
 from PySide2.QtWidgets import QMainWindow, QApplication
@@ -12,6 +13,8 @@ class PypePlayer(QMainWindow):
 
     def __init__(self, parent=None):
         super(PypePlayer, self).__init__(parent)
+
+        print(os.getcwd())
 
         self.player = Player(parent=self)
         self.setCentralWidget(self.player)
