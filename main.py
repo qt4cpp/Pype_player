@@ -1,6 +1,7 @@
 import os
 import sys
 
+from PySide2.QtCore import QSettings
 from PySide2.QtWidgets import QMainWindow, QApplication
 
 from menu_controller import MenuController
@@ -28,6 +29,7 @@ class PypePlayer(QMainWindow):
         self.player.stopped.connect(self.set_window_title)
 
         self.resize(600, 360)
+        self.read_settings()
         self.set_window_title('')
         self.show()
         self.adjust_header_act.trigger()
@@ -105,11 +107,20 @@ class PypePlayer(QMainWindow):
 
     def closeEvent(self, event):
         self.player.playlist.save_all()
+        self.write_settings()
         super(PypePlayer, self).closeEvent(event)
 
     def update_actions(self):
         for a in self.viewer_act[1:]:
             a.setEnabled(self.viewer.isReady())
+
+    def write_settings(self):
+        settings = QSettings('Ted', 'PypePlayer')
+        settings.setValue('order_list', self.player.order_list.currentIndex())
+
+    def read_settings(self):
+        settings = QSettings('Ted', 'PypePlayer')
+        self.player.order_list.setCurrentIndex(settings.value('order_list', 0))
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
