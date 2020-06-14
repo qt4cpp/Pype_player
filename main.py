@@ -1,7 +1,7 @@
 import os
 import sys
 
-from PySide2.QtCore import QSettings
+from PySide2.QtCore import QSettings, QByteArray
 from PySide2.QtWidgets import QMainWindow, QApplication
 
 from menu_controller import MenuController
@@ -117,10 +117,12 @@ class PypePlayer(QMainWindow):
     def write_settings(self):
         settings = QSettings('Ted', 'PypePlayer')
         settings.setValue('order_list', self.player.order_list.currentIndex())
+        settings.setValue('splitter_sizes', self.player.display_splitter.saveState())
 
     def read_settings(self):
         settings = QSettings('Ted', 'PypePlayer')
         self.player.order_list.setCurrentIndex(settings.value('order_list', 0))
+        self.player.display_splitter.restoreState(QByteArray(settings.value('splitter_sizes')))
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
