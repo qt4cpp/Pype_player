@@ -1,7 +1,7 @@
 import os
 import sys
 
-from PySide2.QtCore import QSettings, QByteArray, QCoreApplication
+from PySide2.QtCore import QSettings, QByteArray, QCoreApplication, QSize
 from PySide2.QtWidgets import QMainWindow, QApplication
 
 from menu_controller import MenuController
@@ -31,7 +31,6 @@ class PypePlayer(QMainWindow):
         self.player.media_loaded.connect(self.set_window_title)
         self.player.stopped.connect(self.set_window_title)
 
-        self.resize(600, 360)
         self.read_settings()
         self.set_window_title('')
         self.show()
@@ -119,6 +118,7 @@ class PypePlayer(QMainWindow):
 
     def write_settings(self):
         settings = QSettings()
+        settings.setValue('window_size', self.size())
         settings.beginGroup('player')
         settings.setValue('order_list', self.player.order_list.currentIndex())
         settings.setValue('splitter_sizes', self.player.display_splitter.saveState())
@@ -126,6 +126,7 @@ class PypePlayer(QMainWindow):
 
     def read_settings(self):
         settings = QSettings()
+        self.resize(settings.value('window_size', QSize(600, 360)))
         settings.beginGroup('player')
         self.player.order_list.setCurrentIndex(settings.value('order_list', 0))
         self.player.display_splitter.restoreState(QByteArray(settings.value('splitter_sizes')))
