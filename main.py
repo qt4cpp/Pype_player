@@ -1,7 +1,7 @@
 import os
 import sys
 
-from PySide2.QtCore import QSettings, QByteArray
+from PySide2.QtCore import QSettings, QByteArray, QCoreApplication
 from PySide2.QtWidgets import QMainWindow, QApplication
 
 from menu_controller import MenuController
@@ -17,10 +17,12 @@ class PypePlayer(QMainWindow):
 
         print(os.getcwd())
 
+        QCoreApplication.setOrganizationName('Ted')
+        QCoreApplication.setApplicationName('PypePlayer')
+
         self.player = Player(parent=self)
         self.setCentralWidget(self.player)
         self.viewer = Viewer(parent=self)
-        self.settings = QSettings('Ted', 'PypePlayer')
 
         self.menu_controller = MenuController(self, self.menuBar())
         self.create_menu()
@@ -116,16 +118,18 @@ class PypePlayer(QMainWindow):
             a.setEnabled(self.viewer.isReady())
 
     def write_settings(self):
-        self.settings.beginGroup('player')
-        self.settings.setValue('order_list', self.player.order_list.currentIndex())
-        self.settings.setValue('splitter_sizes', self.player.display_splitter.saveState())
-        self.settings.endGroup()
+        settings = QSettings()
+        settings.beginGroup('player')
+        settings.setValue('order_list', self.player.order_list.currentIndex())
+        settings.setValue('splitter_sizes', self.player.display_splitter.saveState())
+        settings.endGroup()
 
     def read_settings(self):
-        self.settings.beginGroup('player')
-        self.player.order_list.setCurrentIndex(self.settings.value('order_list', 0))
-        self.player.display_splitter.restoreState(QByteArray(self.settings.value('splitter_sizes')))
-        self.settings.endGroup()
+        settings = QSettings()
+        settings.beginGroup('player')
+        self.player.order_list.setCurrentIndex(settings.value('order_list', 0))
+        self.player.display_splitter.restoreState(QByteArray(settings.value('splitter_sizes')))
+        settings.endGroup()
 
 
 if __name__ == '__main__':
