@@ -1,8 +1,7 @@
 import os
 
 from PySide2.QtCore import QSettings
-from PySide2.QtGui import QCloseEvent
-from PySide2.QtWidgets import QWidget, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGroupBox, QGridLayout, \
+from PySide2.QtWidgets import QPushButton, QHBoxLayout, QVBoxLayout, QGroupBox, QGridLayout, \
     QDialog, QCheckBox, QLabel
 
 
@@ -20,7 +19,7 @@ class settings_widget(QDialog):
         self.path_button = QPushButton('Choose...', self)
 
         self.path_label.setText(
-            settings.value('settings_file_path', os.getcwd())+'/playlist/')
+            settings.value('settings_file_path', os.getcwd())+'playlist/')
 
         path_layout = QHBoxLayout()
         path_layout.addWidget(self.path_label, 1)
