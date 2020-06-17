@@ -25,8 +25,7 @@ class PypePlayer(QMainWindow):
         self.player = Player(parent=self)
         self.setCentralWidget(self.player)
         self.viewer = Viewer(parent=self)
-        self.settings_widget = settings_widget()
-        self.settings_widget.show()
+        self.setting_dialog = settings_widget()
 
         self.menu_controller = MenuController(self, self.menuBar())
         self.create_menu()
@@ -68,6 +67,7 @@ class PypePlayer(QMainWindow):
         playlist = self.player.playlist
         add_file = createAction(playlist, 'Add file(s)', playlist.open, 'Ctrl+o')
         open_directory = createAction(playlist, 'Open directory', playlist.open_directory, 'Ctrl+Shift+o')
+        open_preferences = createAction(self, 'Preferences...', self.open_preferences)
 
         add_playlist = createAction(playlist, 'New', playlist.playlist_tab.add_playlist, 'Ctrl+N')
         load_playlist = createAction(playlist, 'Load', playlist.playlist_tab.load_playlist, 'Ctrl+l')
@@ -80,6 +80,8 @@ class PypePlayer(QMainWindow):
 
         self.adjust_header_act = createAction(playlist, 'Auto Adjust Header', playlist.playlist_tab.adjust_header_size)
         self.adjust_header_act.setCheckable(True)
+
+        self.menu_controller.add_action_list('', [open_preferences])
 
         self.menu_controller.add_action_list('File', [add_file, open_directory])
         self.menu_controller.add_separator('File')
@@ -119,6 +121,9 @@ class PypePlayer(QMainWindow):
     def update_actions(self):
         for a in self.viewer_act[1:]:
             a.setEnabled(self.viewer.isReady())
+
+    def open_preferences(self):
+        self.setting_dialog.show()
 
     def write_settings(self):
         settings = QSettings()

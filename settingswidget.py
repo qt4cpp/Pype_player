@@ -1,10 +1,10 @@
 import os
 
 from PySide2.QtCore import QSettings
-from PySide2.QtWidgets import QWidget, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGroupBox, QGridLayout
+from PySide2.QtWidgets import QWidget, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGroupBox, QGridLayout, QDialog
 
 
-class settings_widget(QWidget):
+class settings_widget(QDialog):
     """設定へのアクセスをするインターフェイスを提供する"""
 
     def __init__(self, parent=None):
