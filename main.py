@@ -9,6 +9,8 @@ from player import Player
 from utility import createAction
 from viewer import Viewer
 
+from src.settingswidget import settings_widget
+
 
 class PypePlayer(QMainWindow):
 
@@ -23,6 +25,8 @@ class PypePlayer(QMainWindow):
         self.player = Player(parent=self)
         self.setCentralWidget(self.player)
         self.viewer = Viewer(parent=self)
+        self.settings_widget = settings_widget()
+        self.settings_widget.show()
 
         self.menu_controller = MenuController(self, self.menuBar())
         self.create_menu()
