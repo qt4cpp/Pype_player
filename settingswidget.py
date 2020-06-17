@@ -31,6 +31,7 @@ class settings_widget(QDialog):
         # player setting
         player_group = QGroupBox('Player Settings:')
         self.play_time_checkbox = QCheckBox('Display remaining time instead of duration.')
+        self.play_time_checkbox.setChecked(settings.value('player/remaining_time', False))
 
         player_layout = QVBoxLayout()
         player_layout.addWidget(self.play_time_checkbox)
@@ -51,7 +52,19 @@ class settings_widget(QDialog):
 
         self.setLayout(glayout)
 
+        self.save_button.clicked.connect(self.apply_and_close)
+        self.cancel_button.clicked.connect(self.close)
+
     def show(self):
         self.resize(500, 300)
         super().show()
+
+    def save_settings(self):
+        settings = QSettings()
+        settings.setValue('settings_file_path', self.path_line.text())
+        settings.setValue('player/remaining_time', self.play_time_checkbox.isChecked())
+
+    def apply_and_close(self):
+        self.save_settings()
+        self.close()
 
