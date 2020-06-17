@@ -3,7 +3,7 @@ import os
 from PySide2.QtCore import QSettings
 from PySide2.QtGui import QCloseEvent
 from PySide2.QtWidgets import QWidget, QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QGroupBox, QGridLayout, \
-    QDialog, QCheckBox
+    QDialog, QCheckBox, QLabel
 
 
 class settings_widget(QDialog):
@@ -16,15 +16,14 @@ class settings_widget(QDialog):
 
         # setting relative to file
         file_group = QGroupBox('Playlist File:')
-        self.path_line = QLineEdit(self)
+        self.path_label = QLabel(self)
         self.path_button = QPushButton('Choose...', self)
 
-        self.path_line.setPlaceholderText("Enter your path")
-        self.path_line.setText(
+        self.path_label.setText(
             settings.value('settings_file_path', os.getcwd())+'/playlist/')
 
         path_layout = QHBoxLayout()
-        path_layout.addWidget(self.path_line)
+        path_layout.addWidget(self.path_label, 1)
         path_layout.addWidget(self.path_button)
         file_group.setLayout(path_layout)
 
@@ -61,7 +60,7 @@ class settings_widget(QDialog):
 
     def save_settings(self):
         settings = QSettings()
-        settings.setValue('settings_file_path', self.path_line.text())
+        settings.setValue('settings_file_path', self.path_label.text())
         settings.setValue('player/remaining_time', self.play_time_checkbox.isChecked())
 
     def apply_and_close(self):
