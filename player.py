@@ -52,6 +52,7 @@ class Player(QWidget):
         self.videoWidget = VideoWidget()
         self.next_url = QUrl()
         self.context_menu = QMenu(self)
+        self.display_splitter = QSplitter(Qt.Horizontal)
 
         self.setAcceptDrops(True)
 
@@ -119,7 +120,6 @@ class Player(QWidget):
         controlLayout.addLayout(seekBarLayout)
         controlLayout.addLayout(controlWithoutSeekBarLayout)
 
-        self.display_splitter = QSplitter(Qt.Horizontal)
         self.display_splitter.setOpaqueResize(False)
         self.display_splitter.addWidget(self.videoWidget)
         self.display_splitter.addWidget(self.playlist)
