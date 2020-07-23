@@ -30,7 +30,7 @@ class TestPlaylistModel(unittest.TestCase):
         invalid_url = QUrl('file:/!!//a;''|]~``/b/c/???_rewoui.xf!!', QUrl.StrictMode)
         self.assertEqual(model.add(invalid_url), False)
 
-        current_dir = QDir.current()
+        current_dir = QDir.current_url()
         first_file = current_dir.entryList()[2]  # first = ., second = ..
         first_file_url = QUrl('{0}/{1}'.format(current_dir.absolutePath(), first_file))
         self.assertEqual(model.add(first_file_url), True)
@@ -44,7 +44,7 @@ class TestPlaylistModel(unittest.TestCase):
     def test_del(self):
         model: PlaylistModel = self.playListModel
 
-        current_dir = QDir.current()
+        current_dir = QDir.current_url()
         for file in current_dir.entryList():
             file_url = QUrl('{0}/{1}'.format(current_dir.absolutePath(), file))
             model.add(file_url)

@@ -49,10 +49,13 @@ class Playlist(QWidget):
             self.using_playlist.set_current_index(selected_url)
         elif not self.using_playlist.current_index.isValid():
             self.using_playlist.set_current_index_from_row(0)
-        return self.current_item()
+        return self.current_url()
 
-    def current_item(self):
-        return self.using_playlist.current()
+    def current_url(self):
+        return self.using_playlist.current_url()
+
+    def current_title(self):
+        return self.using_playlist.current_title()
 
     def next(self):
         return self.using_playlist.next()
@@ -65,7 +68,7 @@ class Playlist(QWidget):
 
     def first(self):
         self.using_playlist.set_current_index_from_row(0)
-        return self.current_item()
+        return self.current_url()
 
     def count(self):
         return self.using_playlist.count()

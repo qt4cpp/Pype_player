@@ -9,7 +9,7 @@ from player import Player
 from utility import createAction
 from viewer import Viewer
 
-from src.settingswidget import settings_widget
+from settingswidget import settings_widget
 
 
 class PypePlayer(QMainWindow):

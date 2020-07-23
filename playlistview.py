@@ -129,8 +129,11 @@ class PlaylistView(QTableView):
             return True
         return False
 
-    def current(self):
+    def current_url(self):
         return self.url(self.current_index)
+
+    def current_title(self):
+        return self.title(self.current_index)
 
     def next(self, step=1):
         if self.current_row() + step < self.count():
@@ -163,6 +166,16 @@ class PlaylistView(QTableView):
                 index = self.model().index(row, 0)
         if isinstance(index, QModelIndex):
             return self.model().data(index)
+        else:
+            return None
+
+    def title(self, index):
+        if isinstance(index, int):
+            row = index
+            if 0 <= row < self.count():
+                index = self.model().index(row, 0)
+        if isinstance(index, QModelIndex):
+            return self.model().data(index, Qt.DisplayRole)
         else:
             return None
 

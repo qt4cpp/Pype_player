@@ -17,6 +17,7 @@ class settings_widget(QDialog):
         file_group = QGroupBox('Playlist File:')
         self.path_label = QLabel(self)
         self.path_button = QPushButton('Choose...', self)
+        #TODO: browse()
 
         self.path_label.setText(
             settings.value('settings_file_path', os.getcwd())+'playlist/')
@@ -30,6 +31,7 @@ class settings_widget(QDialog):
         player_group = QGroupBox('Player Settings:')
         self.play_time_checkbox = QCheckBox('Display remaining time instead of duration.')
         self.play_time_checkbox.setChecked(settings.value('player/remaining_time', False))
+        #TODO: funciton to display remaining_time
 
         player_layout = QVBoxLayout()
         player_layout.addWidget(self.play_time_checkbox)

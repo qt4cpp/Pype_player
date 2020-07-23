@@ -195,7 +195,7 @@ class Player(QWidget):
         if file_url.isValid():
             c = QMediaContent(file_url)
             self.player.setMedia(c)
-            self.media_loaded.emit(file_url.fileName())
+            self.media_loaded.emit(self.playlist.current_title())
             self.enableInterface()
 
     def play(self):
