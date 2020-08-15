@@ -17,8 +17,6 @@ class PypePlayer(QMainWindow):
     def __init__(self, parent=None):
         super(PypePlayer, self).__init__(parent)
 
-        print(os.getcwd())
-
         QCoreApplication.setOrganizationName('Ted')
         QCoreApplication.setApplicationName('PypePlayer')
 
@@ -127,7 +125,10 @@ class PypePlayer(QMainWindow):
 
     def write_settings(self):
         settings = QSettings()
-        settings.setValue('window_size', self.size())
+        if settings.value('window/remember'):
+            settings.setValue('window/size', self.size())
+        else:
+            settings.setValue('window/size', QSize(600, 360))
         settings.beginGroup('player')
         settings.setValue('order_list', self.player.order_list.currentIndex())
         settings.setValue('splitter_sizes', self.player.display_splitter.saveState())
@@ -135,7 +136,7 @@ class PypePlayer(QMainWindow):
 
     def read_settings(self):
         settings = QSettings()
-        self.resize(settings.value('window_size', QSize(600, 360)))
+        self.resize(settings.value('window/size', QSize(600, 360)))
         settings.beginGroup('player')
         self.player.order_list.setCurrentIndex(settings.value('order_list', 0))
         self.player.display_splitter.restoreState(QByteArray(settings.value('splitter_sizes')))
