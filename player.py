@@ -257,7 +257,7 @@ class Player(QWidget):
         self.labelCurrentTime.setText(currentTimeStr)
 
     def repeat_track(self):
-        QTimer.singleShot(100, self.play)
+        QTimer.singleShot(50, self.play)
 
     def repeat_all(self):
         if self.playlist.count()-1 == self.playlist.current_row():
