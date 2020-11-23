@@ -74,6 +74,11 @@ class Player(QWidget):
         self.order_list.addItem('Repeat all')
         self.order_list.setFixedWidth(115)
 
+        self.playback_rate_menu = QComboBox()
+        self.playback_rate_menu.addItems((
+            '0.5x', '0.75x', '0.9x', '1.0x', '1.1x', '1.25x', '1.5x'))
+        self.playback_rate_menu.setCurrentText('1.0x')
+
         self.muteButton = create_flat_button(std_icon(
             QStyle.SP_MediaVolume if not self.player.isMuted() else QStyle.SP_MediaVolumeMuted))
 
@@ -111,6 +116,7 @@ class Player(QWidget):
         controlWithoutSeekBarLayout.addWidget(self.backwardButton)
         controlWithoutSeekBarLayout.addWidget(self.forwardButton)
         controlWithoutSeekBarLayout.addWidget(self.order_list)
+        controlWithoutSeekBarLayout.addWidget(self.playback_rate_menu)
         controlWithoutSeekBarLayout.addStretch(stretch=2)
         controlWithoutSeekBarLayout.addWidget(self.muteButton)
         controlWithoutSeekBarLayout.addWidget(self.volumeBar)
@@ -139,6 +145,7 @@ class Player(QWidget):
         self.backwardButton.clicked.connect(self.skip_backward)
         self.forwardButton.clicked.connect(self.skip_forward)
         self.muteButton.clicked.connect(self.toggleMute)
+        self.playback_rate_menu.currentTextChanged.connect(self.set_playback_rate)
 
         self.player.stateChanged.connect(self.playerStateChanged)
         self.player.mediaStatusChanged.connect(self.mediaStatusChanged)
@@ -282,6 +289,8 @@ class Player(QWidget):
     def seek(self, seconds):
         self.player.setPosition(seconds * 1000)
 
+    def set_playback_rate(self, rate_text):
+        self.player.setPlaybackRate(float(rate_text[:-1]))
 
     def toggleMute(self):
         if self.player.isMuted():
