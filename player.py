@@ -8,6 +8,7 @@ from PySide2.QtWidgets import (QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushB
                              QStyle, QSlider, QSplitter, QMenu, QComboBox)
 
 from playlist import Playlist
+from repeat_control import RepeatControl
 
 
 class SeekStep(IntEnum):
@@ -53,6 +54,7 @@ class Player(QWidget):
         self.next_url = QUrl()
         self.context_menu = QMenu(self)
         self.display_splitter = QSplitter(Qt.Horizontal)
+        self.repeat_control = RepeatControl(self)
 
         self.setAcceptDrops(True)
 
@@ -68,10 +70,7 @@ class Player(QWidget):
         self.backwardButton = create_flat_button(std_icon(QStyle.SP_MediaSkipBackward), '')
         self.forwardButton = create_flat_button(std_icon(QStyle.SP_MediaSkipForward), '')
 
-        self.order_list = QComboBox()
-        self.order_list.addItem('No repeat')
-        self.order_list.addItem('Repeat track')
-        self.order_list.addItem('Repeat all')
+        self.order_list = self.repeat_control.menu()
         self.order_list.setFixedWidth(115)
 
         self.playback_rate_menu = QComboBox()
