@@ -9,6 +9,7 @@ from PySide2.QtWidgets import (QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushB
 
 from playlist import Playlist
 from repeat_control import RepeatControl
+from utility import create_flat_button
 
 
 class SeekStep(IntEnum):
@@ -54,15 +55,12 @@ class Player(QWidget):
         self.next_url = QUrl()
         self.context_menu = QMenu(self)
         self.display_splitter = QSplitter(Qt.Horizontal)
-        self.repeat_control = RepeatControl(self)
+        self.repeat_control = RepeatControl(parent=self)
+        self.repeat_control.get_player_position = self.player.position
+        self.repeat_control.set_position_to_player = self.player.setPosition
+        self.player.positionChanged.connect(self.repeat_control.set_pos)
 
         self.setAcceptDrops(True)
-
-        def create_flat_button(icon, label=''):
-            button = QPushButton(icon, label)
-            button.setFlat(True)
-            button.setFixedSize(30, 30)
-            return button
 
         std_icon = self.style().standardIcon
         self.play_button = create_flat_button(std_icon(QStyle.SP_MediaPlay))
@@ -131,10 +129,11 @@ class Player(QWidget):
         self.display_splitter.setSizes([300, 200])
 
         layout = QVBoxLayout()
+        layout.setContentsMargins(11, 0, 11, 0)
         layout.addWidget(self.display_splitter, 1)
         layout.addLayout(controlLayout)
+        layout.addWidget(self.repeat_control.ab_repeat_widget)
         layout.addWidget(self.statusInfoLabel)
-        layout.setSpacing(5)
 
         self.setLayout(layout)
 
@@ -159,6 +158,9 @@ class Player(QWidget):
 
         self.seekBar.sliderMoved.connect(self.seek)
         self.seekBar.sliderReleased.connect(self.seekBarClicked)
+
+        self.repeat_control.pos_exceeded.connect(self.seek)
+        self.player.currentMediaChanged.connect(self.repeat_control.reset)
 
         self.playlist.double_clicked.connect(self.load_and_play)
 

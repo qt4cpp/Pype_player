@@ -1,7 +1,7 @@
 import mimetypes
 import os
 import qtawesome
-from PySide2.QtCore import QByteArray, QIODevice, QTextStream, QUrl
+from PySide2.QtCore import QByteArray, QIODevice, QTextStream, QUrl, QTime
 from PySide2.QtWidgets import QAction, QPushButton, QMessageBox
 
 
@@ -12,12 +12,40 @@ def createAction(obj, name, function, shortcut=''):
 
     return newAction
 
+
+def create_flat_button(icon, label=''):
+    button = QPushButton(icon, label)
+    button.setFlat(True)
+    button.setFixedSize(30, 30)
+    return button
+
+
 def make_button_from_fa(icon_str, str='', tooltip=''):
     icon = qtawesome.icon(icon_str)
     button = QPushButton(icon, str)
     button.setToolTip(tooltip)
 
     return button
+
+
+def ms_to_qtime(ms):
+    sec = int(ms / 1000)
+    h = int(sec / 3600)
+    m = int((sec % 3600) / 60)
+    s = int((sec % 60))
+    ms = int(ms % 1000)
+    return QTime(h, m, s, ms)
+
+
+def qtime_to_ms(qtime: QTime) -> int:
+    """
+    exchange milliseconds from QTime type.
+    """
+    ms = (qtime.hour() * 3600) + (qtime.minute() * 60) + qtime.second()
+    ms *= 1000  # msec 用に1000倍する
+    ms += qtime.msec()
+    return ms
+
 
 def dialog_for_message(message, button=QMessageBox.Ok):
     msg_box = QMessageBox()
