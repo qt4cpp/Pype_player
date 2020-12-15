@@ -46,11 +46,10 @@ class RepeatControl(QObject):
         If AB-repeat is chosen, the widget shows, otherwise hides.
         """
         if index == 3:
+            self.reset()
             self.ab_repeat_widget.show()
         else:
-            self.ab_repeat_widget.reset()
             self.ab_repeat_widget.hide()
-            self.monitoring_timer.stop()
 
     @Slot(int)
     def set_pos(self, pos):
@@ -145,6 +144,10 @@ class ABRepeatWidget(QWidget):
     def reset(self):
         self.a_time.setTime(QTime(0, 0))
         self.b_time.setTime(QTime(0, 0))
+
+    def hide(self) -> None:
+        self.reset()
+        super().hide()
 
 
 if __name__ == '__main__':
