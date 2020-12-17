@@ -24,12 +24,13 @@ class RepeatControl(QObject):
         self.ab_repeat_widget = ABRepeatWidget()
         self.a_time = QTime(0, 0)
         self.b_time = QTime(0, 0)
+        self.duration = QTime(0, 0)
         self.current = QTime()
         self.monitoring_timer = QTimer(self)
 
         # Connect
-        self.menu_box.currentIndexChanged.connect(self.toggle_widget_show)
-        self.toggle_widget_show(self.menu_box.currentIndex())
+        self.menu_box.currentIndexChanged.connect(self.handle_menu_changed)
+        self.handle_menu_changed(self.menu_box.currentIndex())
         self.ab_repeat_widget.a_time.timeChanged.connect(self.set_a_time)
         self.ab_repeat_widget.b_time.timeChanged.connect(self.set_b_time)
         self.monitoring_timer.timeout.connect(self.monitor_pos)
@@ -41,15 +42,23 @@ class RepeatControl(QObject):
         """
         return self.menu_box
 
-    def toggle_widget_show(self, index: int):
+    def handle_menu_changed(self, index: int):
         """
         If AB-repeat is chosen, the widget shows, otherwise hides.
         """
-        if index == 3:
+        if index == 0:  # Repeat 機能 Off
+            self.reset()
+            self.ab_repeat_widget.hide()
+            self.monitor_deactivate()
+        elif index == 1:
+            self.ab_repeat_widget.hide()
+            self.set_b_time(QTime(ms_to_qtime(qtime_to_ms(self.duration) - 500)))
+        elif index == 3:
             self.reset()
             self.ab_repeat_widget.show()
         else:
             self.ab_repeat_widget.hide()
+            self.monitor_deactivate()
 
     @Slot(int)
     def set_pos(self, pos):
@@ -78,19 +87,23 @@ class RepeatControl(QObject):
 
     def timer_is_valid(self):
         if self.b_time > self.a_time:
-            self.ab_repeat_activate()
+            self.monitor_activate()
         else:
-            self.ab_repeat_deactivate()
+            self.monitor_deactivate()
+
+    def set_duration(self, ms):
+        self.duration = ms_to_qtime(ms)
+        self.ab_repeat_widget.b_time.setMaximumTime(self.duration)
 
     def reset(self):
         self.a_time = QTime(0, 0)
         self.b_time = QTime(0, 0)
         self.ab_repeat_widget.reset()
 
-    def ab_repeat_activate(self):
+    def monitor_activate(self):
         self.monitoring_timer.start(400)  # monitoring 間隔を指定する。
 
-    def ab_repeat_deactivate(self):
+    def monitor_deactivate(self):
         self.monitoring_timer.stop()
 
 

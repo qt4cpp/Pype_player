@@ -179,7 +179,7 @@ class Player(QWidget):
         """
         i = self.order_list.currentIndex()
         if i == 1:
-            self.repeat_track()
+            # self.repeat_track()
             return
         elif i == 2:
             self.repeat_all()
@@ -232,6 +232,7 @@ class Player(QWidget):
 
 
     def durationChanged(self, duration):
+        self.repeat_control.set_duration(self.duration)
         duration /= 1000
 
         self.duration = duration
