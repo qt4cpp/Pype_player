@@ -232,7 +232,7 @@ class Player(QWidget):
 
 
     def durationChanged(self, duration):
-        self.repeat_control.set_duration(self.duration)
+        self.repeat_control.set_duration(duration)
         duration /= 1000
 
         self.duration = duration

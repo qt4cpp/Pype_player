@@ -22,10 +22,10 @@ class RepeatControl(QObject):
         self.menu_box = QComboBox(parent)
         self.menu_box.addItems(self.item_name)
         self.ab_repeat_widget = ABRepeatWidget()
-        self.a_time = QTime(0, 0)
-        self.b_time = QTime(0, 0)
-        self.duration = QTime(0, 0)
-        self.current = QTime()
+        self.a_time: int = 0
+        self.b_time = 0
+        self.duration = 0
+        self.current = 0
         self.monitoring_timer = QTimer(self)
 
         # Connect
@@ -45,6 +45,7 @@ class RepeatControl(QObject):
     def handle_menu_changed(self, index: int):
         """
         If AB-repeat is chosen, the widget shows, otherwise hides.
+
         """
         if index == 0:  # Repeat 機能 Off
             self.reset()
@@ -52,9 +53,11 @@ class RepeatControl(QObject):
             self.monitor_deactivate()
         elif index == 1:
             self.ab_repeat_widget.hide()
-            self.set_b_time(QTime(ms_to_qtime(qtime_to_ms(self.duration) - 500)))
+            self.reset()
+            self.set_b_time(self.duration - 900 if self.duration > 2000 else 0)
         elif index == 3:
             self.reset()
+            self.timer_is_valid()
             self.ab_repeat_widget.show()
         else:
             self.ab_repeat_widget.hide()
@@ -65,7 +68,7 @@ class RepeatControl(QObject):
         """
         プレイヤーの現在位置を監視する。
         """
-        self.current = ms_to_qtime(pos)
+        self.current = pos
 
     def monitor_pos(self):
         """
@@ -74,30 +77,50 @@ class RepeatControl(QObject):
         シグナルには、戻す時間が入っている。
         """
         if self.current >= self.b_time:
-            target = int(qtime_to_ms(self.a_time) / 1000)
+            target = int(self.a_time / 1000)
             self.pos_exceeded.emit(target)
 
     def set_a_time(self, time):
+        """
+        a_time をセットする。time はミリセカンドで、QTime が渡された場合は、milliseconds に変換する。
+        """
+        if isinstance(time, QTime):
+            time = qtime_to_ms(time)
         self.a_time = time
         self.timer_is_valid()
 
     def set_b_time(self, time):
+        """
+        b_time をセットする。time はミリセカンドで、QTime が渡された場合は、milliseconds に変換する。
+        """
+        if isinstance(time, QTime):
+            time = qtime_to_ms(time)
         self.b_time = time
         self.timer_is_valid()
 
     def timer_is_valid(self):
+        """
+        b_time が a_time より大きいとき現在位置のモニタリングを開始する。
+        """
         if self.b_time > self.a_time:
             self.monitor_activate()
         else:
             self.monitor_deactivate()
 
     def set_duration(self, ms):
-        self.duration = ms_to_qtime(ms)
-        self.ab_repeat_widget.b_time.setMaximumTime(self.duration)
+        """
+        再生するメディアのduration が変更されたら呼ばれる関数。
+        その時にwidget の QTimeEdit の最大値にする。
+        """
+        self.duration = ms
+        self.ab_repeat_widget.a_time.setMaximumTime(ms_to_qtime(ms))
+        self.ab_repeat_widget.b_time.setMaximumTime(ms_to_qtime(ms))
+        if self.menu_box.currentIndex() == 1:
+            self.set_b_time(self.duration - 900 if self.duration > 2000 else 0)
 
     def reset(self):
-        self.a_time = QTime(0, 0)
-        self.b_time = QTime(0, 0)
+        self.a_time = 0
+        self.b_time = 0
         self.ab_repeat_widget.reset()
 
     def monitor_activate(self):
