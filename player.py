@@ -8,6 +8,8 @@ from PySide2.QtWidgets import (QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushB
                              QStyle, QSlider, QSplitter, QMenu, QComboBox)
 
 from playlist import Playlist
+from repeat_control import RepeatControl
+from utility import create_flat_button
 
 
 class SeekStep(IntEnum):
@@ -53,14 +55,12 @@ class Player(QWidget):
         self.next_url = QUrl()
         self.context_menu = QMenu(self)
         self.display_splitter = QSplitter(Qt.Horizontal)
+        self.repeat_control = RepeatControl(parent=self)
+        self.repeat_control.get_player_position = self.player.position
+        self.repeat_control.set_position_to_player = self.player.setPosition
+        self.player.positionChanged.connect(self.repeat_control.set_pos)
 
         self.setAcceptDrops(True)
-
-        def create_flat_button(icon, label=''):
-            button = QPushButton(icon, label)
-            button.setFlat(True)
-            button.setFixedSize(30, 30)
-            return button
 
         std_icon = self.style().standardIcon
         self.play_button = create_flat_button(std_icon(QStyle.SP_MediaPlay))
@@ -68,10 +68,7 @@ class Player(QWidget):
         self.backwardButton = create_flat_button(std_icon(QStyle.SP_MediaSkipBackward), '')
         self.forwardButton = create_flat_button(std_icon(QStyle.SP_MediaSkipForward), '')
 
-        self.order_list = QComboBox()
-        self.order_list.addItem('No repeat')
-        self.order_list.addItem('Repeat track')
-        self.order_list.addItem('Repeat all')
+        self.order_list = self.repeat_control.menu()
         self.order_list.setFixedWidth(115)
 
         self.playback_rate_menu = QComboBox()
@@ -132,10 +129,11 @@ class Player(QWidget):
         self.display_splitter.setSizes([300, 200])
 
         layout = QVBoxLayout()
+        layout.setContentsMargins(11, 0, 11, 0)
         layout.addWidget(self.display_splitter, 1)
         layout.addLayout(controlLayout)
+        layout.addWidget(self.repeat_control.ab_repeat_widget)
         layout.addWidget(self.statusInfoLabel)
-        layout.setSpacing(5)
 
         self.setLayout(layout)
 
@@ -161,6 +159,9 @@ class Player(QWidget):
         self.seekBar.sliderMoved.connect(self.seek)
         self.seekBar.sliderReleased.connect(self.seekBarClicked)
 
+        self.repeat_control.pos_exceeded.connect(self.seek)
+        self.player.currentMediaChanged.connect(self.repeat_control.reset)
+
         self.playlist.double_clicked.connect(self.load_and_play)
 
         self.videoWidget.double_clicked.connect(self.no_future)
@@ -178,7 +179,7 @@ class Player(QWidget):
         """
         i = self.order_list.currentIndex()
         if i == 1:
-            self.repeat_track()
+            # self.repeat_track()
             return
         elif i == 2:
             self.repeat_all()
@@ -231,6 +232,7 @@ class Player(QWidget):
 
 
     def durationChanged(self, duration):
+        self.repeat_control.set_duration(duration)
         duration /= 1000
 
         self.duration = duration
