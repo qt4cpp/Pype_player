@@ -1,6 +1,7 @@
 __pycache__
 .idea
 dummyfile
+.DS_Store
 *.app/
 .vscode/
 playlist/
