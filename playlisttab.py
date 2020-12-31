@@ -207,8 +207,8 @@ class PlaylistTab(QTabWidget):
         """adjust header size
         :return: Nothing
         """
-        if self.parent().parent().parent().parent().adjust_header_act.isChecked():
-            self.currentWidget().auto_resize_header()
+        # if self.parent().parent().parent().parent().adjust_header_act.isChecked():
+        self.currentWidget().auto_resize_header()
 
     def dragEnterEvent(self, event):
         '''whether accept drag or not.
@@ -270,6 +270,10 @@ class PlaylistTab(QTabWidget):
         for i in range(self.count()):
             tabs_width += self.tabBar().tabRect(i).width()
         return (self.width() - tabs_width) / 2 if self.width() > tabs_width else 0
+
+    def resizeEvent(self, event):
+        self.adjust_header_size()
+        super().resizeEvent(event)
 
 
 if __name__ == '__main__':

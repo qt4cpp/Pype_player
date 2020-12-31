@@ -1,35 +1,25 @@
-from PySide2.QtCore import Signal
+from PySide2.QtCore import Signal, QObject
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QApplication
 
 from playlisttab import PlaylistTab
 from playlistview import PlaylistView
 
 
-class Playlist(QWidget):
+class Playlist(QObject):
 
     double_clicked = Signal()
 
     def __init__(self, parent=None):
         super(Playlist, self).__init__(parent)
 
-        self.playlist_tab = PlaylistTab(parent=self)
-        self.playlist_tab.double_clicked.connect(self.handle_double_clicked)
-        self.using_playlist: PlaylistView = self.playlist_tab.widget(0)
+        self.widget = PlaylistTab(parent=parent)
+        self.widget.double_clicked.connect(self.handle_double_clicked)
+        self.using_playlist: PlaylistView = self.widget.widget(0)
 
-        layout = QVBoxLayout()
-        layout.addWidget(self.playlist_tab)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
-
-        self.setLayout(layout)
-        self.show()
+        self.widget.show()
 
     def playlist(self):
-        return self.playlist_tab.current_playlist()
-
-    def resizeEvent(self, event):
-        self.playlist_tab.adjust_header_size()
-        super().resizeEvent(event)
+        return self.widget.current_playlist()
 
     def change_using_playlist(self):
         self.using_playlist.deactivate()
@@ -78,7 +68,7 @@ class Playlist(QWidget):
         self.using_playlist.clearSelection()
 
     def save_all(self):
-        self.playlist_tab.save_all()
+        self.widget.save_all()
 
     def disable_current_index(self):
         self.using_playlist.set_current_index_from_row(-1)

@@ -67,17 +67,17 @@ class PypePlayer(QMainWindow):
         open_directory = createAction(playlist, 'Open directory', playlist.open_directory, 'Ctrl+Shift+o')
         open_preferences = createAction(self, 'Preferences...', self.open_preferences)
 
-        add_playlist = createAction(playlist, 'New', playlist.playlist_tab.add_playlist, 'Ctrl+N')
-        load_playlist = createAction(playlist, 'Load', playlist.playlist_tab.load_playlist, 'Ctrl+l')
-        save_playlist = createAction(playlist, 'Save Current', playlist.playlist_tab.save_current, 'Ctrl+s')
-        rename_playlist = createAction(playlist, 'Rename', playlist.playlist_tab.rename_playlist)
-        remove_playlist = createAction(playlist, 'Remove Current', playlist.playlist_tab.remove_playlist)
+        add_playlist = createAction(playlist, 'New', playlist.widget.add_playlist, 'Ctrl+N')
+        load_playlist = createAction(playlist, 'Load', playlist.widget.load_playlist, 'Ctrl+l')
+        save_playlist = createAction(playlist, 'Save Current', playlist.widget.save_current, 'Ctrl+s')
+        rename_playlist = createAction(playlist, 'Rename', playlist.widget.rename_playlist)
+        remove_playlist = createAction(playlist, 'Remove Current', playlist.widget.remove_playlist)
 
-        next_tab_act = createAction(playlist, 'Next Tab', playlist.playlist_tab.next_tab, 'Meta+tab')
-        previous_tab_act = createAction(playlist, 'Previous Tab', playlist.playlist_tab.previous_tab, 'Meta+Shift+tab')
+        next_tab_act = createAction(playlist, 'Next Tab', playlist.widget.next_tab, 'Meta+tab')
+        previous_tab_act = createAction(playlist, 'Previous Tab', playlist.widget.previous_tab, 'Meta+Shift+tab')
 
-        self.adjust_header_act = createAction(playlist, 'Auto Adjust Header', playlist.playlist_tab.adjust_header_size)
-        self.adjust_header_act.setCheckable(True)
+        self.adjust_header_act = createAction(playlist, 'Auto Adjust Header', playlist.widget.adjust_header_size)
+        # self.adjust_header_act.setCheckable(True)
 
         self.menu_controller.add_action_list('', [open_preferences])
 

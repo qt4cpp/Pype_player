@@ -15,21 +15,21 @@ class TestPlaylist(unittest.TestCase):
         self.extension = '.m3u8'
 
     def test_playlists(self):
-        self.assertEqual(self.playlist.playlist_tab.count(), 1)
-        self.assertEqual(self.playlist.playlist_tab.add_playlist(), True)
-        self.assertEqual(self.playlist.playlist_tab.count(), 2)
+        self.assertEqual(self.playlist.widget.count(), 1)
+        self.assertEqual(self.playlist.widget.add_playlist(), True)
+        self.assertEqual(self.playlist.widget.count(), 2)
 
-        self.playlist.playlist_tab.add_playlist()
-        count = self.playlist.playlist_tab.count()
-        self.playlist.playlist_tab.setCurrentIndex(count-1)
-        self.playlist.playlist_tab.remove_playlist()
-        self.assertEqual(self.playlist.playlist_tab.count(), count-1)
+        self.playlist.widget.add_playlist()
+        count = self.playlist.widget.count()
+        self.playlist.widget.setCurrentIndex(count - 1)
+        self.playlist.widget.remove_playlist()
+        self.assertEqual(self.playlist.widget.count(), count - 1)
 
     def test_save_remove(self):
-        self.playlist.playlist_tab.add_playlist()
-        self.assertEqual(self.playlist.playlist_tab.count(), 2)
-        title = self.playlist.playlist_tab.tabText(1)
-        self.playlist.playlist_tab.save_all()
+        self.playlist.widget.add_playlist()
+        self.assertEqual(self.playlist.widget.count(), 2)
+        title = self.playlist.widget.tabText(1)
+        self.playlist.widget.save_all()
         file_list = os.listdir(self.save_path)
         self.assertEqual(title+self.extension, file_list[0])
         self.remove_saved_files()

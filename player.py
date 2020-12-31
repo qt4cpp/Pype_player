@@ -125,7 +125,7 @@ class Player(QWidget):
 
         self.display_splitter.setOpaqueResize(False)
         self.display_splitter.addWidget(self.videoWidget)
-        self.display_splitter.addWidget(self.playlist)
+        self.display_splitter.addWidget(self.playlist.widget)
         self.display_splitter.setSizes([300, 200])
 
         layout = QVBoxLayout()
