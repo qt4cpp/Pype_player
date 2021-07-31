@@ -26,7 +26,7 @@ class PypePlayer(QMainWindow):
         self.setting_dialog = settings_widget()
 
         self.menu_controller = MenuController(self, self.menuBar())
-        self.create_menu()
+        self._create_menu()
         self.update_actions()
 
         self.player.media_loaded.connect(self.set_window_title)
@@ -37,7 +37,7 @@ class PypePlayer(QMainWindow):
         self.show()
         self.adjust_header_act.trigger()
 
-    def create_menu(self):
+    def _create_menu(self):
 
         # Player
         forward_short = createAction(self.player, 'Short Forward', self.player.forward_short, 'Right')

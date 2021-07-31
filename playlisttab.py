@@ -25,7 +25,7 @@ class PlaylistTab(QTabWidget):
         self.setElideMode(Qt.ElideNone)
 
         self.context_menu = QMenu(self)
-        self.create_context_menu()
+        self._create_context_menu()
 
         self.currentChanged[int].connect(self.adjust_header_size)
 
@@ -33,7 +33,7 @@ class PlaylistTab(QTabWidget):
 
         self.show()
 
-    def create_context_menu(self):
+    def _create_context_menu(self):
         self.context_menu.addAction(createAction(self, 'Add Playlist', self.add_playlist))
         self.context_menu.addAction(createAction(self, 'Rename', self.rename_playlist))
         self.context_menu.addAction(createAction(self, 'Save', self.save_current))
@@ -111,6 +111,7 @@ class PlaylistTab(QTabWidget):
             return name
         return False
 
+    # Todo:ファイルを操作する関数をインターフェイスへ移動する。
     def save_current(self):
         """現在のPlaylistを保存する
 

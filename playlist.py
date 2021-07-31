@@ -68,7 +68,9 @@ class Playlist(QObject):
         self.using_playlist.clearSelection()
 
     def save_all(self):
+        """ファイル開いて、widgetに渡すのがいいのか"""
         self.widget.save_all()
+
 
     def disable_current_index(self):
         self.using_playlist.set_current_index_from_row(-1)

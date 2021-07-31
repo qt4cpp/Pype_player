@@ -2,9 +2,9 @@ import os
 
 from PySide2.QtCore import QSettings
 from PySide2.QtWidgets import QPushButton, QHBoxLayout, QVBoxLayout, QGroupBox, QGridLayout, \
-    QDialog, QCheckBox, QLabel
+    QDialog, QCheckBox, QLabel, QFileDialog
 
-
+# TODO: settings に渡す値を辞書形式にする？
 class settings_widget(QDialog):
     """設定へのアクセスをするインターフェイスを提供する"""
 
@@ -13,17 +13,19 @@ class settings_widget(QDialog):
 
         # General settings
         general_group = QGroupBox('General:')
+        self.path_guide_label = QLabel(self)
+        self.path_guide_label.setText('Playlist folder: ')
         self.path_label = QLabel(self)
-        self.path_button = QPushButton('Choose...', self)
-        # TODO: browse()
+        self.browse_button = QPushButton('browse', self)
 
         path_layout = QHBoxLayout()
         path_layout.addWidget(self.path_label, 1)
-        path_layout.addWidget(self.path_button)
+        path_layout.addWidget(self.browse_button)
 
         self.window_size_chkbox = QCheckBox('Remember window size when close.')
 
         general_layout = QVBoxLayout()
+        general_layout.addWidget(self.path_guide_label)
         general_layout.addLayout(path_layout)
         general_layout.addWidget(self.window_size_chkbox)
         general_group.setLayout(general_layout)
@@ -54,6 +56,8 @@ class settings_widget(QDialog):
 
         self.setLayout(glayout)
 
+        # connection
+        self.browse_button.clicked.connect(self.browse)
         self.save_button.clicked.connect(self.apply_and_close)
         self.cancel_button.clicked.connect(self.close)
         self.reset_button.clicked.connect(self.reset)
@@ -84,3 +88,11 @@ class settings_widget(QDialog):
         settings = QSettings()
         settings.clear()
         self.read_settings()
+
+    def browse(self, open_dir=''):
+        path = QFileDialog.getExistingDirectory(
+            self, 'Open directory', '',
+            QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks
+            )
+        if path:
+            self.path_label.setText(path)
