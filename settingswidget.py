@@ -4,7 +4,7 @@ from PySide2.QtCore import QSettings
 from PySide2.QtWidgets import QPushButton, QHBoxLayout, QVBoxLayout, QGroupBox, QGridLayout, \
     QDialog, QCheckBox, QLabel, QFileDialog
 
-# TODO: settings に渡す値を辞書形式にする？
+
 class settings_widget(QDialog):
     """設定へのアクセスをするインターフェイスを提供する"""
 
@@ -89,10 +89,11 @@ class settings_widget(QDialog):
         settings.clear()
         self.read_settings()
 
-    def browse(self, open_dir=''):
+    def browse(self):
+        open_dir = self.path_label.text()
         path = QFileDialog.getExistingDirectory(
-            self, 'Open directory', '',
+            self, 'Open directory', open_dir,
             QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks
             )
         if path:
-            self.path_label.setText(path)
+            self.path_label.setText(path + '/')
