@@ -19,11 +19,12 @@ class PypePlayer(QMainWindow):
 
         QCoreApplication.setOrganizationName('Ted')
         QCoreApplication.setApplicationName('PypePlayer')
+        self.setting_dialog = settings_widget()
+        self.setting_dialog.settings_saved.connect(self.read_settings)
 
         self.player = Player(parent=self)
         self.setCentralWidget(self.player)
         self.viewer = Viewer(parent=self)
-        self.setting_dialog = settings_widget()
 
         self.menu_controller = MenuController(self, self.menuBar())
         self._create_menu()
@@ -137,10 +138,7 @@ class PypePlayer(QMainWindow):
     def read_settings(self):
         settings = QSettings()
         self.resize(settings.value('window/size', QSize(600, 360)))
-        settings.beginGroup('player')
-        self.player.order_list.setCurrentIndex(settings.value('order_list', 0))
-        self.player.display_splitter.restoreState(QByteArray(settings.value('splitter_sizes')))
-        settings.endGroup()
+        self.player.read_settings()
 
 
 if __name__ == '__main__':

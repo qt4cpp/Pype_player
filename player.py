@@ -1,6 +1,6 @@
 from enum import IntEnum
 
-from PySide2.QtCore import (QUrl, Qt, QTime, QTimer, Signal, Slot)
+from PySide2.QtCore import (QUrl, Qt, QTime, QTimer, Signal, Slot, QSettings, QByteArray)
 from PySide2.QtGui import (QPalette)
 from PySide2.QtMultimedia import (QMediaContent, QMediaPlayer)
 from PySide2.QtMultimediaWidgets import QVideoWidget
@@ -168,6 +168,15 @@ class Player(QWidget):
 
     def contextMenuEvent(self, event):
         self.context_menu.exec_(event.globalPos())
+
+    def read_settings(self):
+        settings = QSettings()
+        settings.beginGroup('player')
+        self.order_list.setCurrentIndex(settings.value('order_list', 0))
+        self.display_splitter.restoreState(
+            QByteArray(settings.value('splitter_sizes')))
+        settings.endGroup()
+        self.playlist.read_settings()
 
     def no_future(self):
         self.display_splitter.moveSplitter(0, 1)

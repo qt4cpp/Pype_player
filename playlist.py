@@ -1,4 +1,4 @@
-from PySide2.QtCore import Signal, QObject
+from PySide2.QtCore import Signal, QObject, QSettings
 from PySide2.QtWidgets import QWidget, QVBoxLayout, QApplication
 
 from playlisttab import PlaylistTab
@@ -17,6 +17,12 @@ class Playlist(QObject):
         self.using_playlist: PlaylistView = self.widget.widget(0)
 
         self.widget.show()
+
+    def read_settings(self):
+        settings = QSettings()
+        settings.beginGroup('playlist')
+        self.widget.saved_playlists_path = settings.value('path')
+        settings.endGroup()
 
     def playlist(self):
         return self.widget.current_playlist()
@@ -70,7 +76,6 @@ class Playlist(QObject):
     def save_all(self):
         """ファイル開いて、widgetに渡すのがいいのか"""
         self.widget.save_all()
-
 
     def disable_current_index(self):
         self.using_playlist.set_current_index_from_row(-1)

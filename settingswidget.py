@@ -1,12 +1,14 @@
 import os
 
-from PySide2.QtCore import QSettings
+from PySide2.QtCore import QSettings, Signal
 from PySide2.QtWidgets import QPushButton, QHBoxLayout, QVBoxLayout, QGroupBox, QGridLayout, \
     QDialog, QCheckBox, QLabel, QFileDialog
 
 
 class settings_widget(QDialog):
     """設定へのアクセスをするインターフェイスを提供する"""
+
+    settings_saved = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -72,6 +74,7 @@ class settings_widget(QDialog):
         settings.setValue('playlist/path', self.path_label.text())
         settings.setValue('window/remember', self.window_size_chkbox.isChecked())
         settings.setValue('player/remaining_time', self.play_time_checkbox.isChecked())
+        self.settings_saved.emit()
 
     def read_settings(self):
         settings = QSettings()

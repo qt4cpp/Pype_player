@@ -1,6 +1,6 @@
 import os
 
-from PySide2.QtCore import (Qt, Signal, QPoint)
+from PySide2.QtCore import (Qt, Signal, QPoint, QSettings)
 from PySide2.QtWidgets import (QApplication, QTabWidget, QInputDialog,
                                QMessageBox, QFileDialog, QMenu)
 from playlistview import PlaylistView
@@ -15,7 +15,7 @@ class PlaylistTab(QTabWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.save_playlist_path = 'playlist/'
+        self.saved_playlists_path = 'playlist/'
 
         self.addTab(self.create_new(), 'Queue')
         self.setCurrentIndex(0)
@@ -28,7 +28,6 @@ class PlaylistTab(QTabWidget):
         self._create_context_menu()
 
         self.currentChanged[int].connect(self.adjust_header_size)
-
         self.autoload_playlists()
 
         self.show()
@@ -106,8 +105,8 @@ class PlaylistTab(QTabWidget):
             return title
 
     def remove_file(self, name=''):
-        if os.path.exists('./' + self.save_playlist_path + name):
-            os.remove('./' + self.save_playlist_path + name)
+        if os.path.exists('./' + self.saved_playlists_path + name):
+            os.remove('./' + self.saved_playlists_path + name)
             return name
         return False
 
@@ -127,11 +126,11 @@ class PlaylistTab(QTabWidget):
 
     def save_all(self):
         """すべてのプレイリストを保存する"""
-        os.makedirs(self.save_playlist_path, exist_ok=True)
+        os.makedirs(self.saved_playlists_path, exist_ok=True)
         for i in range(self.count()):
             title = self.tabText(i)
             if not title == 'Queue':
-                path = self.save_playlist_path + self.tabText(i) + self.playlist_ext
+                path = self.saved_playlists_path + self.tabText(i) + self.playlist_ext
                 self.widget(i).save(path)
 
     def load_playlist(self):
@@ -151,7 +150,7 @@ class PlaylistTab(QTabWidget):
     def remove_files(self):
         """すべてのプレイリストファイルを消去する"""
         import shutil
-        shutil.rmtree(self.save_playlist_path)
+        shutil.rmtree(self.saved_playlists_path)
 
     def autoload_playlists(self):
         """プレイリストをフォルダから読み込む。
