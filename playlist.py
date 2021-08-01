@@ -1,5 +1,5 @@
 from PySide2.QtCore import Signal, QObject, QSettings
-from PySide2.QtWidgets import QWidget, QVBoxLayout, QApplication
+from PySide2.QtWidgets import QApplication
 
 from playlisttab import PlaylistTab
 from playlistview import PlaylistView

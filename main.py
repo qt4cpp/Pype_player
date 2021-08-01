@@ -1,7 +1,6 @@
-import os
 import sys
 
-from PySide2.QtCore import QSettings, QByteArray, QCoreApplication, QSize
+from PySide2.QtCore import QSettings, QCoreApplication, QSize
 from PySide2.QtWidgets import QMainWindow, QApplication
 
 from menu_controller import MenuController

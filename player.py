@@ -4,7 +4,7 @@ from PySide2.QtCore import (QUrl, Qt, QTime, QTimer, Signal, Slot, QSettings, QB
 from PySide2.QtGui import (QPalette)
 from PySide2.QtMultimedia import (QMediaContent, QMediaPlayer)
 from PySide2.QtMultimediaWidgets import QVideoWidget
-from PySide2.QtWidgets import (QWidget, QLabel, QHBoxLayout, QVBoxLayout, QPushButton,
+from PySide2.QtWidgets import (QWidget, QLabel, QHBoxLayout, QVBoxLayout,
                              QStyle, QSlider, QSplitter, QMenu, QComboBox)
 
 from playlist import Playlist
