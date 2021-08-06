@@ -1,3 +1,5 @@
+from typing import Any
+
 from PySide2.QtCore import QUrl, QModelIndex, Qt, Signal, Slot, QAbstractTableModel, QTime
 from PySide2.QtGui import QFont, QBrush, QColor
 
@@ -70,16 +72,12 @@ class PlaylistModel(QAbstractTableModel):
         else:
             return 0
 
-    def headerData(self, section: int, orientation, role: int =None):
+    def headerData(self, section: int, orientation: Qt.Orientation, role=None) -> Any:
         """
 
-        :param role: Qt.DisplayRole
-        :param orientation: Qt.Orientation
-        :type section: int
-        
         """
         if role != Qt.DisplayRole:
-            return 0
+            return None
 
         if orientation == Qt.Horizontal:
             return self.headerTitles[section]
