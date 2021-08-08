@@ -73,9 +73,6 @@ class PlaylistModel(QAbstractTableModel):
             return 0
 
     def headerData(self, section: int, orientation: Qt.Orientation, role=None) -> Any:
-        """
-
-        """
         if role != Qt.DisplayRole:
             return None
 
