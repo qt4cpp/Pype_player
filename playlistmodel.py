@@ -70,7 +70,7 @@ class PlaylistModel(QAbstractTableModel):
         elif role == Qt.ToolTipRole or role is None:
             return self.item_list[row]['url']
         else:
-            return 0
+            return None
 
     def headerData(self, section: int, orientation: Qt.Orientation, role=None) -> Any:
         if role != Qt.DisplayRole:
