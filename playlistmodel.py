@@ -171,5 +171,13 @@ class PlaylistModel(QAbstractTableModel):
         self.rowCount_changed.emit(self.rowCount())
         return True
 
+    def sort(self, column:int = 0, order:Qt.SortOrder=Qt.AscendingOrder) -> None:
+        self.sort_by_title()
+
+    def sort_by_title(self, reverse=False):
+        self.layoutAboutToBeChanged.emit()
+        self.item_list = sorted(self.item_list, key=lambda x: x['title'])
+        self.layoutChanged.emit()
+
     def set_current_index(self, index: QModelIndex):
         self.current_index = index
