@@ -176,7 +176,8 @@ class PlaylistModel(QAbstractTableModel):
 
     def sort_by_title(self, reverse=False):
         self.layoutAboutToBeChanged.emit()
-        self.item_list = sorted(self.item_list, key=lambda x: x['title'])
+        self.item_list = sorted(self.item_list, key=lambda x: x['title'],
+                                reverse=reverse)
         self.layoutChanged.emit()
 
     def set_current_index(self, index: QModelIndex):
