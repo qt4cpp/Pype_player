@@ -67,7 +67,8 @@ class PlaylistView(QTableView):
         add_file = createAction(self, 'Add File(s)', self.open)
         delete_selected = createAction(self, 'Delete selected', self.delete_items)
         sort_action = createAction(self, 'Sort', self.model().sort)
-        self.context_menu.addActions([add_file, delete_selected, sort_action])
+        pickup_dup_action = createAction(self, 'Pickup Duplicated', self.model().pickup)
+        self.context_menu.addActions([add_file, delete_selected, sort_action, pickup_dup_action])
 
     def contextMenuEvent(self, event):
         self.context_menu.exec_(event.globalPos())
