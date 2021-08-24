@@ -71,9 +71,9 @@ class PlaylistView(QTableView):
         add_file = createAction(self, 'Add File(s)', self.open)
         delete_selected = createAction(self, 'Delete selected', self.delete_items)
         sort_action = createAction(self, 'Sort', self.proxy_model.sourceModel().sort)
-        pickup_dup_action = createAction(self, 'Pickup Duplicated', self.filter_same_title)
-        cancel_filter_action = createAction(self, 'Cancel Filter', self.cancel_filter)
-        self.context_menu.addActions([add_file, delete_selected, sort_action, pickup_dup_action, cancel_filter_action])
+        pickup_dup_action = createAction(self, 'Filter by same title', self.filter_same_title)
+        stop_filtering_action = createAction(self, 'Stop Filtering', self.stop_filtering)
+        self.context_menu.addActions([add_file, delete_selected, sort_action, pickup_dup_action, stop_filtering_action])
 
     def contextMenuEvent(self, event):
         self.context_menu.exec_(event.globalPos())
@@ -394,7 +394,7 @@ class PlaylistView(QTableView):
         re = QRegularExpression('|'.join(dup))
         self.proxy_model.setFilterRegularExpression(re)
 
-    def cancel_filter(self):
+    def stop_filtering(self):
         self.proxy_model.setFilterWildcard('*')
 
     def index_for_dropping_pos(self, pos: QPoint) -> QModelIndex:
