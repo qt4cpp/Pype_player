@@ -42,10 +42,10 @@ class PlaylistView(QTableView):
         self.setAcceptDrops(True)
         self.setDragDropMode(QAbstractItemView.DragDrop)
         self.setDropIndicatorShown(True)
-        playlist_model = PlaylistModel(self)
-        proxy_model = QSortFilterProxyModel(self)
-        proxy_model.setSourceModel(playlist_model)
-        self.setModel(proxy_model)
+
+        self.proxy_model = QSortFilterProxyModel(self)
+        self.proxy_model.setSourceModel(PlaylistModel(self))
+        self.setModel(self.proxy_model)
         # self.setModel(PlaylistModel())
 
         self.setShowGrid(False)
@@ -64,19 +64,13 @@ class PlaylistView(QTableView):
         self.context_menu = QMenu(self)
         self.create_context_menu()
 
-        # self.current_index_changed.connect(self.model().sourceModel().set_current_index)
-        self.current_index_changed.connect(self.model().set_current_index)
-
-    def model(self, access_source_model=True):
-        if access_source_model:
-            return super().model().sourceModel()
-        else:
-            return super().model()
+        # self.current_index_changed.connect(self.proxy_model.sourceModel().set_current_index)
+        self.current_index_changed.connect(self.proxy_model.sourceModel().set_current_index)
 
     def create_context_menu(self):
         add_file = createAction(self, 'Add File(s)', self.open)
         delete_selected = createAction(self, 'Delete selected', self.delete_items)
-        sort_action = createAction(self, 'Sort', self.model().sort)
+        sort_action = createAction(self, 'Sort', self.proxy_model.sourceModel().sort)
         pickup_dup_action = createAction(self, 'Pickup Duplicated', self.filter_same_title)
         cancel_filter_action = createAction(self, 'Cancel Filter', self.cancel_filter)
         self.context_menu.addActions([add_file, delete_selected, sort_action, pickup_dup_action, cancel_filter_action])
@@ -85,7 +79,7 @@ class PlaylistView(QTableView):
         self.context_menu.exec_(event.globalPos())
 
     def count(self):
-        return self.model().rowCount()
+        return self.proxy_model.sourceModel().rowCount()
 
     def open(self):
         list, _ = QFileDialog.getOpenFileNames(
@@ -121,8 +115,8 @@ class PlaylistView(QTableView):
             return
 
         with open(path, 'wt') as fout:
-            for i in range(self.model().rowCount()):
-                index = self.model().index(i, 0)
+            for i in range(self.proxy_model.sourceModel().rowCount()):
+                index = self.proxy_model.sourceModel().index(i, 0)
                 print(self.url(index).toLocalFile(), file=fout)
         return True
 
@@ -138,7 +132,7 @@ class PlaylistView(QTableView):
 
     def add_item(self, path):
         if is_media(path):
-            self.model().add(QUrl.fromLocalFile(path))
+            self.proxy_model.sourceModel().add(QUrl.fromLocalFile(path))
             return True
         return False
 
@@ -176,9 +170,9 @@ class PlaylistView(QTableView):
         if isinstance(index, int):
             row = index
             if 0 <= row < self.count():
-                index = self.model().index(row, 0)
+                index = self.proxy_model.sourceModel().index(row, 0)
         if isinstance(index, QModelIndex):
-            return self.model().data(index)
+            return self.proxy_model.sourceModel().data(index)
         else:
             return None
 
@@ -186,14 +180,14 @@ class PlaylistView(QTableView):
         if isinstance(index, int):
             row = index
             if 0 <= row < self.count():
-                index = self.model().index(row, 0)
+                index = self.proxy_model.sourceModel().index(row, 0)
         if isinstance(index, QModelIndex):
-            return self.model().data(index, Qt.DisplayRole)
+            return self.proxy_model.sourceModel().data(index, Qt.DisplayRole)
         else:
             return None
 
     def set_current_index_from_row(self, row):
-        new_index = self.model().index(row, 0)
+        new_index = self.proxy_model.sourceModel().index(row, 0)
         return self.set_current_index(new_index)
 
     def set_current_index(self, new_index: QModelIndex):
@@ -373,13 +367,13 @@ class PlaylistView(QTableView):
         start に −1を渡すと一番後ろに追加する。
         """
         if isinstance(items, QUrl):
-            self.model().add(items)
+            self.proxy_model.sourceModel().add(items)
         elif start == -1:
             for item in items:
-                self.model().add(item)
+                self.proxy_model.sourceModel().add(item)
         else:
             for item, i in items, range(start, len(items)):
-                self.model().add(item, i)
+                self.proxy_model.sourceModel().add(item, i)
 
     def delete_items(self):
         """渡されたインデックスを順番に消していく。
@@ -388,20 +382,20 @@ class PlaylistView(QTableView):
         """
         indexes = self.selectedIndexes()
         if indexes:
-            self.model().remove_items(indexes)
+            self.proxy_model.sourceModel().remove_items(indexes)
         else:
             return
 
     def move_items(self, indexes: [QModelIndex], dest: QModelIndex):
-        self.model().move(indexes, dest.row())
+        self.proxy_model.sourceModel().move(indexes, dest.row())
 
     def filter_same_title(self):
-        dup = self.model().pickup_same_title()
+        dup = self.proxy_model.sourceModel().pickup_same_title()
         re = QRegularExpression('|'.join(dup))
-        self.model(access_source_model=False).setFilterRegularExpression(re)
+        self.proxy_model.setFilterRegularExpression(re)
 
     def cancel_filter(self):
-        self.model(access_source_model=False).setFilterWildcard('*')
+        self.proxy_model.setFilterWildcard('*')
 
     def index_for_dropping_pos(self, pos: QPoint) -> QModelIndex:
         """dropした場所のindexを返す。ただし、要素の高さ半分より下にある場合は、下の要素を返す。
@@ -412,7 +406,7 @@ class PlaylistView(QTableView):
         """
         index = self.indexAt(pos)
         if index.row() < 0:
-            new_index = self.model().index(self.model().rowCount(), 0)
+            new_index = self.proxy_model.sourceModel().index(self.proxy_model.sourceModel().rowCount(), 0)
             return new_index
 
         item_rect = self.visualRect(index)
@@ -420,7 +414,7 @@ class PlaylistView(QTableView):
         if pos_in_rect < (item_rect.height() / 2):
             return index
         else:
-            return self.model().index(index.row() + 1, 0)
+            return self.proxy_model.sourceModel().index(index.row() + 1, 0)
 
     def rectForDropIndicator(self, index: QModelIndex) -> QRect:
         """QRubberBand を DropIndicatorとして表示するためのQRectを返す。
@@ -435,5 +429,5 @@ class PlaylistView(QTableView):
     def url_list(self, indexes):
         urls = []
         for index in indexes:
-            urls.append(self.model().data(index))
+            urls.append(self.proxy_model.sourceModel().data(index))
         return sorted(set(urls), key=urls.index)
