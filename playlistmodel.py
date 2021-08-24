@@ -181,23 +181,25 @@ class PlaylistModel(QAbstractTableModel):
         self.layoutChanged.emit()
 
     def pickup(self):
-        self.pickup_duplicated('title')
+        dup_row = self.pickup_same_title('title')
+        # pickup_done.emit(dup)
 
-    def pickup_duplicated(self, key='title'):
+    def pickup_same_title(self, key='title'):
         dup = []
         i = 0
 
         while i+1 < len(self.item_list):
             ref = self.item_list[i][key]
-            if i not in dup:
+            if ref not in dup:
                 j = i+1
                 while j < len(self.item_list):
                     comp = self.item_list[j][key]
                     if ref == comp:
-                        dup.append(j)
+                        dup.append(ref)
                     j = j + 1
             i = i+1
-        print(dup)
+        print('|'.join(dup))
+        return dup
 
     def set_current_index(self, index: QModelIndex):
         self.current_index = index

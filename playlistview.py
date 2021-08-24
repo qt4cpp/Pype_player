@@ -1,12 +1,11 @@
-from PySide2.QtCore import QModelIndex, QRect, QSize, QPoint, Signal, QDir,\
-    Qt, QMimeData, QUrl, Slot
+from PySide2.QtCore import QModelIndex, QRect, QSize, QPoint, Signal, QDir, \
+    Qt, QMimeData, QUrl, Slot, QSortFilterProxyModel, QRegularExpression
 from PySide2.QtWidgets import QRubberBand, QFileDialog, QAbstractItemView,\
     QApplication, QStyle, QTableView, QHeaderView, QMenu
 from PySide2.QtGui import QDrag
 
 from playlistmodel import PlaylistModel
 from utility import convert_from_bytearray, is_media, createAction
-
 
 class PlaylistView(QTableView):
 
@@ -43,7 +42,11 @@ class PlaylistView(QTableView):
         self.setAcceptDrops(True)
         self.setDragDropMode(QAbstractItemView.DragDrop)
         self.setDropIndicatorShown(True)
-        self.setModel(PlaylistModel())
+        playlist_model = PlaylistModel(self)
+        proxy_model = QSortFilterProxyModel(self)
+        proxy_model.setSourceModel(playlist_model)
+        self.setModel(proxy_model)
+        # self.setModel(PlaylistModel())
 
         self.setShowGrid(False)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -61,14 +64,22 @@ class PlaylistView(QTableView):
         self.context_menu = QMenu(self)
         self.create_context_menu()
 
+        # self.current_index_changed.connect(self.model().sourceModel().set_current_index)
         self.current_index_changed.connect(self.model().set_current_index)
+
+    def model(self, access_source_model=True):
+        if access_source_model:
+            return super().model().sourceModel()
+        else:
+            return super().model()
 
     def create_context_menu(self):
         add_file = createAction(self, 'Add File(s)', self.open)
         delete_selected = createAction(self, 'Delete selected', self.delete_items)
         sort_action = createAction(self, 'Sort', self.model().sort)
-        pickup_dup_action = createAction(self, 'Pickup Duplicated', self.model().pickup)
-        self.context_menu.addActions([add_file, delete_selected, sort_action, pickup_dup_action])
+        pickup_dup_action = createAction(self, 'Pickup Duplicated', self.filter_same_title)
+        cancel_filter_action = createAction(self, 'Cancel Filter', self.cancel_filter)
+        self.context_menu.addActions([add_file, delete_selected, sort_action, pickup_dup_action, cancel_filter_action])
 
     def contextMenuEvent(self, event):
         self.context_menu.exec_(event.globalPos())
@@ -383,6 +394,14 @@ class PlaylistView(QTableView):
 
     def move_items(self, indexes: [QModelIndex], dest: QModelIndex):
         self.model().move(indexes, dest.row())
+
+    def filter_same_title(self):
+        dup = self.model().pickup_same_title()
+        re = QRegularExpression('|'.join(dup))
+        self.model(access_source_model=False).setFilterRegularExpression(re)
+
+    def cancel_filter(self):
+        self.model(access_source_model=False).setFilterWildcard('*')
 
     def index_for_dropping_pos(self, pos: QPoint) -> QModelIndex:
         """dropした場所のindexを返す。ただし、要素の高さ半分より下にある場合は、下の要素を返す。
