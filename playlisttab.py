@@ -1,6 +1,6 @@
 import os
 
-from PySide2.QtCore import (Qt, Signal, QPoint, QSettings)
+from PySide2.QtCore import (Qt, Signal, QPoint, QSettings, Slot)
 from PySide2.QtWidgets import (QApplication, QTabWidget, QInputDialog,
                                QMessageBox, QFileDialog, QMenu)
 from playlistview import PlaylistView
@@ -73,7 +73,16 @@ class PlaylistTab(QTabWidget):
     def create_new(self):
         new = PlaylistView(self)
         new.playlist_double_clicked.connect(self.handle_playlist_double_clicked)
+        new.filtering.connect(self.append_text)
+        new.unfiltered.connect(self.append_text)
         return new
+
+    @Slot(str)
+    def append_text(self, append_text=''):
+        # Todo: 元のタイトルに戻せるようにする
+        # append を追加して、そこに付けるようにしようか。
+        title = self.tabText(self.currentIndex())
+        self.setTabText(self.currentIndex(), title+append_text)
 
     def rename_playlist(self):
         original = self.tabText(self.currentIndex())

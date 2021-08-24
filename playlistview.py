@@ -11,6 +11,8 @@ class PlaylistView(QTableView):
 
     current_index_changed = Signal(QModelIndex)
     playlist_double_clicked = Signal()
+    filtering = Signal(str)
+    unfiltered = Signal(str)
     next = Slot(int)
     previous = Slot(int)
 
@@ -72,7 +74,7 @@ class PlaylistView(QTableView):
         delete_selected = createAction(self, 'Delete selected', self.delete_items)
         sort_action = createAction(self, 'Sort', self.proxy_model.sourceModel().sort)
         pickup_dup_action = createAction(self, 'Filter by same title', self.filter_same_title)
-        stop_filtering_action = createAction(self, 'Stop Filtering', self.stop_filtering)
+        stop_filtering_action = createAction(self, 'Stop Filtering', self.unfilter)
         self.context_menu.addActions([add_file, delete_selected, sort_action, pickup_dup_action, stop_filtering_action])
 
     def contextMenuEvent(self, event):
@@ -393,9 +395,11 @@ class PlaylistView(QTableView):
         dup = self.proxy_model.sourceModel().pickup_same_title()
         re = QRegularExpression('|'.join(dup))
         self.proxy_model.setFilterRegularExpression(re)
+        self.filtering.emit(' - filtered')
 
-    def stop_filtering(self):
+    def unfilter(self):
         self.proxy_model.setFilterWildcard('*')
+        self.unfiltered.emit('')
 
     def index_for_dropping_pos(self, pos: QPoint) -> QModelIndex:
         """dropした場所のindexを返す。ただし、要素の高さ半分より下にある場合は、下の要素を返す。
